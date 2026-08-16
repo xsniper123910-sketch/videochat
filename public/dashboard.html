@@ -651,3 +651,91 @@ function setStatus(t){document.getElementById('callStatus').textContent=t}
 function setButtons(s){
     document.getElementById('findBtn').classList.toggle('hidden', s!=='searching');
     document.getElementById('endBtn').class
+// ==============================================
+// ✅ THESE ARE THE MISSING FUNCTIONS — ADD THEM
+// ==============================================
+
+// OPEN BUY COINS MODAL
+function openHub(){
+    document.getElementById('hubModal').classList.add('show');
+    document.getElementById('hubMsg').textContent = '';
+}
+
+// CLOSE BUY COINS MODAL
+function closeHub(){
+    document.getElementById('hubModal').classList.remove('show');
+}
+
+// BUY COINS HANDLER
+async function buy(pack){
+    const msgBox = document.getElementById('hubMsg');
+    msgBox.textContent = 'Processing...';
+    msgBox.className = 'msg ok';
+    try {
+        const res = await fetch('/buy-coins', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: user.email, pack })
+        });
+        const d = await res.json();
+        if (d.success) {
+            user.coins = d.newCoinCount;
+            localStorage.setItem('user', JSON.stringify(user));
+            document.getElementById('coinCount').textContent = d.newCoinCount;
+            msgBox.textContent = '✅ Coins added!';
+            setTimeout(closeHub, 1500);
+        } else {
+            msgBox.textContent = d.error || 'Failed';
+            msgBox.className = 'msg err';
+        }
+    } catch {
+        msgBox.textContent = '⚠️ Server error';
+        msgBox.className = 'msg err';
+    }
+}
+
+// LOGOUT BUTTON
+function logout(){
+    if (confirm('Logout?')) {
+        localStorage.removeItem('user');
+        window.location.href = 'login.html';
+    }
+}
+
+// NEXT PARTNER BUTTON
+function nextPartner(){
+    if ((user.coins || 0) < 10) {
+        alert('⚠️ Need 10 coins!');
+        openHub();
+        return;
+    }
+    endCall();
+    setTimeout(() => findPartner(), 500);
+}
+
+// END CALL FUNCTION (if missing)
+function endCall(){
+    if(callTimer) clearInterval(callTimer);
+    if(pc) pc.close();
+    callStartTime = null;
+    minutesBilled = 0;
+    document.getElementById('callStats').classList.remove('show');
+    document.getElementById('remoteEmpty').style.display = 'block';
+    document.getElementById('remoteEmpty').innerHTML = '<h3>✨ Ready to connect?</h3><p>Find a partner or call someone below</p>';
+    if(document.getElementById('remoteVid')) document.getElementById('remoteVid').srcObject = null;
+    document.getElementById('smsToggle').classList.add('hidden');
+    document.getElementById('favoriteBtn').classList.add('hidden');
+    document.getElementById('blurBtn').classList.add('hidden');
+    document.getElementById('smsPanel').classList.remove('show');
+    setButtons('idle');
+    partnerId = partnerEmail = partnerName = null;
+    isFavorite = manCameraBlurred = false;
+    document.getElementById('selfWrap').classList.remove('blur');
+}
+
+// SET BUTTON STATES
+function setButtons(s){
+    document.getElementById('findBtn').classList.toggle('hidden', s !== 'searching');
+    document.getElementById('endBtn').classList.toggle('hidden', s !== 'connected');
+    document.getElementById('nextBtn').classList.toggle('hidden', s !== 'connected');
+}
