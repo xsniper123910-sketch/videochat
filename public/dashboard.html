@@ -5,98 +5,191 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Video Chat — Flitry</title>
     <style>
-        *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-        body{background:linear-gradient(135deg,#0F0F23,#1A1A3A,#251640);min-height:100vh;color:white}
-        .top{display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:rgba(0,0,0,.4);border-bottom:1px solid rgba(255,255,255,.1)}
-        .logo{font-size:20px;font-weight:bold;background:linear-gradient(90deg,#FF6B9D,#9D65FF);-webkit-background-clip:text;color:transparent}
-        .coins{background:linear-gradient(135deg,#FACC15,#F59E0B);color:black;padding:8px 16px;border-radius:50px;font-weight:bold;border:none;cursor:pointer}
-        .vid-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:20px;max-width:1100px;margin:0 auto}
-        @media(max-width:768px){.vid-grid{grid-template-columns:1fr}}
-        .vid-box{background:#000;border-radius:16px;aspect-ratio:16/9;position:relative;overflow:hidden}
-        video{width:100%;height:100%;object-fit:cover}
-        .tag{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.7);padding:5px 12px;border-radius:20px;font-size:13px}
-        .empty{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#666;text-align:center}
-        .ctrls{display:flex;justify-content:center;gap:12px;padding:12px;flex-wrap:wrap}
-        .btn{padding:14px 24px;border-radius:50px;border:none;font-size:16px;font-weight:bold;cursor:pointer;transition:transform .15s}
-        .btn:hover{transform:scale(1.05)}
-        .btn-green{background:linear-gradient(135deg,#10B981,#34D399);color:white}
-        .btn-purple{background:linear-gradient(135deg,#6366F1,#8B5CF6);color:white}
-        .btn-red{background:linear-gradient(135deg,#EF4444,#F87171);color:white}
-        .hidden{display:none!important}
-        .status{text-align:center;padding:8px;color:#ccc}
-        .hub{position:fixed;inset:0;background:rgba(5,5,25,.92);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}
-        .hub.show{display:flex}
-        .hub-card{background:linear-gradient(180deg,#232352,#151535);border-radius:24px;padding:30px;max-width:460px;width:100%;border:2px solid rgba(139,92,246,.25);box-shadow:0 0 60px rgba(99,102,241,.18)}
-        .hub h2{text-align:center;margin-bottom:20px}
-        .pack{background:rgba(255,255,255,.05);border:2px solid transparent;border-radius:14px;padding:16px;margin:10px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .25s}
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif}
+        :root {
+            --bg: linear-gradient(135deg,#0F0F23,#1A1A3A,#251640);
+            --card: rgba(255,255,255,.04);
+            --border: rgba(255,255,255,.12);
+            --accent: linear-gradient(135deg,#EC4899,#6366F1);
+            --green: linear-gradient(135deg,#10B981,#34D399);
+            --purple: linear-gradient(135deg,#6366F1,#8B5CF6);
+            --red: linear-gradient(135deg,#EF4444,#F87171);
+        }
+        body{background:var(--bg);min-height:100vh;color:white;overflow-x:hidden}
+
+        /* === TOP NAVBAR === */
+        .top{display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:rgba(0,0,0,.35);border-bottom:1px solid var(--border);backdrop-filter:blur(10px);position:sticky;top:0;z-index:50}
+        .logo{font-size:22px;font-weight:bold;background:linear-gradient(90deg,#FF6B9D,#9D65FF);-webkit-background-clip:text;color:transparent}
+        .top-right{display:flex;align-items:center;gap:14px}
+        .coins{background:linear-gradient(135deg,#FACC15,#F59E0B);color:#000;padding:8px 18px;border-radius:50px;font-weight:bold;border:none;cursor:pointer;font-size:15px;box-shadow:0 2px 10px rgba(250,204,21,.25)}
+        .top-btn{background:rgba(255,255,255,.08);border:none;color:white;padding:8px 12px;border-radius:10px;cursor:pointer;font-size:14px;transition:all .2s}
+        .top-btn:hover{background:rgba(255,255,255,.15)}
+        .user-label{color:#ccc;font-size:14px}
+
+        /* === VIDEO LAYOUT — PARTNER BIGGER === */
+        .video-container{position:relative;width:94%;max-width:1200px;margin:20px auto}
+        
+        /* PARTNER VIDEO — LARGE & MAIN */
+        .partner-wrap{width:100%;aspect-ratio:16/9;background:#000;border-radius:20px;overflow:hidden;position:relative;box-shadow:0 8px 40px rgba(0,0,0,.45);border:1px solid rgba(236,72,153,.15)}
+        .partner-wrap video{width:100%;height:100%;object-fit:cover;background:#0a0a18}
+        .partner-label{position:absolute;top:16px;left:16px;background:rgba(0,0,0,.65);padding:6px 14px;border-radius:50px;font-size:14px;font-weight:500;backdrop-filter:blur(6px)}
+        .partner-empty{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#777}
+        .partner-empty svg{width:80px;height:80px;opacity:.3;margin-bottom:12px}
+        .partner-empty h3{font-size:18px;color:#aaa;margin-bottom:6px}
+        .partner-empty p{font-size:14px;color:#666}
+
+        /* YOUR VIDEO — SMALL PIP STYLE */
+        .self-wrap{position:absolute;bottom:20px;right:20px;width:220px;aspect-ratio:16/9;background:#000;border-radius:14px;overflow:hidden;border:2px solid rgba(255,255,255,.15);box-shadow:0 4px 20px rgba(0,0,0,.4);z-index:10}
+        .self-wrap video{width:100%;height:100%;object-fit:cover}
+        .self-empty{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:#888;text-align:center;width:90%}
+
+        /* FULLSCREEN BUTTONS */
+        .fs-btn{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.65);border:none;color:white;padding:6px 8px;border-radius:8px;cursor:pointer;font-size:16px;z-index:15;backdrop-filter:blur(4px)}
+        .fs-btn:hover{background:rgba(255,255,255,.2)}
+
+        /* STATUS */
+        .status{text-align:center;padding:10px 16px;margin:16px auto;width:fit-content;background:rgba(99,102,241,.1);border-radius:50px;color:#C4B5FD;font-size:14px}
+
+        /* CONTROLS */
+        .ctrls{display:flex;justify-content:center;gap:14px;padding:10px 20px 30px;flex-wrap:wrap}
+        .btn{padding:14px 28px;border-radius:50px;border:none;font-size:16px;font-weight:600;cursor:pointer;transition:all .2s;box-shadow:0 4px 15px rgba(0,0,0,.2)}
+        .btn:hover{transform:translateY(-2px)}
+        .btn:active{transform:translateY(0)}
+        .btn-green{background:var(--green);color:white}
+        .btn-purple{background:var(--purple);color:white}
+        .btn-red{background:var(--red);color:white}
+        .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+        .hidden{display:none !important}
+
+        /* === MODALS — SUPPORT & SETTINGS === */
+        .modal{position:fixed;inset:0;background:rgba(5,5,25,.85);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}
+        .modal.show{display:flex}
+        .modal-card{background:linear-gradient(180deg,#232352,#151535);border-radius:24px;padding:30px;max-width:460px;width:100%;border:2px solid rgba(139,92,246,.25);box-shadow:0 0 60px rgba(99,102,241,.18)}
+        .modal-card h2{text-align:center;margin-bottom:20px;font-size:20px}
+        .modal-card p{color:#ccc;line-height:1.6;margin-bottom:12px;font-size:15px}
+        .modal-card input, .modal-card select{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #333;background:#111522;color:white;margin-bottom:12px;font-size:14px}
+        .modal-card label{display:block;margin:8px 0 4px;color:#ddd;font-size:14px}
+        .btn-wide{width:100%;padding:14px;border-radius:10px;border:none;background:var(--accent);color:white;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px}
+        .btn-wide.secondary{background:rgba(255,255,255,.08);color:#aaa;margin-top:10px}
+        .btn-wide:hover{opacity:.9}
+        .msg{margin-top:12px;padding:10px;border-radius:8px;text-align:center;font-size:14px;min-height:40px}
+        .err{color:#F87171;background:rgba(239,68,68,.1)}
+        .ok{color:#34D399;background:rgba(16,185,129,.1)}
+
+        /* COIN PACKS */
+        .pack{background:rgba(255,255,255,.05);border:2px solid transparent;border-radius:14px;padding:14px;margin:8px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s}
         .pack:hover{border-color:rgba(139,92,246,.5);transform:translateY(-2px)}
         .pack.popular{border-color:#FACC15;background:rgba(250,204,21,.08)}
-        .pack-left{display:flex;flex-direction:column;gap:4px}
-        .pack-name{font-weight:bold;font-size:16px}
-        .pack-bonus{font-size:12px;color:#34D399}
-        .pack-right{text-align:right}
-        .price{color:#FACC15;font-weight:bold;font-size:22px}
-        .close{width:100%;padding:14px;border-radius:10px;border:none;background:rgba(255,255,255,.08);color:#aaa;margin-top:20px;cursor:pointer;font-size:15px}
-        .close:hover{background:rgba(255,255,255,.15);color:white}
-        .msg{margin-top:12px;padding:10px;border-radius:8px;text-align:center;font-size:14px;min-height:40px}
-        .err{color:#F87171}
-        .ok{color:#34D399}
+        .pack-name{font-weight:bold;font-size:15px}
+        .pack-bonus{font-size:12px;color:#34D399;margin-top:2px}
+        .price{color:#FACC15;font-weight:bold;font-size:20px}
     </style>
 </head>
 <body>
 
-<!-- COIN HUB MODAL -->
-<div id="hubModal" class="hub">
-    <div class="hub-card">
+<!-- === BUY COINS MODAL === -->
+<div id="hubModal" class="modal">
+    <div class="modal-card">
         <h2>🪨 Buy Coins</h2>
         <div class="pack" onclick="buy('small')">
-            <div class="pack-left"><span class="pack-name">💰 100 Coins</span></div>
-            <div class="pack-right"><span class="price">$4.99</span></div>
+            <div><div class="pack-name">💰 100 Coins</div></div>
+            <div class="price">$4.99</div>
         </div>
         <div class="pack popular" onclick="buy('medium')">
-            <div class="pack-left"><span class="pack-name">⭐ 500 Coins</span><span class="pack-bonus">+50 FREE!</span></div>
-            <div class="pack-right"><span class="price">$19.99</span></div>
+            <div><div class="pack-name">⭐ 500 Coins</div><div class="pack-bonus">+50 FREE!</div></div>
+            <div class="price">$19.99</div>
         </div>
         <div class="pack" onclick="buy('large')">
-            <div class="pack-left"><span class="pack-name">💎 1,500 Coins</span><span class="pack-bonus">+200 FREE!</span></div>
-            <div class="pack-right"><span class="price">$49.99</span></div>
+            <div><div class="pack-name">💎 1,500 Coins</div><div class="pack-bonus">+200 FREE!</div></div>
+            <div class="price">$49.99</div>
         </div>
         <div class="pack" onclick="buy('mega')">
-            <div class="pack-left"><span class="pack-name">👑 5,000 Coins</span><span class="pack-bonus">+800 FREE!</span></div>
-            <div class="pack-right"><span class="price">$149.99</span></div>
+            <div><div class="pack-name">👑 5,000 Coins</div><div class="pack-bonus">+800 FREE!</div></div>
+            <div class="price">$149.99</div>
         </div>
         <div id="hubMsg" class="msg"></div>
-        <button class="close" onclick="closeHub()">Close</button>
+        <button class="btn-wide secondary" onclick="closeHub()">Close</button>
     </div>
 </div>
 
-<!-- TOP BAR -->
+<!-- === SETTINGS MODAL === -->
+<div id="settingsModal" class="modal">
+    <div class="modal-card">
+        <h2>⚙️ Settings</h2>
+        <label>Camera</label>
+        <select id="camSel">
+            <option value="on">✅ Camera Enabled</option>
+            <option value="off">❌ Camera Disabled</option>
+        </select>
+        <label>Microphone</label>
+        <select id="micSel">
+            <option value="on">✅ Microphone Enabled</option>
+            <option value="off">❌ Microphone Disabled</option>
+        </select>
+        <label>Video Quality</label>
+        <select id="qualSel">
+            <option value="720">HD (720p) — Recommended</option>
+            <option value="1080">Full HD (1080p)</option>
+            <option value="480">SD (480p) — Faster</option>
+        </select>
+        <button class="btn-wide" onclick="saveSettings()">✅ Save Settings</button>
+        <button class="btn-wide secondary" onclick="closeSettings()">Cancel</button>
+    </div>
+</div>
+
+<!-- === CUSTOMER SUPPORT MODAL === -->
+<div id="supportModal" class="modal">
+    <div class="modal-card">
+        <h2>💬 Customer Support</h2>
+        <p><strong>Need help? Contact us anytime:</strong></p>
+        <p>📧 Email: <strong>support@flitry.com</strong></p>
+        <p>⏰ Response time: Within 24 hours</p>
+        <p>📋 Include your username and issue details.</p>
+        <p style="margin-top:10px;color:#999;font-size:13px;">Common fixes:<br>• Allow camera/mic when prompted<br>• Use Chrome or Edge browser<br>• Refresh page if stuck</p>
+        <button class="btn-wide" onclick="window.location='mailto:support@flitry.com'">📧 Send Email</button>
+        <button class="btn-wide secondary" onclick="closeSupport()">Close</button>
+    </div>
+</div>
+
+<!-- === TOP NAVBAR === -->
 <div class="top">
     <div class="logo">FLITRY</div>
-    <div style="display:flex;gap:12px;align-items:center">
-        <span id="userName" style="color:#aaa"></span>
+    <div class="top-right">
+        <span class="user-label" id="userName"></span>
         <button class="coins" onclick="openHub()">💰 <span id="coinCount">0</span></button>
-        <button onclick="logout()" style="background:none;border:none;color:#888;cursor:pointer;font-size:14px">Logout</button>
+        <button class="top-btn" onclick="openSettings()">⚙️ Settings</button>
+        <button class="top-btn" onclick="openSupport()">💬 Support</button>
+        <button class="top-btn" onclick="logout()" style="color:#F87171">Logout</button>
     </div>
 </div>
 
-<!-- VIDEO AREA -->
-<div class="vid-grid">
-    <div class="vid-box">
-        <span class="tag">You</span>
-        <video id="localVid" autoplay muted playsinline></video>
-        <div id="localStat" class="empty">📷 Camera loading...</div>
-    </div>
-    <div class="vid-box">
-        <span class="tag">Partner</span>
+<!-- === MAIN VIDEO AREA — PARTNER BIGGER === -->
+<div class="video-container">
+    <!-- PARTNER — BIG & MAIN (what you wanted!) -->
+    <div class="partner-wrap" id="partnerWrap">
+        <span class="partner-label">👩 Partner</span>
         <video id="remoteVid" autoplay playsinline></video>
-        <div id="remoteStat" class="empty">👋 Click "Find Partner"</div>
+        <div id="remoteEmpty" class="partner-empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M12.5 7a4 4 0 11-8 0 4 4 0 018 0zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+            </svg>
+            <h3>Looking for someone...</h3>
+            <p>Click "Find Partner" below to start</p>
+        </div>
+        <button class="fs-btn" onclick="fullscreen('partnerWrap')">⛶</button>
+    </div>
+
+    <!-- YOUR CAMERA — SMALL PICTURE-IN-PICTURE -->
+    <div class="self-wrap" id="selfWrap">
+        <video id="localVid" autoplay muted playsinline></video>
+        <div id="localEmpty" class="self-empty">📷 Camera loading...</div>
+        <button class="fs-btn" onclick="fullscreen('selfWrap')" style="font-size:12px;padding:3px 5px">⛶</button>
     </div>
 </div>
 
 <div id="callStatus" class="status"></div>
 
-<!-- CONTROLS -->
+<!-- === CONTROLS === -->
 <div class="ctrls">
     <button id="findBtn" class="btn btn-green" onclick="findPartner()">🔍 Find Partner</button>
     <button id="nextBtn" class="btn btn-purple hidden" onclick="nextPartner()">➡️ Next (10 coins)</button>
@@ -107,6 +200,7 @@
 <script>
 const socket = io();
 let user = null, stream = null, pc = null, partnerId = null;
+let camEnabled = true, micEnabled = true;
 const ICE = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
 window.onload = async () => {
@@ -117,11 +211,11 @@ window.onload = async () => {
     document.getElementById('coinCount').textContent = user.coins || 0;
 
     try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        stream = await navigator.mediaDevices.getUserMedia({ video: { width:1280, height:720 }, audio: true });
         document.getElementById('localVid').srcObject = stream;
-        document.getElementById('localStat').style.display = 'none';
+        document.getElementById('localEmpty').style.display = 'none';
     } catch {
-        document.getElementById('localStat').textContent = '⚠️ Camera blocked — check permissions';
+        document.getElementById('localEmpty').innerHTML = '⚠️ Camera blocked<br>Check permissions';
     }
 };
 
@@ -131,18 +225,19 @@ async function findPartner() {
         setTimeout(openHub, 600);
         return;
     }
-    setStatus('⏳ Searching...');
-    document.getElementById('remoteStat').textContent = '🔍 Looking for a match...';
+    setStatus('⏳ Searching for someone...');
+    document.getElementById('remoteEmpty').innerHTML = `<h3>🔍 Searching...</h3><p>Waiting for a match</p>`;
+    document.getElementById('remoteEmpty').style.display = 'block';
     setButtons('searching');
     socket.emit('find', { username: user.username, email: user.email, role: user.role });
 }
 
-socket.on('wait', () => setStatus('⏳ Waiting for someone...'));
+socket.on('wait', () => setStatus('⏳ Waiting for someone to join...'));
 
 socket.on('found', async (data) => {
     partnerId = data.partnerId;
-    setStatus('✅ Connected with ' + data.name);
-    document.getElementById('remoteStat').style.display = 'none';
+    setStatus(`✅ Connected with ${data.name}`);
+    document.getElementById('remoteEmpty').style.display = 'none';
     setButtons('connected');
     await deductCoins(10);
     await startConnection();
@@ -150,7 +245,7 @@ socket.on('found', async (data) => {
 
 async function startConnection() {
     pc = new RTCPeerConnection(ICE);
-    stream.getTracks().forEach(track => pc.addTrack(track, stream));
+    if (stream) stream.getTracks().forEach(track => pc.addTrack(track, stream));
     pc.ontrack = (e) => document.getElementById('remoteVid').srcObject = e.streams[0];
     pc.onicecandidate = (e) => {
         if (e.candidate) socket.emit('signal', { to: partnerId, s: { c: e.candidate } });
@@ -181,21 +276,21 @@ async function nextPartner() {
     if ((user.coins || 0) < 10) { showHubMsg('❌ Need more coins!', 'err'); openHub(); return; }
     await deductCoins(10);
     endCall(true);
-    setTimeout(findPartner, 300);
+    setTimeout(findPartner, 400);
 }
 
 function endCall(skip = false) {
     pc && pc.close(); pc = null;
     skip || socket.emit('end');
     document.getElementById('remoteVid').srcObject = null;
-    document.getElementById('remoteStat').style.display = 'block';
-    document.getElementById('remoteStat').textContent = '👋 Call ended';
+    document.getElementById('remoteEmpty').style.display = 'block';
+    document.getElementById('remoteEmpty').innerHTML = `<h3>👋 Call ended</h3><p>Click Find Partner to try again</p>`;
     setStatus('');
     partnerId = null;
     setButtons('idle');
 }
 
-socket.on('ended', () => { endCall(); setStatus('👋 Partner disconnected'); });
+socket.on('ended', () => { endCall(true); setStatus('👋 Partner disconnected'); });
 
 async function deductCoins(amount) {
     const res = await fetch('/deduct-coins', {
@@ -211,7 +306,7 @@ async function deductCoins(amount) {
     }
 }
 
-async function buyCoins(packId) {
+async function buy(packId) {
     showHubMsg('⏳ Processing...', 'ok');
     const res = await fetch('/buy-coins', {
         method: 'POST',
@@ -223,7 +318,7 @@ async function buyCoins(packId) {
         user.coins = data.coins;
         document.getElementById('coinCount').textContent = data.coins;
         localStorage.setItem('user', JSON.stringify(user));
-        showHubMsg('✅ ' + data.added + ' Coins added!', 'ok');
+        showHubMsg(`✅ +${data.added} Coins added!`, 'ok');
         setTimeout(closeHub, 1600);
     } else {
         showHubMsg('❌ Purchase failed', 'err');
@@ -236,13 +331,41 @@ function setButtons(state) {
     document.getElementById('nextBtn').classList.toggle('hidden', state !== 'connected');
     document.getElementById('endBtn').classList.toggle('hidden', state !== 'connected');
 }
+
+/* === FULLSCREEN FUNCTION === */
+function fullscreen(id) {
+    const el = document.getElementById(id);
+    if (!document.fullscreenElement) el.requestFullscreen?.();
+    else document.exitFullscreen?.();
+}
+
+/* === SETTINGS FUNCTIONS === */
+function openSettings() { document.getElementById('settingsModal').classList.add('show'); }
+function closeSettings() { document.getElementById('settingsModal').classList.remove('show'); }
+function saveSettings() {
+    camEnabled = document.getElementById('camSel').value === 'on';
+    micEnabled = document.getElementById('micSel').value === 'on';
+    if (stream) {
+        stream.getVideoTracks().forEach(t => t.enabled = camEnabled);
+        stream.getAudioTracks().forEach(t => t.enabled = micEnabled);
+    }
+    alert('✅ Settings saved!');
+    closeSettings();
+}
+
+/* === SUPPORT FUNCTIONS === */
+function openSupport() { document.getElementById('supportModal').classList.add('show'); }
+function closeSupport() { document.getElementById('supportModal').classList.remove('show'); }
+
+/* === COIN HUB === */
 function openHub() { document.getElementById('hubModal').classList.add('show'); document.getElementById('hubMsg').textContent = ''; }
-function closeHub() { document.getElementById('hubModal').classList.remove('show'); document.getElementById('hubMsg').textContent = ''; }
+function closeHub() { document.getElementById('hubModal').classList.remove('show'); }
 function showHubMsg(text, type) {
     const el = document.getElementById('hubMsg');
     el.className = 'msg ' + type;
     el.textContent = text;
 }
+
 function logout() { localStorage.clear(); window.location = 'login.html'; }
 </script>
 </body>
