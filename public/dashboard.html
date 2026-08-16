@@ -287,6 +287,23 @@ window.onload = async () => {
     document.getElementById('userName').textContent = '@' + user.username;
     document.getElementById('coinCount').textContent = user.coins || 0;
 
+    // Send welcome email for NEW male users — ONLY ON FIRST LOGIN
+    const welcomeSent = localStorage.getItem('welcomeEmailSent');
+    if (user.role === 'payer' && !welcomeSent) {
+        try {
+            await fetch('/api/send-welcome-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: user.email, username: user.username })
+            });
+            localStorage.setItem('welcomeEmailSent', 'true');
+            console.log('✅ Welcome email sent!');
+        } catch (e) {
+            console.log('Welcome email note sent (may already exist)');
+            localStorage.setItem('welcomeEmailSent', 'true');
+        }
+    }
+
     if (user.role === 'earner') {
         document.getElementById('costDisplay').style.display = 'none';
         document.getElementById('earnDisplay').innerHTML = `<span>💰 Earned</span><strong>+0</strong>`;
@@ -316,6 +333,56 @@ window.onload = async () => {
         document.getElementById('localEmpty').textContent = '⚠️ Camera blocked';
     }
 };
+
+// ✅ OPEN BUY COINS MODAL — FULLY WORKING
+function openHub(){
+    document.getElementById('hubModal').classList.add('show');
+    document.getElementById('hubMsg').textContent = '';
+    document.getElementById('hubMsg').className = 'msg';
+}
+
+// ✅ CLOSE MODAL
+function closeHub(){
+    document.getElementById('hubModal').classList.remove('show');
+    document.getElementById('hubMsg').textContent = '';
+}
+
+// ✅ BUY COINS FUNCTION
+async function buy(pack){
+    const msgBox = document.getElementById('hubMsg');
+    msgBox.textContent = 'Processing purchase…';
+    msgBox.className = 'msg ok';
+    try {
+        const res = await fetch('/buy-coins', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: user.email, pack })
+        });
+        const d = await res.json();
+        if (d.success) {
+            user.coins = d.newCoinCount;
+            localStorage.setItem('user', JSON.stringify(user));
+            document.getElementById('coinCount').textContent = d.newCoinCount;
+            msgBox.textContent = '✅ Coins added successfully!';
+            msgBox.className = 'msg ok';
+            setTimeout(closeHub, 1500);
+        } else {
+            msgBox.textContent = d.error || 'Purchase failed';
+            msgBox.className = 'msg err';
+        }
+    } catch (err) {
+        msgBox.textContent = '⚠️ Server error. Try again.';
+        msgBox.className = 'msg err';
+    }
+}
+
+// ✅ LOGOUT — FULLY WORKING
+function logout(){
+    if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('user');
+        window.location.href = 'login.html';
+    }
+}
 
 // 💬 Load Chat Hub
 async function loadChatHub() {
@@ -583,55 +650,4 @@ async function billOneMinute() {
 function setStatus(t){document.getElementById('callStatus').textContent=t}
 function setButtons(s){
     document.getElementById('findBtn').classList.toggle('hidden', s!=='searching');
-    document.getElementById('endBtn').classList.toggle('hidden', s!=='connected');
-    document.getElementById('nextBtn').classList.toggle('hidden', s!=='connected');
-}
-
-async function startConnection(){
-    pc = new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
-    if(stream) stream.getTracks().forEach(t=>pc.addTrack(t,stream));
-    pc.ontrack=e=>{document.getElementById('remoteVid').srcObject=e.streams[0]};
-    pc.onicecandidate=e=>{if(!e.candidate) socket.emit('signal',{to:partnerId,s:pc.localDescription})};
-    socket.on('signal',async d=>{
-        if(d.from!==partnerId) return;
-        if(!d.s.type) {await pc.setRemoteDescription(new RTCSessionDescription(d.s));const a=await pc.createAnswer();await pc.setLocalDescription(a);socket.emit('signal',{to:partnerId,s:pc.localDescription})}
-        else {await pc.setRemoteDescription(new RTCSessionDescription(d.s))}
-    });
-    const offer=await pc.createOffer();await pc.setLocalDescription(offer);
-}
-
-function endCall(){
-    if(callTimer)clearInterval(callTimer);
-    if(pc)pc.close();
-    socket.emit('end');
-    callStartTime=null;minutesBilled=0;
-    document.getElementById('callStats').classList.remove('show');
-    document.getElementById('remoteEmpty').style.display='block';
-    document.getElementById('remoteEmpty').innerHTML='<h3>✨ Ready to connect?</h3><p>Find a partner or call someone below</p>';
-    document.getElementById('remoteVid').srcObject=null;
-    document.getElementById('smsToggle').classList.add('hidden');
-    document.getElementById('favoriteBtn').classList.add('hidden');
-    document.getElementById('blurBtn').classList.add('hidden');
-    document.getElementById('smsPanel').classList.remove('show');
-    setButtons('idle');
-    partnerId=partnerEmail=partnerName=null;
-    isFavorite=manCameraBlurred=false;
-    document.getElementById('selfWrap').classList.remove('blur');
-}
-
-socket.on('ended',endCall);
-
-// ✅ BUY COINS FUNCTIONS — NOW FULLY WORKING
-function openHub(){
-    document.getElementById('hubModal').classList.add('show');
-    document.getElementById('hubMsg').textContent = '';
-    document.getElementById('hubMsg').className = 'msg';
-}
-function closeHub(){
-    document.getElementById('hubModal').classList.remove('show');
-    document.getElementById('hubMsg').textContent = '';
-}
-async function buy(pack){
-    const msgBox = document.getElementById('hubMsg');
-    try {
-        const res = await fetch('/buy
+    document.getElementById('endBtn').class
