@@ -1,7 +1,6 @@
 const express = require('express');
 const http = require('http');
 const path = require('path');
-const fs = require('fs');
 
 const app = express();
 const server = http.createServer(app);
@@ -18,12 +17,16 @@ app.use((req, res, next) => {
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// 💰 RATES — EXACTLY AS YOU WANTED
+const RATE_COST_PER_MINUTE = 1;      // 👨 Man pays 1 coin per minute
+const RATE_EARN_PER_MINUTE = 0.50;   // 👩 Woman earns 0.50 coins per minute
+
 const ADMIN_CODE = "FlitryAdmin2026!";
 let users = [];
+let activeCalls = {}; // Track active calls for billing
 
 // ✅ REGISTER — WITH VERIFICATION UPLOAD
 app.post('/register', (req, res) => {
-  console.log('📩 REGISTER:', req.body);
   const { role, username, email, password, adminCode, passportPhoto, selfiePhoto } = req.body;
 
   if (!username || !email || !password) {
@@ -59,7 +62,7 @@ app.post('/register', (req, res) => {
   }
 
   let coins = 0, approved = false, isAdmin = false;
-  if (role === 'payer') { coins = 100; approved = true; } // ✅ Male = Instant
+  if (role === 'payer') { coins = 100; approved = true; } // ✅ Male = Instant + 100 coins
   if (role === 'earner') { coins = 0; approved = false; } // ⏳ Female = Pending Approval
   if (role === 'admin') { coins = 9999; approved = true; isAdmin = true; }
 
@@ -74,6 +77,8 @@ app.post('/register', (req, res) => {
     isAdmin,
     passportPhoto: passportPhoto || null,
     selfiePhoto: selfiePhoto || null,
+    totalEarned: 0,      // 💰 Total coins earned from calls
+    totalCallMinutes: 0, // ⏱️ Total minutes on calls
     registeredAt: new Date().toISOString()
   });
 
@@ -98,8 +103,62 @@ app.post('/login', (req, res) => {
     email: user.email,
     role: user.role,
     coins: user.coins,
-    isAdmin: user.isAdmin
+    isAdmin: user.isAdmin,
+    totalEarned: user.totalEarned || 0,
+    totalCallMinutes: user.totalCallMinutes || 0
   }});
+});
+
+// ✅ START CALL — RECORD START TIME
+app.post('/call/start', (req, res) => {
+  const { userEmail, partnerEmail } = req.body;
+  const user = users.find(u => u.email.toLowerCase() === userEmail.toLowerCase());
+  const partner = users.find(u => u.email.toLowerCase() === partnerEmail.toLowerCase());
+  
+  if (!user || !partner) return res.json({ success: false, error: 'User not found' });
+
+  const callId = userEmail + '_' + partnerEmail + '_' + Date.now();
+  activeCalls[callId] = {
+    callerEmail: userEmail,
+    callerRole: user.role,
+    receiverEmail: partnerEmail,
+    receiverRole: partner.role,
+    startTime: Date.now(),
+    lastBilledMinute: 0
+  };
+
+  res.json({ success: true, callId, startTime: Date.now() });
+});
+
+// ✅ BILL PER MINUTE — CORE SYSTEM
+app.post('/call/bill-minute', (req, res) => {
+  const { callId, minutesElapsed, payerEmail, earnerEmail } = req.body;
+  
+  const payer = users.find(u => u.email.toLowerCase() === payerEmail.toLowerCase());
+  const earner = users.find(u => u.email.toLowerCase() === earnerEmail.toLowerCase());
+
+  if (!payer || !earner) return res.json({ success: false, error: 'User not found' });
+
+  // 👨 DEDUCT from Man
+  if (payer.coins < RATE_COST_PER_MINUTE) {
+    return res.json({ success: false, error: '⚠️ Insufficient coins — Call ended!', outOfCoins: true });
+  }
+  payer.coins -= RATE_COST_PER_MINUTE;
+
+  // 👩 ADD to Woman
+  earner.coins += RATE_EARN_PER_MINUTE;
+  earner.totalEarned = (earner.totalEarned || 0) + RATE_EARN_PER_MINUTE;
+  earner.totalCallMinutes = (earner.totalCallMinutes || 0) + 1;
+
+  console.log(`💰 BILLED: ${payer.username} -1 | ${earner.username} +${RATE_EARN_PER_MINUTE}`);
+
+  res.json({ 
+    success: true, 
+    payerCoins: payer.coins,
+    earnerCoins: earner.coins,
+    earnedThisMinute: RATE_EARN_PER_MINUTE,
+    costThisMinute: RATE_COST_PER_MINUTE
+  });
 });
 
 // ✅ ADMIN: GET ALL PENDING USERS
@@ -111,12 +170,15 @@ app.post('/admin/pending', (req, res) => {
     u.isAdmin
   );
   if (!admin) return res.json({ success: false, error: 'Unauthorized' });
-  const pending = users.filter(u => !u.isApproved && u.role === 'earner').map(u => ({
+  const pending = users.filter(u => u.role === 'earner').map(u => ({
     id: u.id,
     username: u.username,
     email: u.email,
     passportPhoto: u.passportPhoto,
     selfiePhoto: u.selfiePhoto,
+    isApproved: u.isApproved,
+    totalEarned: u.totalEarned || 0,
+    totalCallMinutes: u.totalCallMinutes || 0,
     registeredAt: u.registeredAt
   }));
   return res.json({ success: true, pending });
@@ -189,8 +251,18 @@ io.on('connection', socket => {
       waiting = waiting.filter(w => w.id !== partner.id);
       socket.partner = partner.id;
       io.to(partner.id).partner = socket.id;
-      io.to(socket.id).emit('found', { name: partner.username, partnerId: partner.id });
-      io.to(partner.id).emit('found', { name: data.username, partnerId: socket.id });
+      io.to(socket.id).emit('found', { 
+        name: partner.username, 
+        partnerId: partner.id,
+        partnerEmail: partner.email,
+        partnerRole: partner.role
+      });
+      io.to(partner.id).emit('found', { 
+        name: data.username, 
+        partnerId: socket.id,
+        partnerEmail: data.email,
+        partnerRole: data.role
+      });
     } else {
       waiting.push({ ...data, id: socket.id });
       socket.emit('wait');
@@ -202,4 +274,4 @@ io.on('connection', socket => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`✅ SERVER RUNNING PORT ${PORT} | ADMIN CODE: ${ADMIN_CODE}`));
+server.listen(PORT, () => console.log(`✅ SERVER RUNNING PORT ${PORT} | RATE: Man pays 1/min → Woman earns 0.50/min`));
