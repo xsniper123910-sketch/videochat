@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Chat — Flitry</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body { background: linear-gradient(135deg, #0F0F23 0%, #1A1A3A 50%, #251640 100%); min-height: 100vh; color: white; }
+
+        /* TOP BAR */
+        .top-bar { background: rgba(0,0,0,0.4); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .top-logo { font-size: 20px; font-weight: 800; background: linear-gradient(90deg, #FF6B9D, #9D65FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .top-right { display: flex; align-items: center; gap: 16px; }
+        .coins-btn { background: linear-gradient(135deg, #FACC15, #F59E0B); color: #000; padding: 8px 20px; border-radius: 50px; font-weight: 700; border: none; cursor: pointer; font-size: 15px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(250,204,21,0.25); }
+        .coins-btn:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(250,204,21,0.4); }
+        .user-label { color: #aaa; font-size: 14px; }
+        .logout { color: #888; background: none; border: none; cursor: pointer; font-size: 14px; padding: 6px 10px; transition: color 0.2s; }
+        .logout:hover { color: white; }
+
+        /* VIDEO AREA */
+        .video-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 20px; max-width: 1100px; margin: 0 auto; }
+        @media (max-width: 768px) { .video-grid { grid-template-columns: 1fr; } }
+        .video-box { background: #000; border-radius: 16px; aspect-ratio: 16/9; position: relative; overflow: hidden; border: 2px solid rgba(255,255,255,0.05); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+        video { width: 100%; height: 100%; object-fit: cover; }
+        .vid-tag { position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.7); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; backdrop-filter: blur(10px); }
+        .empty { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #666; text-align: center; }
+
+        .status { text-align: center; padding: 8px; color: #ccc; font-size: 15px; }
+        .controls { display: flex; justify-content: center; gap: 12px; padding: 12px; flex-wrap: wrap; }
+        .ctrl-btn { padding: 14px 26px; border-radius: 50px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .ctrl-btn:hover { transform: scale(1.05); }
+        .btn-find { background: linear-gradient(135deg, #10B981, #34D399); color: white; }
+        .btn-next { background: linear-gradient(135deg, #6366F1, #8B5CF6); color: white; }
+        .btn-end { background: linear-gradient(135deg, #EF4444, #F87171); color: white; }
+        .hidden { display: none !important; }
+
+        /* ==============================================
+           🪙 PREMIUM COIN HUB — BETTER THAN LUCKYCRUSH
+           ============================================== */
+        .hub-overlay { position: fixed; inset: 0; background: rgba(5,5,25,0.92); backdrop-filter: blur(12px); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; animation: fadeIn 0.25s ease; }
+        .hub-overlay.show { display: flex; }
+        @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+
+        .hub-container { background: linear-gradient(180deg, #232352 0%, #151535 100%); border-radius: 28px; padding: 36px 32px; max-width: 520px; width: 100%; border: 2px solid rgba(139,92,246,0.25); box-shadow: 0 0 60px rgba(99,102,241,0.18), 0 25px 80px rgba(0,0,0,0.5); animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+
+        .hub-header { text-align: center; margin-bottom: 28px; }
+        .hub-title { font-size: 28px; font-weight: 800; margin-bottom: 6px; background: linear-gradient(90deg, #FF6B9D, #FACC15); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hub-subtitle { color: #A0A0C0; font-size: 14px; }
+
+        .coin-package {
+            background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+            border: 2px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+            padding: 20px 22px;
+            margin: 12px 0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .coin-package::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+            transition: left 0.5s ease;
+        }
+        .coin-package:hover::before { left: 100%; }
+        .coin-package:hover {
+            transform: translateY(-4px) scale(1.01);
+            border-color: rgba(139,92,246,0.5);
+            box-shadow: 0 10px 30px rgba(99,102,241,0.2);
+        }
+
+        /* ⭐ POPULAR PACKAGE — GLOWING EFFECT */
+        .coin-package.popular {
+            border-color: #FACC15;
+            background: linear-gradient(135deg, rgba(250,204,21,0.12), rgba(250,204,21,0.02));
+            box-shadow: 0 0 25px rgba(250,204,21,0.15), 0 8px 30px rgba(0,0,0,0.3);
+        }
+        .coin-package.popular:hover { box-shadow: 0 0 35px rgba(250,204,21,0.3), 0 12px 40px rgba(0,0,0,0.4); }
+
+        /* 👑 VIP PACKAGE — RAINBOW GLOW */
+        .coin-package.vip {
+            border: 2px solid transparent;
+            background: linear-gradient(#232352, #232352) padding-box,
+                        linear-gradient(135deg, #FF6B9D, #FACC15, #6366F1) border-box;
+            animation: vipPulse 3s infinite ease-in-out;
+        }
+        @keyframes vipPulse {
+            0%,100% { box-shadow: 0 0 20px rgba(255,107,157,0.2), 0 8px 30px rgba(0,0,0,0.3); }
+            50% { box-shadow: 0 0 35px rgba(99,102,241,0.25), 0 8px 30px rgba(0,0,0,0.3); }
+        }
+
+        .badge-wrapper { position: absolute; top: 0; right: 20px; }
+        .badge {
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 0 0 10px 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .badge-popular { background: linear-gradient(90deg, #FACC15, #F59E0B); color: #000; }
+        .badge-vip { background: linear-gradient(90deg, #FF6B9D, #6366F1); color: white; }
+
+        .pack-left { display: flex; flex-direction: column; gap: 4px; }
+        .pack-icon { font-size: 22px; margin-bottom: 2px; }
+        .pack-amount { font-size: 18px; font-weight: 700; }
+        .pack-bonus { font-size: 13px; color: #34D399; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+        .pack-bonus span { background: rgba(52,211,153,0.15); padding: 1px 8px; border-radius: 10px; font-size: 11px; }
+
+        .pack-right { text-align: right; }
+        .pack-price { font-size: 22px; font-weight: 800; color: #FACC15; }
+        .pack-save { font-size: 11px; color: #F87171; margin-top: 2px; }
+
+        .hub-footer { margin-top: 24px; text-align: center; }
+        .guarantee { font-size: 12px; color: #777; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .close-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255,255,255,0.06);
+            color: #aaa;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .close-btn:hover { background: rgba(255,255,255,0.12); color: white; }
+        .hub-msg { margin-top: 14px; font-size: 14px; text-align: center; min-height: 24px; }
+    </style>
+</head>
+<body>
+
+<!-- 🪙 ULTIMATE COIN HUB MODAL -->
+<div id="hubModal" class="hub-overlay">
+    <div class="hub-container">
+        <div class="hub-header">
+            <h2 class="hub-title">🪙 Buy Coins</h2>
+            <p class="hub-subtitle">Instant access to video chat — best value below ⬇️</p>
+        </div>
+
+        <!-- PACKAGE 1 -->
+        <div class="coin-package" onclick="buyCoins('small')">
+            <div class="pack-left">
+                <span class="pack-icon">💰</span>
+                <span class="pack-amount">100 Coins</span>
+            </div>
+            <div class="pack-right">
+                <span class="pack-price">$4.99</span>
+            </div>
+        </div>
+
+        <!-- PACKAGE 2 — POPULAR -->
+        <div class="coin-package popular" onclick="buyCoins('medium')">
+            <div class="badge-wrapper"><span class="badge badge-popular">⭐ Most Popular</span></div>
+            <div class="pack-left">
+                <span class="pack-icon">💎</span>
+                <span class="pack-amount">500 Coins</span>
+                <span class="pack-bonus"><span>HOT</span> +50 FREE Bonus!</span>
+            </div>
+            <div class="pack-right">
+                <span class="pack-price">$19.99</span>
+                <span class="pack-save">Save 10%</span>
+            </div>
+        </div>
+
+        <!-- PACKAGE 3 -->
+        <div class="coin-package" onclick="buyCoins('large')">
+            <div class="pack-left">
+                <span class="pack-icon">🚀</span>
+                <span class="pack-amount">1,500 Coins</span>
+                <span class="pack-bonus"><span>BONUS</span> +200 FREE Bonus!</span>
+            </div>
+            <div class="pack-right">
+                <span class="pack-price">$49.99</span>
+                <span class="pack-save">Save 15%</span>
+            </div>
+        </div>
+
+        <!-- PACKAGE 4 — VIP TOP -->
+        <div class="coin-package vip" onclick="buyCoins('mega')">
+            <div class="badge-wrapper"><span class="badge badge-vip">👑 VIP Best Value</span></div>
+            <div class="pack-left">
+                <span class="pack-icon">👑</span>
+                <span class="pack-amount">5,000 Coins</span>
+                <span class="pack-bonus"><span>MEGA</span> +800 FREE Bonus!</span>
+            </div>
+            <div class="pack-right">
+                <span class="pack-price">$149.99</span>
+                <span class="pack-save">Save 22% — BEST DEAL</span>
+            </div>
+        </div>
+
+        <div id="hubMsg" class="hub-msg"></div>
+
+        <div class="hub-footer">
+            <p class="guarantee">🔒 Secure Purchase • Instant Delivery • 100% Private</p>
+            <button class="close-btn" onclick="closeHub()">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+    <div class="top-logo">FLITRY</div>
+    <div class="top-right">
+        <span class="user-label" id="userName"></span>
+        <button class="coins-btn" onclick="openHub()">💰 <span id="coinCount">0</span> Coins</button>
+        <button class="logout" onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<!-- VIDEO AREA -->
+<div class="video-grid">
+    <div class="video-box">
+        <span class="vid-tag">You</span>
+        <video id="localVid" autoplay muted playsinline></video>
+        <div id="localStat" class="empty">📷 Camera loading...</div>
+    </div>
+    <div class="video-box">
+        <span class="vid-tag">Partner</span>
+        <video id="remoteVid" autoplay playsinline></video>
+        <div id="remoteStat" class="empty">👋 Click "Find Partner"</div>
+    </div>
+</div>
+
+<div id="callStatus" class="status"></div>
+
+<!-- CONTROLS -->
+<div class="controls">
+    <button id="findBtn" class="ctrl-btn btn-find" onclick="findPartner()">🔍 Find Partner</button>
+    <button id="nextBtn" class="ctrl-btn btn-next hidden" onclick="nextPartner()">➡️ Next (10 coins)</button>
+    <button id="endBtn" class="ctrl-btn btn-end hidden" onclick="endCall()">📞 End Call</button>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket = io();
+let user = null, stream = null, pc = null, partnerId = null;
+const ICE = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
+window.onload = async () => {
+    const saved = localStorage.getItem('user');
+    if (!saved) { alert('⚠️ Please login first!'); return window.location = 'login.html'; }
+    user = JSON.parse(saved);
+    document.getElementById('userName').textContent = '@' + user.username;
+    document.getElementById('coinCount').textContent = user.coins || 0;
+
+    // 🎥 CAMERA STARTS ONLY AFTER LOGIN
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        document.getElementById('localVid').srcObject = stream;
+        document.getElementById('localStat').style.display = 'none';
+    } catch { document.getElementById('localStat').textContent = '⚠️ Camera blocked — check permissions'; }
+};
+
+async function findPartner() {
+    if ((user.coins || 0) < 10) {
+        showHubMsg('❌ You need at least 10 coins to start chatting!', 'err');
+        setTimeout(openHub, 600);
+        return;
+    }
+    setStatus('⏳ Searching for someone online...');
+    document.getElementById('remoteStat').textContent = '🔍 Looking for a match...';
+    setButtons('searching');
+    socket.emit('find', { username: user.username, email: user.email, role: user.role });
+}
+
+socket.on('wait', () => setStatus('⏳ Waiting for someone to join...'));
+
+socket.on('found', async (data) => {
+    partnerId = data.partnerId;
+    setStatus('✅ Connected with <strong>' + data.name + '</strong>');
+    document.getElementById('remoteStat').style.display = 'none';
+    setButtons('connected');
+    await deductCoins(10);
+    await startConnection();
+});
+
+async function startConnection() {
+    pc = new RTCPeerConnection(ICE);
+    stream.getTracks().forEach(track => pc.addTrack(track, stream));
+    pc.ontrack = (e) => document.getElementById('remoteVid').srcObject = e.streams[0];
+    pc.onicecandidate = (e) => {
+        if (e.candidate) socket.emit('signal', { to: partnerId, s: { c: e.candidate } });
+    };
+    if (partnerId) {
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        socket.emit('signal', { to: partnerId, s: { o: offer } });
+    }
+}
+
+socket.on('signal', async (d) => {
+    partnerId = d.from;
+    if (!pc) await startConnection();
+    if (d.s.o) {
+        await pc.setRemoteDescription(new RTCSessionDescription(d.s.o));
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        socket.emit('signal', { to: d.from, s: { a: answer } });
+    } else if (d.s.a) {
+        await pc.setRemoteDescription(new RTCSessionDescription(d.s.a));
+    } else if (d.s.c) {
+        await pc.addIceCandidate(new RTCIceCandidate(d.s.c));
+    }
+});
+
+async function nextPartner() {
+    if ((user.coins || 0) < 10) {
+        showHubMsg('❌ Need 10 more coins!', 'err');
+        setTimeout(openHub, 600);
+        return;
+    }
+    await deductCoins(10);
+    endCall(true);
+    setTimeout(findPartner, 300);
+}
+
+function endCall(skip = false) {
+    pc && pc.close(); pc = null;
+    skip || socket.emit('end');
+    document.getElementById('remoteVid').srcObject = null;
+    document.getElementById('remoteStat').style.display = 'block';
+    document.getElementById('remoteStat').textContent = '👋 Call ended';
+    setStatus('');
+    partnerId = null;
+    setButtons('idle');
+}
+
+socket.on('ended', () => { endCall(); setStatus('👋 Partner disconnected'); });
+
+async function deductCoins(amount) {
+    const res = await fetch('/deduct-coins', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email, amount })
+    });
+    const data = await res.json();
+    if (data.success) {
+        user.coins = data.coins;
+        document.getElementById('coinCount').textContent = data.coins;
+        localStorage.setItem('user', JSON.stringify(user));
+    }
+}
+
+async function buyCoins(packageId) {
+    showHubMsg('⏳ Processing...', 'wait');
+    const res = await fetch('/buy-coins', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email, pack: packageId })
+    });
+    const data = await res.json();
+    if (data.success) {
+        user.coins = data.coins;
+        document.getElementById('coinCount').textContent = data.coins;
+        localStorage.setItem('user', JSON.stringify(user));
+        showHubMsg('✅ ' + data.added + ' Coins added successfully!', 'ok');
+        setTimeout(closeHub, 1600);
+    } else {
+        showHubMsg('❌ Purchase failed — try again', 'err');
+    }
+}
+
+function setStatus(text) { document.getElementById('callStatus').innerHTML = text; }
+function setButtons(state) {
+    document.getElementById('findBtn').classList.toggle('hidden', state !== 'idle');
+    document.getElementById('nextBtn').classList.toggle('hidden', state !== 'connected');
+    document.getElementById('endBtn').classList.toggle('hidden', state !== 'connected');
+}
+function showHubMsg(text, type) {
+    const el = document.getElementById('hubMsg');
+    el.innerHTML = text;
+    el.style.color = type === 'ok' ? '#34D399' : type === 'err' ? '#F87171' : '#FACC15';
+}
+function openHub() { document.getElementById('hubModal').classList.add('show'); document.getElementById('hubMsg').textContent = ''; }
+function closeHub() { document.getElementById('hubModal').classList.remove('show'); document.getElementById('hubMsg').textContent = ''; }
+function logout() { localStorage.clear(); window.location = 'login.html'; }
+</script>
+</body>
+</html>
