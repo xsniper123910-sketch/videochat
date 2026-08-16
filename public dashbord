@@ -3,551 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flitry — Join Us</title>
+    <title>Flitry — Video Chat</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        * {margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
-        body {
-            background: linear-gradient(135deg, #0F0F23 0%, #1A1A3A 50%, #251640 100%);
-            min-height:100vh;
-            color:white;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            padding:20px;
-        }
-        .container {max-width:640px;width:100%}
-        .logo {text-align:center;margin-bottom:30px}
-        .logo h1 {font-size:44px;font-weight:800;background:linear-gradient(90deg,#FF6B9D,#9D65FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px}
-        .logo p {color:#B8B8D1;font-size:16px;margin-top:6px}
-        .card {
-            background:rgba(255,255,255,0.05);
-            border-radius:24px;
-            padding:36px 30px;
-            backdrop-filter:blur(12px);
-            border:1px solid rgba(255,255,255,0.1);
-            box-shadow:0 8px 40px rgba(0,0,0,0.35);
-        }
-        .title {text-align:center;margin-bottom:24px}
-        .title h2 {font-size:26px;margin-bottom:4px}
-        .title p {color:#B8B8D1;font-size:15px}
-        .steps {display:flex;justify-content:center;gap:12px;margin-bottom:24px}
-        .step {text-align:center;opacity:0.4;transition:all 0.3s}
-        .step.active {opacity:1}
-        .step-num {width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#EC4899,#F472B6);display:flex;align-items:center;justify-content:center;font-weight:700;margin:0 auto 4px}
-        .step.active .step-num {box-shadow:0 0 16px rgba(236,72,153,0.4)}
-        .step-label {font-size:12px;color:#B8B8D1}
-        .role-grid {display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:30px}
-        .role-card {
-            padding:24px 12px;
-            border-radius:18px;
-            border:2px solid transparent;
-            text-align:center;
-            cursor:pointer;
-            transition:all 0.3s ease;
-            background:rgba(255,255,255,0.05);
-        }
-        .role-card:hover {transform:translateY(-4px)}
-        .role-card.active {border-color:#FF6B9D;box-shadow:0 0 24px rgba(255,107,157,0.3)}
-        .role-card.man:hover, .role-card.man.active {border-color:#7C3AED;box-shadow:0 0 24px rgba(124,58,237,0.3)}
-        .role-card.admin:hover, .role-card.admin.active {border-color:#FACC15;box-shadow:0 0 24px rgba(250,204,21,0.3);background:rgba(250,204,21,0.05)}
-        .role-icon {font-size:32px;margin-bottom:8px}
-        .role-label {font-size:15px;font-weight:700}
-        .form-wrap {display:none}
-        .form-step {display:none}
-        .form-step.active {display:block}
-        .input-group {margin-bottom:14px}
-        label.field-label {display:block;margin-bottom:6px;color:#D4D4E4;font-size:14px;font-weight:500}
-        input {
-            width:100%;
-            padding:14px 16px;
-            border-radius:12px;
-            border:1px solid rgba(255,255,255,0.15);
-            background:rgba(255,255,255,0.05);
-            color:white;
-            font-size:16px;
-            outline:none;
-            transition:border 0.25s
-        }
-        input:focus {border-color:#9D65FF}
-        input.secret-code {border-color:2px solid #FACC15;background:rgba(250,204,21,0.08)}
-        .grid-2 {display:grid;grid-template-columns:1fr 1fr;gap:12px}
-        .photo-section {
-            background:rgba(255,107,157,0.06);
-            border-radius:16px;
-            padding:18px;
-            margin:10px 0;
-            border:1px solid rgba(255,107,157,0.2)
-        }
-        .photo-section h4 {margin-bottom:10px;color:#FFB6C9;font-size:14px}
-        .camera-buttons {display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
-        .cam-btn {
-            flex:1;
-            min-width:120px;
-            padding:10px 12px;
-            border-radius:10px;
-            border:none;
-            font-size:14px;
-            font-weight:600;
-            cursor:pointer;
-            color:white;
-            transition:all 0.2s
-        }
-        .cam-btn:hover {transform:scale(1.03)}
-        .cam-btn.cam {background:linear-gradient(135deg,#EC4899,#F472B6)}
-        .cam-btn.upload {background:linear-gradient(135deg,#6366F1,#8B5CF6)}
-        .preview-box {
-            width:100%;
-            min-height:80px;
-            background:rgba(0,0,0,0.25);
-            border-radius:10px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            color:#999;
-            font-size:13px;
-            overflow:hidden;
-            margin-top:6px
-        }
-        .preview-box img {max-width:100%;border-radius:8px}
-        .hidden-input {display:none}
-        .checkbox-row {display:flex;align-items:flex-start;gap:10px;margin:14px 0}
-        .checkbox-row input {width:auto;margin-top:2px}
-        .checkbox-row label {color:#D4D4E4;font-size:14px;line-height:1.5}
-        .btn-row {display:flex;gap:12px;margin-top:16px}
-        .submit-btn {
-            flex:1;
-            padding:14px;
-            border-radius:12px;
-            border:none;
-            font-size:16px;
-            font-weight:700;
-            cursor:pointer;
-            transition:transform 0.2s
-        }
-        .submit-btn:hover {transform:scale(1.02)}
-        .btn-next {background:linear-gradient(135deg,#EC4899,#F472B6);color:white}
-        .btn-back {background:#475569;color:white}
-        .btn-man {background:linear-gradient(135deg,#4F46E5,#7C3AED);color:white;width:100%}
-        .btn-admin {background:linear-gradient(135deg,#FACC15,#F59E0B);color:black;width:100%}
-        .back-link {text-align:center;margin-top:20px}
-        .back-btn {color:#9D65FF;cursor:pointer;font-size:15px}
-        .error {color:#FF8EAD;margin-top:12px;text-align:center}
-        .success {color:#10B981;margin-top:12px;text-align:center}
-        .link {color:#9D65FF;text-decoration:none}
-        .login-link {text-align:center;margin-top:24px;color:#999;font-size:15px}
-        .admin-note {background:rgba(250,204,21,0.1);border:1px solid rgba(250,204,21,0.3);border-radius:10px;padding:12px;margin-bottom:16px;color:#FDE68A;font-size:14px;text-align:center}
-        .secret-note {color:#FACC15;font-size:13px;margin-top:4px}
-        video {width:100%;border-radius:10px;background:#000}
-        .camera-modal {
-            position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);
-            display:none;align-items:center;justify-content:center;z-index:9999;padding:20px
-        }
-        .camera-modal-content {
-            background:#1A1A3A;border-radius:20px;padding:24px;max-width:500px;width:100%
-        }
-        .cam-controls {display:flex;gap:10px;margin-top:16px}
-        .cam-controls button {flex:1;padding:12px;border-radius:10px;border:none;font-weight:600;cursor:pointer}
-        .btn-capture {background:linear-gradient(135deg,#EC4899,#F472B6);color:white}
-        .btn-close {background:#475569;color:white}
-        .hidden {display:none !important}
-        @media(max-width:580px){.role-grid{grid-template-columns:1fr}}
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+        body{background:linear-gradient(135deg,#0F0F23 0%,#1A1A3A 50%,#251640 100%);min-height:100vh;color:white}
+        .top-bar{background:rgba(0,0,0,0.3);padding:12px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.1)}
+        .logo-text{font-size:24px;font-weight:800;background:linear-gradient(90deg,#FF6B9D,#9D65FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .coins-display{background:linear-gradient(135deg,#FACC15,#F59E0B);color:black;padding:8px 16px;border-radius:20px;font-weight:700}
+        .container{max-width:1200px;margin:0 auto;padding:20px}
+        .video-container{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+        @media(max-width:768px){.video-container{grid-template-columns:1fr}}
+        .video-box{background:#000;border-radius:20px;aspect-ratio:16/9;overflow:hidden;position:relative;border:3px solid transparent}
+        video{width:100%;height:100%;object-fit:cover;background:#111}
+        .video-label{position:absolute;top:12px;left:12px;background:rgba(0,0,0,0.7);padding:6px 12px;border-radius:20px;font-size:14px;font-weight:600}
+        .status-box{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#aaa}
+        .controls{display:flex;justify-content:center;gap:16px;margin:24px 0;flex-wrap:wrap}
+        .ctrl-btn{padding:16px 32px;border-radius:50px;border:none;font-size:18px;font-weight:700;cursor:pointer;transition:all 0.2s;min-width:140px}
+        .ctrl-btn:hover{transform:scale(1.05)}
+        .btn-start{background:linear-gradient(135deg,#10B981,#34D399);color:white}
+        .btn-next{background:linear-gradient(135deg,#6366F1,#8B5CF6);color:white}
+        .btn-end{background:linear-gradient(135deg,#EF4444,#F87171);color:white}
+        .btn-hub{background:linear-gradient(135deg,#FACC15,#F59E0B);color:black}
+        .ctrl-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+        .hidden{display:none !important}
+        .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px}
+        .modal.active{display:flex}
+        .modal-content{background:linear-gradient(135deg,#1A1A3A,#251640);border-radius:24px;padding:30px;max-width:500px;width:100%;border:1px solid rgba(255,255,255,0.1)}
+        .tab-buttons{display:flex;gap:10px;margin-bottom:20px}
+        .tab-btn{flex:1;padding:10px;border-radius:10px;border:none;background:#2A2A4A;color:white;cursor:pointer}
+        .tab-btn.active{background:linear-gradient(135deg,#6366F1,#EC4899)}
+        .tab-content{display:none}
+        .tab-content.active{display:block}
+        .coin-package{background:rgba(255,255,255,0.05);border-radius:12px;padding:16px;margin:10px 0;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+        .coin-package:hover{background:rgba(255,255,255,0.1)}
+        .support-box{background:rgba(255,255,255,0.05);border-radius:12px;padding:16px;margin:10px 0}
+        .support-box input,.support-box textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #444;background:#112;color:white;margin:6px 0}
+        .call-status{text-align:center;margin-top:20px;font-size:18px}
+        .admin-badge{background:linear-gradient(135deg,#FACC15,#F59E0B);color:black;padding:4px 10px;border-radius:12px;font-size:12px;font-weight:700;margin-left:10px}
+        .user-area{display:flex;align-items:center;gap:12px}
     </style>
 </head>
 <body>
 
-<div class="camera-modal" id="cameraModal">
-    <div class="camera-modal-content">
-        <h3 style="text-align:center;margin-bottom:16px" id="camTitle">📸 Take Photo</h3>
-        <video id="camVideo" autoplay playsinline style="width:100%;border-radius:12px"></video>
-        <div class="cam-controls">
-            <button class="btn-capture" onclick="capturePhoto()">📸 Capture</button>
-            <button class="btn-close" onclick="closeCamera()">✕ Close</button>
+<!-- HUB MODAL -->
+<div class="modal" id="hubModal">
+    <div class="modal-content">
+        <h2 style="text-align:center;margin-bottom:20px">⚡ FLITRY HUB</h2>
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="openTab('coins')">💰 Buy Coins</button>
+            <button class="tab-btn" onclick="openTab('support')">💬 Support</button>
         </div>
-        <canvas id="camCanvas" class="hidden"></canvas>
+        <div class="tab-content active" id="tabCoins">
+            <p style="color:#999;margin-bottom:10px">Coins let you connect with new people!</p>
+            <div class="coin-package" onclick="buyCoins('small')">
+                <div><strong>100 Coins</strong></div><div style="color:#FACC15;font-weight:700">$4.99</div>
+            </div>
+            <div class="coin-package" onclick="buyCoins('medium')">
+                <div><strong>500 Coins ⭐</strong></div><div style="color:#FACC15;font-weight:700">$19.99</div>
+            </div>
+            <div class="coin-package" onclick="buyCoins('large')">
+                <div><strong>1,500 Coins 💎</strong></div><div style="color:#FACC15;font-weight:700">$49.99</div>
+            </div>
+            <div class="coin-package" onclick="buyCoins('mega')">
+                <div><strong>5,000 Coins 👑</strong></div><div style="color:#FACC15;font-weight:700">$149.99</div>
+            </div>
+            <p id="buyMsg" style="text-align:center;margin-top:12px"></p>
+        </div>
+        <div class="tab-content" id="tabSupport">
+            <p style="color:#999;margin-bottom:10px">Need help? Contact us!</p>
+            <div class="support-box">
+                <input type="text" id="sName" placeholder="Your Name">
+                <input type="email" id="sEmail" placeholder="Your Email">
+                <textarea id="sMsg" rows="4" placeholder="Your message..."></textarea>
+                <button onclick="sendSupport()" style="width:100%;padding:12px;border-radius:8px;border:none;background:linear-gradient(135deg,#EC4899,#6366F1);color:white;font-weight:600;margin-top:8px">📤 Send</button>
+                <p id="sStatus" style="text-align:center;margin-top:10px"></p>
+            </div>
+        </div>
+        <div style="text-align:center;margin-top:16px"><button onclick="closeHub()" style="padding:10px 30px;border-radius:10px;border:none;background:#475569;color:white;cursor:pointer">Close</button></div>
     </div>
 </div>
 
+<!-- TOP BAR -->
+<div class="top-bar">
+    <div class="logo-text">FLITRY</div>
+    <div class="user-area">
+        <span id="userName"></span>
+        <span id="adminBadge" class="admin-badge hidden">👑 ADMIN</span>
+        <span class="coins-display">💰 <span id="coinCount">0</span></span>
+        <button onclick="openHub()" style="background:none;border:none;color:#FACC15;cursor:pointer">⚡ Hub</button>
+        <button onclick="logout()" style="background:none;border:none;color:#999;cursor:pointer">Logout</button>
+    </div>
+</div>
+
+<!-- MAIN CAMERA PAGE -->
 <div class="container">
-    <div class="logo">
-        <h1>FLITRY</h1>
-        <p>Instant video calls with amazing people</p>
-    </div>
-
-    <!-- CHOOSE ROLE -->
-    <div class="card" id="choiceScreen">
-        <div class="title">
-            <h2>Join as a...</h2>
-            <p>Choose your account type</p>
+    <div class="video-container">
+        <div class="video-box">
+            <div class="video-label">You</div>
+            <video id="localVideo" autoplay muted playsinline></video>
+            <div id="localStatus" class="status-box">📷 Camera loading...</div>
         </div>
-        <div class="role-grid">
-            <div class="role-card man" id="cardPayer" onclick="chooseRole('payer')">
-                <div class="role-icon">🧍</div>
-                <div class="role-label">MAN</div>
-            </div>
-            <div class="role-card" id="cardEarner" onclick="chooseRole('earner')">
-                <div class="role-icon">👩</div>
-                <div class="role-label">WOMAN</div>
-            </div>
-            <div class="role-card admin" id="cardAdmin" onclick="chooseRole('admin')">
-                <div class="role-icon">👑</div>
-                <div class="role-label">ADMIN</div>
-            </div>
+        <div class="video-box">
+            <div class="video-label">Partner</div>
+            <video id="remoteVideo" autoplay playsinline></video>
+            <div id="remoteStatus" class="status-box">👋 Click Find Partner to start</div>
         </div>
     </div>
 
-    <!-- MAN'S FORM -->
-    <div class="form-wrap" id="formPayer">
-        <div class="card">
-            <div class="title">
-                <h2>Create Account</h2>
-                <p>Start meeting people instantly</p>
-            </div>
-            <form onsubmit="registerPayer(event)">
-                <div class="input-group">
-                    <label class="field-label">👤 Username</label>
-                    <input type="text" id="mUsername" placeholder="Choose a username" required>
-                </div>
-                <div class="input-group">
-                    <label class="field-label">📧 Email Address</label>
-                    <input type="email" id="email" placeholder="your@email.com" required>
-                </div>
-                <div class="input-group">
-                    <label class="field-label">🔒 Create Password</label>
-                    <input type="password" id="password" placeholder="At least 6 characters" required>
-                </div>
-                <div class="checkbox-row">
-                    <input type="checkbox" id="mAge" required>
-                    <label for="mAge">I am 18+ years old</label>
-                </div>
-                <div class="checkbox-row">
-                    <input type="checkbox" id="mTerms" required>
-                    <label for="mTerms">I agree to the <a href="#" class="link">Terms</a> & <a href="#" class="link">Privacy Policy</a></label>
-                </div>
-                <button type="submit" class="submit-btn btn-man">✅ Create Account</button>
-                <div class="back-link"><span class="back-btn" onclick="goBack()">← Go back</span></div>
-                <div id="msgPayer"></div>
-            </form>
-        </div>
+    <div class="controls">
+        <button class="ctrl-btn btn-start" id="findBtn" onclick="findPartner()">🔍 Find Partner</button>
+        <button class="ctrl-btn btn-next hidden" id="nextBtn" onclick="nextPartner()">➡️ Next</button>
+        <button class="ctrl-btn btn-end hidden" id="endBtn" onclick="endCall()">📞 End</button>
     </div>
 
-    <!-- ADMIN'S FORM — WITH SECRET CODE! -->
-    <div class="form-wrap" id="formAdmin">
-        <div class="card">
-            <div class="title">
-                <h2>👑 Administrator Account</h2>
-                <p>Full access & verification controls</p>
-            </div>
-            <div class="admin-note">🔒 SECRET CODE REQUIRED — ONLY THE OWNER CAN CREATE THIS!</div>
-            <form onsubmit="registerAdmin(event)">
-                <div class="input-group">
-                    <label class="field-label">🔑 SECRET ADMIN CODE</label>
-                    <input type="password" id="aAdminCode" class="secret-code" placeholder="Enter your secret code here..." required>
-                    <p class="secret-note">⚠️ KEEP THIS CODE PRIVATE! DO NOT SHARE WITH ANYONE!</p>
-                </div>
-                <div class="input-group">
-                    <label class="field-label">👤 Admin Username</label>
-                    <input type="text" id="aUsername" placeholder="Choose admin username" required>
-                </div>
-                <div class="input-group">
-                    <label class="field-label">📧 Admin Email</label>
-                    <input type="email" id="aEmail" placeholder="your@email.com" required>
-                </div>
-                <div class="input-group">
-                    <label class="field-label">🔒 Password</label>
-                    <input type="password" id="aPassword" placeholder="At least 6 characters" required>
-                </div>
-                <div class="input-group">
-                    <label class="field-label">🔒 Confirm Password</label>
-                    <input type="password" id="aPassword2" placeholder="Type password again" required>
-                </div>
-                <div class="checkbox-row">
-                    <input type="checkbox" id="aTerms" required>
-                    <label for="aTerms">I confirm this is my personal admin account</label>
-                </div>
-                <button type="submit" class="submit-btn btn-admin">👑 Create Admin Account</button>
-                <div class="back-link"><span class="back-btn" onclick="goBack()">← Go back</span></div>
-                <div id="msgAdmin"></div>
-            </form>
-        </div>
-    </div>
-
-    <!-- WOMAN'S FORM — 2 STEPS -->
-    <div class="form-wrap" id="formEarner">
-        <div class="card">
-            <div class="title">
-                <h2>Creator Account</h2>
-                <p>Get paid for your time</p>
-            </div>
-            <div class="steps">
-                <div class="step active" id="step1Indicator">
-                    <div class="step-num">1</div>
-                    <div class="step-label">Account</div>
-                </div>
-                <div class="step" id="step2Indicator">
-                    <div class="step-num">2</div>
-                    <div class="step-label">Verification</div>
-                </div>
-            </div>
-            <form onsubmit="return false;">
-                <div class="form-step active" id="wStep1">
-                    <div class="input-group">
-                        <label class="field-label">👤 Username</label>
-                        <input type="text" id="wUsername" placeholder="Choose a username" required>
-                    </div>
-                    <div class="input-group">
-                        <label class="field-label">📧 Email Address</label>
-                        <input type="email" id="eEmail" placeholder="your@email.com" required>
-                    </div>
-                    <div class="input-group">
-                        <label class="field-label">🔒 Create Password</label>
-                        <input type="password" id="ePassword" placeholder="At least 6 characters" required>
-                    </div>
-                    <div class="input-group">
-                        <label class="field-label">🔒 Confirm Password</label>
-                        <input type="password" id="ePassword2" placeholder="Type password again" required>
-                    </div>
-                    <div class="btn-row">
-                        <button type="button" class="submit-btn btn-back" onclick="goBack()">← Back</button>
-                        <button type="button" class="submit-btn btn-next" onclick="goToStep2()">Continue →</button>
-                    </div>
-                    <div id="msgStep1"></div>
-                </div>
-
-                <div class="form-step" id="wStep2">
-                    <div class="input-group">
-                        <label class="field-label">👤 Full Name</label>
-                        <input type="text" id="fullName" placeholder="Your full name" required>
-                    </div>
-                    <div class="input-group">
-                        <label class="field-label">🏠 Street Address</label>
-                        <input type="text" id="address" placeholder="Your address" required>
-                    </div>
-                    <div class="grid-2">
-                        <div class="input-group">
-                            <label class="field-label">🏙️ City</label>
-                            <input type="text" id="city" placeholder="City" required>
-                        </div>
-                        <div class="input-group">
-                            <label class="field-label">🌍 Country</label>
-                            <input type="text" id="country" placeholder="Country" required>
-                        </div>
-                    </div>
-                    <div class="photo-section">
-                        <h4>📸 Government ID Photo</h4>
-                        <div class="camera-buttons">
-                            <button type="button" class="cam-btn cam" onclick="openCamera('idPhoto')">📷 Take Photo</button>
-                            <button type="button" class="cam-btn upload" onclick="document.getElementById('idPhotoUpload').click()">📁 Upload</button>
-                        </div>
-                        <input type="file" id="idPhotoUpload" accept="image/*" class="hidden-input" onchange="previewFile(this,'idPhotoPreview','idPhoto')">
-                        <div class="preview-box" id="idPhotoPreview">Photo will appear here</div>
-                        <input type="hidden" id="idPhoto">
-                    </div>
-                    <div class="photo-section">
-                        <h4>🤳 Selfie (must match ID)</h4>
-                        <div class="camera-buttons">
-                            <button type="button" class="cam-btn cam" onclick="openCamera('selfie')">📷 Take Selfie</button>
-                            <button type="button" class="cam-btn upload" onclick="document.getElementById('selfieUpload').click()">📁 Upload</button>
-                        </div>
-                        <input type="file" id="selfieUpload" accept="image/*" class="hidden-input" onchange="previewFile(this,'selfiePreview','selfie')">
-                        <div class="preview-box" id="selfiePreview">Photo will appear here</div>
-                        <input type="hidden" id="selfie">
-                    </div>
-                    <div class="photo-section">
-                        <h4>📄 Proof of Address</h4>
-                        <div class="camera-buttons">
-                            <button type="button" class="cam-btn cam" onclick="openCamera('proofOfRes')">📷 Take Photo</button>
-                            <button type="button" class="cam-btn upload" onclick="document.getElementById('proofUpload').click()">📁 Upload</button>
-                        </div>
-                        <input type="file" id="proofUpload" accept="image/*" class="hidden-input" onchange="previewFile(this,'proofPreview','proofOfRes')">
-                        <div class="preview-box" id="proofPreview">Photo will appear here</div>
-                        <input type="hidden" id="proofOfRes">
-                    </div>
-                    <div class="checkbox-row">
-                        <input type="checkbox" id="wAge" required>
-                        <label for="wAge">I am 18+ years old and all documents are genuine</label>
-                    </div>
-                    <div class="checkbox-row">
-                        <input type="checkbox" id="wTerms" required>
-                        <label for="wTerms">I agree to the <a href="#" class="link">Terms</a> & <a href="#" class="link">Privacy Policy</a></label>
-                    </div>
-                    <div class="btn-row">
-                        <button type="button" class="submit-btn btn-back" onclick="goToStep1()">← Back</button>
-                        <button type="submit" class="submit-btn btn-next" onclick="registerEarner(event)">✅ Submit for Approval</button>
-                    </div>
-                    <div id="msgEarner"></div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="login-link">
-        Already have an account? <a href="login.html" class="link">Login →</a>
-    </div>
+    <div id="callStatus" class="call-status"></div>
 </div>
 
+<script src="/socket.io/socket.io.js"></script>
 <script>
-let selectedRole = null;
-let cameraStream = null;
-let currentPhotoTarget = null;
+const socket = io();
+let localStream = null, peer = null, user = null, partnerSocketId = null;
+const ICE = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
-function chooseRole(role){
-    selectedRole = role;
-    document.getElementById('choiceScreen').style.display = 'none';
-    document.getElementById('formPayer').style.display = role === 'payer' ? 'block' : 'none';
-    document.getElementById('formEarner').style.display = role === 'earner' ? 'block' : 'none';
-    document.getElementById('formAdmin').style.display = role === 'admin' ? 'block' : 'none';
-    
-    document.getElementById('cardPayer').classList.toggle('active', role === 'payer');
-    document.getElementById('cardEarner').classList.toggle('active', role === 'earner');
-    document.getElementById('cardAdmin').classList.toggle('active', role === 'admin');
-}
+window.onload = async () => {
+  const email = localStorage.getItem('userEmail');
+  const token = localStorage.getItem('token');
+  if (!email || !token) {
+    alert('⚠️ Please register & login first!');
+    window.location.href = 'register.html';
+    return;
+  }
 
-function goBack(){
-    selectedRole = null;
-    document.getElementById('choiceScreen').style.display = 'block';
-    document.getElementById('formPayer').style.display = 'none';
-    document.getElementById('formEarner').style.display = 'none';
-    document.getElementById('formAdmin').style.display = 'none';
-    document.getElementById('cardPayer').classList.remove('active');
-    document.getElementById('cardEarner').classList.remove('active');
-    document.getElementById('cardAdmin').classList.remove('active');
-}
+  // Load user data
+  const res = await fetch('/user-info', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({email})
+  });
+  const data = await res.json();
+  if (!data.success) { logout(); return; }
+  
+  user = { email, username: data.username, role: data.role, coins: data.coins };
+  document.getElementById('userName').textContent = '@' + user.username;
+  document.getElementById('coinCount').textContent = user.coins;
+  if (localStorage.getItem('isAdmin') === 'true') {
+    document.getElementById('adminBadge').classList.remove('hidden');
+  }
 
-function goToStep2(){
-    const username = document.getElementById('wUsername').value.trim();
-    const email = document.getElementById('eEmail').value.trim();
-    const pass1 = document.getElementById('ePassword').value;
-    const pass2 = document.getElementById('ePassword2').value;
-    const msg = document.getElementById('msgStep1');
-    if(!username){ msg.innerHTML='<div class="error">❌ Enter a username</div>'; return; }
-    if(!email || !email.includes('@')){ msg.innerHTML='<div class="error">❌ Enter a valid email</div>'; return; }
-    if(pass1.length < 6){ msg.innerHTML='<div class="error">❌ Password must be at least 6 characters</div>'; return; }
-    if(pass1 !== pass2){ msg.innerHTML='<div class="error">❌ Passwords do not match</div>'; return; }
-    msg.innerHTML = '';
-    document.getElementById('wStep1').classList.remove('active');
-    document.getElementById('wStep2').classList.add('active');
-    document.getElementById('step1Indicator').classList.remove('active');
-    document.getElementById('step2Indicator').classList.add('active');
-}
-function goToStep1(){
-    document.getElementById('wStep2').classList.remove('active');
-    document.getElementById('wStep1').classList.add('active');
-    document.getElementById('step2Indicator').classList.remove('active');
-    document.getElementById('step1Indicator').classList.add('active');
-}
+  // ✅ CAMERA ONLY STARTS AFTER LOGIN!
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+    document.getElementById('localVideo').srcObject = localStream;
+    document.getElementById('localStatus').style.display = 'none';
+  } catch(e) {
+    document.getElementById('localStatus').innerHTML = '⚠️ Camera access denied';
+  }
+};
 
-async function openCamera(fieldName){
-    currentPhotoTarget = fieldName;
-    document.getElementById('cameraModal').style.display = 'flex';
-    try {
-        cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: 800, height: 600 } });
-        document.getElementById('camVideo').srcObject = cameraStream;
-    } catch(err) {
-        alert('❌ Cannot open camera: ' + err.message + '\nTry uploading a photo instead.');
-        closeCamera();
-    }
-}
-function capturePhoto(){
-    const video = document.getElementById('camVideo');
-    const canvas = document.getElementById('camCanvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0);
-    const imageData = canvas.toDataURL('image/jpeg', 0.8);
-    document.getElementById(currentPhotoTarget).value = imageData;
-    document.getElementById(currentPhotoTarget + 'Preview').innerHTML = '<img src="' + imageData + '" style="max-width:100%">';
-    closeCamera();
-}
-function closeCamera(){
-    if(cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
-    document.getElementById('cameraModal').style.display = 'none';
-}
-function previewFile(input, previewId, targetId){
-    const file = input.files[0]; if(!file) return;
-    const reader = new FileReader();
-    reader.onload = e => { document.getElementById(targetId).value = e.target.result; document.getElementById(previewId).innerHTML = '<img src="' + e.target.result + '" style="max-width:100%">'; };
-    reader.readAsDataURL(file);
+// 🔍 FIND PARTNER
+async function findPartner(){
+  if (!user) return;
+  if (user.coins < 10) {
+    alert('❌ Need at least 10 coins! Open Hub to buy more.');
+    openHub(); return;
+  }
+  document.getElementById('callStatus').textContent = '⏳ Searching...';
+  document.getElementById('remoteStatus').textContent = '🔍 Looking for someone...';
+  updateButtons('searching');
+  socket.emit('find-partner', {email:user.email,role:user.role,username:user.username});
 }
 
-async function registerPayer(e){
-    e.preventDefault(); const msgBox = document.getElementById('msgPayer'); msgBox.innerHTML = '';
-    const username = document.getElementById('mUsername').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-    if(!username){ msgBox.innerHTML='<div class="error">❌ Enter a username</div>'; return; }
-    if(!email || !email.includes('@')){ msgBox.innerHTML='<div class="error">❌ Enter a valid email</div>'; return; }
-    if(password.length < 6){ msgBox.innerHTML='<div class="error">❌ Password must be at least 6 characters</div>'; return; }
-    try {
-        const res = await fetch('/register', {
-            method: 'POST', headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ role: 'payer', username, email, password })
-        });
-        const d = await res.json();
-        if(d.success){
-            localStorage.setItem('token', d.token); localStorage.setItem('role', 'payer');
-            msgBox.innerHTML = '<div class="success">✅ Account created! Redirecting...</div>';
-            setTimeout(() => window.location.href = 'dashboard.html', 1500);
-        } else { msgBox.innerHTML = '<div class="error">❌ ' + (d.error || 'Registration failed') + '</div>'; }
-    } catch(err) { msgBox.innerHTML = '<div class="error">❌ Server error. Please try again.</div>'; }
+// ✅ PARTNER FOUND!
+socket.on('partner-found', async (data) => {
+  partnerSocketId = data.partnerId;
+  document.getElementById('callStatus').innerHTML = '✅ Connected with <strong>' + data.partner + '</strong>';
+  document.getElementById('remoteStatus').style.display = 'none';
+  updateButtons('connected');
+  await deductCoins(10);
+  await startPeerConnection();
+});
+
+// ⏳ WAITING
+socket.on('waiting', () => {
+  document.getElementById('callStatus').textContent = '⏳ Waiting for someone...';
+});
+
+// 📡 WEBRTC CONNECTION
+async function startPeerConnection(){
+  peer = new RTCPeerConnection(ICE);
+  localStream.getTracks().forEach(t => peer.addTrack(t, localStream));
+  
+  peer.ontrack = e => {
+    document.getElementById('remoteVideo').srcObject = e.streams[0];
+  };
+  peer.onicecandidate = e => {
+    if (e.candidate) socket.emit('signal', {to:partnerSocketId, signal:{candidate:e.candidate}});
+  };
+
+  // If you joined first → create offer
+  if (partnerSocketId) {
+    const offer = await peer.createOffer();
+    await peer.setLocalDescription(offer);
+    socket.emit('signal', {to:partnerSocketId, signal:{offer}});
+  }
 }
 
-async function registerAdmin(e){
-    e.preventDefault(); const msgBox = document.getElementById('msgAdmin'); msgBox.innerHTML = '';
-    const adminCode = document.getElementById('aAdminCode').value;
-    const username = document.getElementById('aUsername').value.trim();
-    const email = document.getElementById('aEmail').value.trim();
-    const pass1 = document.getElementById('aPassword').value;
-    const pass2 = document.getElementById('aPassword2').value;
-    
-    if(!adminCode){ msgBox.innerHTML='<div class="error">❌ ENTER YOUR SECRET ADMIN CODE!</div>'; return; }
-    if(!username){ msgBox.innerHTML='<div class="error">❌ Enter admin username</div>'; return; }
-    if(!email || !email.includes('@')){ msgBox.innerHTML='<div class="error">❌ Enter a valid email</div>'; return; }
-    if(pass1.length < 6){ msgBox.innerHTML='<div class="error">❌ Password must be at least 6 characters</div>'; return; }
-    if(pass1 !== pass2){ msgBox.innerHTML='<div class="error">❌ Passwords do not match</div>'; return; }
-    
-    try {
-        const res = await fetch('/register', {
-            method: 'POST', headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ role: 'admin', adminCode, username, email, password: pass1 })
-        });
-        const d = await res.json();
-        if(d.success){
-            localStorage.setItem('token', d.token); localStorage.setItem('role', 'admin'); localStorage.setItem('isAdmin', 'true');
-            msgBox.innerHTML = '<div class="success">👑 ADMIN ACCOUNT CREATED! REDIRECTING...</div>';
-            setTimeout(() => window.location.href = 'dashboard.html', 2000);
-        } else { msgBox.innerHTML = '<div class="error">❌ ' + (d.error || 'Registration failed') + '</div>'; }
-    } catch(err) { msgBox.innerHTML = '<div class="error">❌ Server error. Please try again.</div>'; }
+// 📡 SIGNAL HANDLING
+socket.on('signal', async data => {
+  partnerSocketId = data.from;
+  if (!peer) await startPeerConnection();
+  
+  if (data.signal.offer) {
+    await peer.setRemoteDescription(new RTCSessionDescription(data.signal.offer));
+    const ans = await peer.createAnswer();
+    await peer.setLocalDescription(ans);
+    socket.emit('signal', {to:data.from, signal:{answer:ans}});
+  } else if (data.signal.answer) {
+    await peer.setRemoteDescription(new RTCSessionDescription(data.signal.answer));
+  } else if (data.signal.candidate) {
+    await peer.addIceCandidate(new RTCIceCandidate(data.signal.candidate));
+  }
+});
+
+// ➡️ NEXT PARTNER
+async function nextPartner(){
+  if (user.coins < 10) { alert('❌ Need 10 coins!'); return; }
+  endCall(true);
+  await deductCoins(10);
+  findPartner();
 }
 
-async function registerEarner(e){
-    e.preventDefault(); const msgBox = document.getElementById('msgEarner'); msgBox.innerHTML = '';
-    const username = document.getElementById('wUsername').value.trim();
-    const email = document.getElementById('eEmail').value.trim();
-    const password = document.getElementById('ePassword').value;
-    const fullName = document.getElementById('fullName').value.trim();
-    const address = document.getElementById('address').value.trim();
-    const city = document.getElementById('city').value.trim();
-    const country = document.getElementById('country').value.trim();
-    const idPhoto = document.getElementById('idPhoto').value;
-    const selfie = document.getElementById('selfie').value;
-    const proofOfResidence = document.getElementById('proofOfRes').value;
-    if(!username || !email || !password){ msgBox.innerHTML='<div class="error">❌ Fill Step 1 first</div>'; return; }
-    if(!fullName || !address || !city || !country){ msgBox.innerHTML='<div class="error">❌ Fill all personal details</div>'; return; }
-    if(!idPhoto || !selfie || !proofOfResidence){ msgBox.innerHTML='<div class="error">❌ Upload all 3 photos</div>'; return; }
-    try {
-        const res = await fetch('/register', {
-            method: 'POST', headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ role: 'earner', username, email, password, fullName, address, city, country, idPhoto, selfie, proofOfResidence })
-        });
-        const d = await res.json();
-        if(d.success){
-            msgBox.innerHTML = '<div class="success">✅ Registered! Waiting for approval...</div>';
-            setTimeout(() => window.location.href = 'login.html', 2000);
-        } else { msgBox.innerHTML = '<div class="error">❌ ' + (d.error || 'Registration failed') + '</div>'; }
-    } catch(err) { msgBox.innerHTML = '<div class="error">❌ Server error. Please try again.</div>'; }
+// 📞 END CALL
+function endCall(skip = false){
+  if (peer) peer.close(); peer = null;
+  if (!skip) socket.emit('end-call');
+  document.getElementById('remoteVideo').srcObject = null;
+  document.getElementById('remoteStatus').style.display = 'flex';
+  document.getElementById('remoteStatus').textContent = '👋 Call ended';
+  document.getElementById('callStatus').textContent = '';
+  partnerSocketId = null;
+  updateButtons('idle');
 }
+
+// 👋 PARTNER ENDED
+socket.on('call-ended', () => {
+  endCall();
+  document.getElementById('callStatus').textContent = '👋 Partner disconnected';
+});
+
+// 💰 DEDUCT COINS
+async function deductCoins(amt){
+  const r = await fetch('/deduct-coins', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({email:user.email, amount:amt})
+  });
+  const d = await r.json();
+  if (d.success) { user.coins = d.remainingCoins; document.getElementById('coinCount').textContent = d.remainingCoins; }
+}
+
+// 🔘 BUTTON STATES
+function updateButtons(state){
+  document.getElementById('findBtn').classList.toggle('hidden', state!=='idle');
+  document.getElementById('nextBtn').classList.toggle('hidden', state!=='connected');
+  document.getElementById('endBtn').classList.toggle('hidden', state!=='connected');
+}
+
+// ⚡ HUB FUNCTIONS
+function openHub(){ document.getElementById('hubModal').classList.add('active'); }
+function closeHub(){ document.getElementById('hubModal').classList.remove('active'); }
+function openTab(name){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab'+name.charAt(0).toUpperCase()+name.slice(1)).classList.add('active');
+  event.target.classList.add('active');
+}
+async function buyCoins(pkg){
+  const r = await fetch('/buy-coins', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({email:user.email, packageId:pkg})
+  });
+  const d = await r.json();
+  if (d.success) {
+    user.coins = d.newCoins;
+    document.getElementById('coinCount').textContent = d.newCoins;
+    document.getElementById('buyMsg').innerHTML = '<span style="color:#10B981">✅ +' + d.added + ' coins!</span>';
+  } else {
+    document.getElementById('buyMsg').innerHTML = '<span style="color:#EF4444">❌ Failed</span>';
+  }
+}
+function sendSupport(){
+  document.getElementById('sStatus').innerHTML = '<span style="color:#10B981">✅ Sent!</span>';
+  document.getElementById('sName').value='';document.getElementById('sEmail').value='';document.getElementById('sMsg').value='';
+}
+function logout(){ localStorage.clear(); window.location.href='login.html'; }
 </script>
 </body>
 </html>
