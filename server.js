@@ -5,7 +5,6 @@ const path = require('path');
 const app = express();
 const server = http.createServer(app);
 
-// ✅ CORS
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -20,19 +19,23 @@ app.use(express.static(path.join(__dirname, 'public')));
 // 💰 RATES
 const RATE_COST_PER_MINUTE = 1;
 const RATE_EARN_PER_MINUTE = 0.50;
+const SMS_COST_PER_TEXT = 2;
+const SMS_EARN_PER_TEXT = 1;
+const UNLOCK_MINUTES = 900;
 
 // ✅ ONE-TIME ADMIN CODE
 let ADMIN_CODE = "FlitryAdmin2026!";
 let adminCodeHasBeenUsed = false;
 
 let users = [];
-let activeCalls = {};
-let onlineUsers = {}; // Track who's online
+let onlineUsers = {};
+let pairData = {}; // { "email1_email2": { totalMinutes: 0, messages: [] } }
+let favorites = {}; // { userEmail: [list of favorite partner emails] }
+let blurSettings = {}; // { womanEmail_manEmail: true/false }
 
 // ✅ REGISTER
 app.post('/register', (req, res) => {
   const { role, username, email, password, adminCode, passportPhoto, selfiePhoto } = req.body;
-
   if (!username || !email || !password) return res.json({ success: false, error: 'Fill all fields' });
   if (!email.includes('@')) return res.json({ success: false, error: 'Enter valid email' });
   if (password.length < 6) return res.json({ success: false, error: 'Password min 6 chars' });
@@ -58,10 +61,11 @@ app.post('/register', (req, res) => {
   if (role === 'earner') { coins = 0; approved = false; }
   if (role === 'admin') { coins = 9999; approved = true; isAdmin = true; }
 
+  const cleanEmail = email.toLowerCase();
   users.push({
     id: Date.now().toString(),
     username: username.trim(),
-    email: email.toLowerCase(),
+    email: cleanEmail,
     password,
     role,
     coins,
@@ -74,53 +78,47 @@ app.post('/register', (req, res) => {
     registeredAt: new Date().toISOString()
   });
 
+  favorites[cleanEmail] = [];
   return res.json({ success: true, pendingApproval: !approved,
     message: approved ? '✅ Account created!' : '⏳ Waiting admin approval' });
 });
 
-// ✅ LOGIN — MARK USER ONLINE
+// ✅ LOGIN
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
   const user = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
   if (!user) return res.json({ success: false, error: 'Wrong email or password' });
   if (!user.isApproved) return res.json({ success: false, error: '⏳ Account waiting approval' });
 
-  // Mark online
-  onlineUsers[user.email.toLowerCase()] = {
-    username: user.username,
-    role: user.role,
-    online: true,
+  const cleanEmail = user.email.toLowerCase();
+  onlineUsers[cleanEmail] = {
+    username: user.username, role: user.role, online: true,
     lastSeen: Date.now()
   };
+  if (!favorites[cleanEmail]) favorites[cleanEmail] = [];
 
   return res.json({ success: true, user: {
-    username: user.username,
-    email: user.email,
-    role: user.role,
-    coins: user.coins,
-    isAdmin: user.isAdmin,
-    totalEarned: user.totalEarned || 0,
-    totalCallMinutes: user.totalCallMinutes || 0
+    username: user.username, email: user.email, role: user.role,
+    coins: user.coins, isAdmin: user.isAdmin,
+    totalEarned: user.totalEarned || 0, totalCallMinutes: user.totalCallMinutes || 0,
+    favorites: favorites[cleanEmail] || []
   }});
 });
 
-// ✅ GET ONLINE WOMEN — FOR BOTTOM HUB
+// ✅ GET ONLINE WOMEN
 app.post('/api/online-women', (req, res) => {
   const women = Object.entries(onlineUsers)
     .filter(([email, data]) => data.role === 'earner' && data.online)
     .map(([email, data]) => {
       const fullUser = users.find(u => u.email.toLowerCase() === email);
       return {
-        email,
-        username: data.username,
-        selfiePhoto: fullUser?.selfiePhoto || null,
-        online: true
+        email, username: data.username, selfiePhoto: fullUser?.selfiePhoto || null, online: true
       };
     });
   return res.json({ success: true, women });
 });
 
-// ✅ CALL BILLING
+// ✅ BILL MINUTE + TRACK PAIR TIME
 app.post('/call/bill-minute', (req, res) => {
   const { payerEmail, earnerEmail } = req.body;
   const payer = users.find(u => u.email.toLowerCase() === payerEmail.toLowerCase());
@@ -136,7 +134,128 @@ app.post('/call/bill-minute', (req, res) => {
   earner.totalEarned = (earner.totalEarned || 0) + RATE_EARN_PER_MINUTE;
   earner.totalCallMinutes = (earner.totalCallMinutes || 0) + 1;
 
-  res.json({ success: true, payerCoins: payer.coins, earnerCoins: earner.coins });
+  const sorted = [payerEmail.toLowerCase(), earnerEmail.toLowerCase()].sort();
+  const pairKey = sorted.join('_');
+  if (!pairData[pairKey]) pairData[pairKey] = { totalMinutes: 0, messages: [] };
+  pairData[pairKey].totalMinutes += 1;
+
+  res.json({
+    success: true, payerCoins: payer.coins, earnerCoins: earner.coins,
+    totalMinutesTogether: pairData[pairKey].totalMinutes,
+    canText: pairData[pairKey].totalMinutes >= UNLOCK_MINUTES
+  });
+});
+
+// ✅ CHECK UNLOCK STATUS
+app.post('/api/check-sms-unlocked', (req, res) => {
+  const { userEmail, partnerEmail } = req.body;
+  if (!userEmail || !partnerEmail) return res.json({ success: false });
+  const sorted = [userEmail.toLowerCase(), partnerEmail.toLowerCase()].sort();
+  const pairKey = sorted.join('_');
+  const data = pairData[pairKey] || { totalMinutes: 0, messages: [] };
+  res.json({
+    success: true, totalMinutes: data.totalMinutes,
+    canText: data.totalMinutes >= UNLOCK_MINUTES,
+    unlockMinutesRequired: UNLOCK_MINUTES, messages: data.messages.slice(-50)
+  });
+});
+
+// ✅ SEND SMS
+app.post('/api/send-sms', (req, res) => {
+  const { fromEmail, toEmail, text } = req.body;
+  if (!text || text.trim().length === 0 || text.length > 500) {
+    return res.json({ success: false, error: 'Message empty or too long (max 500 chars)' });
+  }
+
+  const sorted = [fromEmail.toLowerCase(), toEmail.toLowerCase()].sort();
+  const pairKey = sorted.join('_');
+  if (!pairData[pairKey]) pairData[pairKey] = { totalMinutes: 0, messages: [] };
+  const pair = pairData[pairKey];
+
+  if (pair.totalMinutes < UNLOCK_MINUTES) {
+    return res.json({ success: false, error: `🔒 Locked — need ${UNLOCK_MINUTES} min together. Currently: ${pair.totalMinutes} min` });
+  }
+
+  const sender = users.find(u => u.email.toLowerCase() === fromEmail.toLowerCase());
+  const receiver = users.find(u => u.email.toLowerCase() === toEmail.toLowerCase());
+  if (!sender || !receiver) return res.json({ success: false, error: 'User not found' });
+
+  if (sender.coins < SMS_COST_PER_TEXT) {
+    return res.json({ success: false, error: `⚠️ Need ${SMS_COST_PER_TEXT} coins. You have ${sender.coins}` });
+  }
+  sender.coins -= SMS_COST_PER_TEXT;
+  receiver.coins += SMS_EARN_PER_TEXT;
+
+  const msg = {
+    from: fromEmail.toLowerCase(), to: toEmail.toLowerCase(),
+    text: text.trim(), time: new Date().toISOString()
+  };
+  pair.messages.push(msg);
+  if (pair.messages.length > 200) pair.messages.shift();
+
+  console.log(`💬 SMS: ${sender.username} → ${receiver.username} | -${SMS_COST_PER_TEXT} +${SMS_EARN_PER_TEXT}`);
+  res.json({ success: true, message: msg, senderCoins: sender.coins, receiverCoins: receiver.coins });
+});
+
+// ✅ GET CHAT HUB — ALL WOMEN UNLOCKED
+app.post('/api/chat-hub', (req, res) => {
+  const { userEmail } = req.body;
+  if (!userEmail) return res.json({ success: false });
+  const ue = userEmail.toLowerCase();
+  const unlocked = [];
+
+  Object.entries(pairData).forEach(([key, data]) => {
+    const emails = key.split('_');
+    if (emails.includes(ue) && data.totalMinutes >= UNLOCK_MINUTES) {
+      const partnerEmail = emails.find(e => e !== ue);
+      const partner = users.find(u => u.email.toLowerCase() === partnerEmail);
+      if (partner) {
+        unlocked.push({
+          email: partnerEmail, username: partner.username,
+          selfiePhoto: partner.selfiePhoto || null,
+          totalMinutes: data.totalMinutes,
+          lastMessage: data.messages.length ? data.messages[data.messages.length - 1] : null,
+          isFavorite: favorites[ue]?.includes(partnerEmail) || false
+        });
+      }
+    }
+  });
+
+  unlocked.sort((a, b) => (b.lastMessage?.time || '').localeCompare(a.lastMessage?.time || ''));
+  res.json({ success: true, unlocked });
+});
+
+// ✅ FAVORITES — ADD / REMOVE
+app.post('/api/favorite', (req, res) => {
+  const { userEmail, partnerEmail, action } = req.body;
+  const ue = userEmail.toLowerCase();
+  const pe = partnerEmail.toLowerCase();
+  if (!favorites[ue]) favorites[ue] = [];
+
+  if (action === 'add' && !favorites[ue].includes(pe)) {
+    favorites[ue].push(pe);
+  } else if (action === 'remove') {
+    favorites[ue] = favorites[ue].filter(e => e !== pe);
+  }
+  res.json({ success: true, favorites: favorites[ue] });
+});
+
+// ✅ WOMAN TOGGLES BLUR ON MAN'S CAMERA
+app.post('/api/toggle-blur', (req, res) => {
+  const { womanEmail, manEmail, enabled } = req.body;
+  const we = womanEmail.toLowerCase();
+  const me = manEmail.toLowerCase();
+  const blurKey = `${we}_${me}`;
+  blurSettings[blurKey] = !!enabled;
+  console.log(`🫣 BLUR: ${we} → ${me}: ${enabled}`);
+  res.json({ success: true, blurred: !!enabled });
+});
+
+// ✅ GET BLUR STATUS
+app.post('/api/check-blur', (req, res) => {
+  const { womanEmail, manEmail } = req.body;
+  const key = `${womanEmail.toLowerCase()}_${manEmail.toLowerCase()}`;
+  res.json({ success: true, blurred: !!blurSettings[key] });
 });
 
 // ✅ ADMIN ENDPOINTS
@@ -203,13 +322,10 @@ io.on('connection', socket => {
   socket.on('login-online', data => {
     if (data.email) {
       onlineUsers[data.email.toLowerCase()] = {
-        username: data.username,
-        role: data.role,
-        online: true,
-        socketId: socket.id,
-        lastSeen: Date.now()
+        username: data.username, role: data.role, online: true,
+        socketId: socket.id, lastSeen: Date.now()
       };
-      io.emit('presence-update'); // Tell everyone — list updated
+      io.emit('presence-update');
     }
   });
 
@@ -220,11 +336,11 @@ io.on('connection', socket => {
       waiting = waiting.filter(w => w.id !== partner.id);
       socket.partner = partner.id;
       io.to(partner.id).partner = socket.id;
-      io.to(socket.id).emit('found', { 
+      io.to(socket.id).emit('found', {
         name: partner.username, partnerId: partner.id,
         partnerEmail: partner.email, partnerRole: partner.role
       });
-      io.to(partner.id).emit('found', { 
+      io.to(partner.id).emit('found', {
         name: data.username, partnerId: socket.id,
         partnerEmail: data.email, partnerRole: data.role
       });
@@ -239,7 +355,6 @@ io.on('connection', socket => {
 
   socket.on('disconnect', () => {
     waiting = waiting.filter(w => w.id !== socket.id);
-    // Mark offline
     Object.keys(onlineUsers).forEach(email => {
       if (onlineUsers[email].socketId === socket.id) {
         onlineUsers[email].online = false;
@@ -252,5 +367,5 @@ io.on('connection', socket => {
 });
 
 const PORT = process.env.PORT || 3000;
-console.log(`🔑 ADMIN CODE: ${ADMIN_CODE || '🔒 LOCKED'}`);
+console.log(`🔑 ADMIN CODE: ${ADMIN_CODE || '🔒 LOCKED'} | SMS UNLOCK: ${UNLOCK_MINUTES} min | SMS COST: ${SMS_COST_PER_TEXT} → ${SMS_EARN_PER_TEXT}`);
 server.listen(PORT, () => console.log(`✅ SERVER RUNNING | Rate: 1/min → 0.50/min earned`));
