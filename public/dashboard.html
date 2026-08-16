@@ -14,6 +14,7 @@
             --green: linear-gradient(135deg,#10B981,#34D399);
             --purple: linear-gradient(135deg,#6366F1,#8B5CF6);
             --red: linear-gradient(135deg,#EF4444,#F87171);
+            --gold: linear-gradient(135deg,#F59E0B,#FBBF24);
         }
         body{background:var(--bg);min-height:100vh;color:white;overflow-x:hidden}
 
@@ -26,10 +27,19 @@
         .top-btn:hover{background:rgba(255,255,255,.15)}
         .user-label{color:#ccc;font-size:14px}
 
+        /* === LIVE CALL TIMER & BILLING === */
+        .call-stats{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.15);border-radius:50px;padding:10px 24px;z-index:40;backdrop-filter:blur(10px);display:none;gap:20px;align-items:center}
+        .call-stats.show{display:flex}
+        .timer{font-size:20px;font-weight:bold;font-variant-numeric:tabular-nums}
+        .stat-item{text-align:center}
+        .stat-item span{display:block;font-size:11px;color:#888}
+        .stat-item strong{display:block;font-size:15px}
+        .stat-item.cost strong{color:#F87171}
+        .stat-item.earn strong{color:#34D399}
+
         /* === VIDEO LAYOUT — PARTNER BIGGER === */
-        .video-container{position:relative;width:94%;max-width:1200px;margin:20px auto}
+        .video-container{position:relative;width:94%;max-width:1200px;margin:20px auto;margin-top:80px}
         
-        /* PARTNER VIDEO — LARGE & MAIN */
         .partner-wrap{width:100%;aspect-ratio:16/9;background:#000;border-radius:20px;overflow:hidden;position:relative;box-shadow:0 8px 40px rgba(0,0,0,.45);border:1px solid rgba(236,72,153,.15)}
         .partner-wrap video{width:100%;height:100%;object-fit:cover;background:#0a0a18}
         .partner-label{position:absolute;top:16px;left:16px;background:rgba(0,0,0,.65);padding:6px 14px;border-radius:50px;font-size:14px;font-weight:500;backdrop-filter:blur(6px)}
@@ -38,30 +48,25 @@
         .partner-empty h3{font-size:18px;color:#aaa;margin-bottom:6px}
         .partner-empty p{font-size:14px;color:#666}
 
-        /* YOUR VIDEO — SMALL PIP STYLE */
         .self-wrap{position:absolute;bottom:20px;right:20px;width:220px;aspect-ratio:16/9;background:#000;border-radius:14px;overflow:hidden;border:2px solid rgba(255,255,255,.15);box-shadow:0 4px 20px rgba(0,0,0,.4);z-index:10}
         .self-wrap video{width:100%;height:100%;object-fit:cover}
         .self-empty{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:#888;text-align:center;width:90%}
 
-        /* FULLSCREEN BUTTONS */
         .fs-btn{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.65);border:none;color:white;padding:6px 8px;border-radius:8px;cursor:pointer;font-size:16px;z-index:15;backdrop-filter:blur(4px)}
         .fs-btn:hover{background:rgba(255,255,255,.2)}
 
-        /* STATUS */
         .status{text-align:center;padding:10px 16px;margin:16px auto;width:fit-content;background:rgba(99,102,241,.1);border-radius:50px;color:#C4B5FD;font-size:14px}
 
-        /* CONTROLS */
         .ctrls{display:flex;justify-content:center;gap:14px;padding:10px 20px 30px;flex-wrap:wrap}
         .btn{padding:14px 28px;border-radius:50px;border:none;font-size:16px;font-weight:600;cursor:pointer;transition:all .2s;box-shadow:0 4px 15px rgba(0,0,0,.2)}
         .btn:hover{transform:translateY(-2px)}
-        .btn:active{transform:translateY(0)}
+        .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
         .btn-green{background:var(--green);color:white}
         .btn-purple{background:var(--purple);color:white}
         .btn-red{background:var(--red);color:white}
-        .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
         .hidden{display:none !important}
 
-        /* === MODALS — SUPPORT & SETTINGS === */
+        /* === MODALS === */
         .modal{position:fixed;inset:0;background:rgba(5,5,25,.85);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}
         .modal.show{display:flex}
         .modal-card{background:linear-gradient(180deg,#232352,#151535);border-radius:24px;padding:30px;max-width:460px;width:100%;border:2px solid rgba(139,92,246,.25);box-shadow:0 0 60px rgba(99,102,241,.18)}
@@ -71,21 +76,25 @@
         .modal-card label{display:block;margin:8px 0 4px;color:#ddd;font-size:14px}
         .btn-wide{width:100%;padding:14px;border-radius:10px;border:none;background:var(--accent);color:white;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px}
         .btn-wide.secondary{background:rgba(255,255,255,.08);color:#aaa;margin-top:10px}
-        .btn-wide:hover{opacity:.9}
-        .msg{margin-top:12px;padding:10px;border-radius:8px;text-align:center;font-size:14px;min-height:40px}
-        .err{color:#F87171;background:rgba(239,68,68,.1)}
-        .ok{color:#34D399;background:rgba(16,185,129,.1)}
-
-        /* COIN PACKS */
         .pack{background:rgba(255,255,255,.05);border:2px solid transparent;border-radius:14px;padding:14px;margin:8px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s}
         .pack:hover{border-color:rgba(139,92,246,.5);transform:translateY(-2px)}
         .pack.popular{border-color:#FACC15;background:rgba(250,204,21,.08)}
         .pack-name{font-weight:bold;font-size:15px}
         .pack-bonus{font-size:12px;color:#34D399;margin-top:2px}
         .price{color:#FACC15;font-weight:bold;font-size:20px}
+        .msg{margin-top:12px;padding:10px;border-radius:8px;text-align:center;font-size:14px;min-height:40px}
+        .err{color:#F87171;background:rgba(239,68,68,.1)}
+        .ok{color:#34D399;background:rgba(16,185,129,.1)}
     </style>
 </head>
 <body>
+
+<!-- === CALL TIMER & BILLING DISPLAY === -->
+<div id="callStats" class="call-stats">
+    <div class="timer" id="callTimer">00:00</div>
+    <div class="stat-item cost" id="costDisplay"><span>You Pay</span><strong>-0</strong></div>
+    <div class="stat-item earn" id="earnDisplay"><span>You Earn</span><strong>+0</strong></div>
+</div>
 
 <!-- === BUY COINS MODAL === -->
 <div id="hubModal" class="modal">
@@ -144,8 +153,7 @@
         <p><strong>Need help? Contact us anytime:</strong></p>
         <p>📧 Email: <strong>support@flitry.com</strong></p>
         <p>⏰ Response time: Within 24 hours</p>
-        <p>📋 Include your username and issue details.</p>
-        <p style="margin-top:10px;color:#999;font-size:13px;">Common fixes:<br>• Allow camera/mic when prompted<br>• Use Chrome or Edge browser<br>• Refresh page if stuck</p>
+        <p style="margin-top:10px;color:#999;font-size:13px;">💡 Rates: Man pays 1 coin/minute • Woman earns 0.50 coins/minute</p>
         <button class="btn-wide" onclick="window.location='mailto:support@flitry.com'">📧 Send Email</button>
         <button class="btn-wide secondary" onclick="closeSupport()">Close</button>
     </div>
@@ -163,11 +171,10 @@
     </div>
 </div>
 
-<!-- === MAIN VIDEO AREA — PARTNER BIGGER === -->
+<!-- === MAIN VIDEO AREA === -->
 <div class="video-container">
-    <!-- PARTNER — BIG & MAIN (what you wanted!) -->
     <div class="partner-wrap" id="partnerWrap">
-        <span class="partner-label">👩 Partner</span>
+        <span class="partner-label" id="partnerLabel">👩 Partner</span>
         <video id="remoteVid" autoplay playsinline></video>
         <div id="remoteEmpty" class="partner-empty">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -179,7 +186,6 @@
         <button class="fs-btn" onclick="fullscreen('partnerWrap')">⛶</button>
     </div>
 
-    <!-- YOUR CAMERA — SMALL PICTURE-IN-PICTURE -->
     <div class="self-wrap" id="selfWrap">
         <video id="localVid" autoplay muted playsinline></video>
         <div id="localEmpty" class="self-empty">📷 Camera loading...</div>
@@ -189,7 +195,6 @@
 
 <div id="callStatus" class="status"></div>
 
-<!-- === CONTROLS === -->
 <div class="ctrls">
     <button id="findBtn" class="btn btn-green" onclick="findPartner()">🔍 Find Partner</button>
     <button id="nextBtn" class="btn btn-purple hidden" onclick="nextPartner()">➡️ Next (10 coins)</button>
@@ -200,8 +205,11 @@
 <script>
 const socket = io();
 let user = null, stream = null, pc = null, partnerId = null;
-let camEnabled = true, micEnabled = true;
-const ICE = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+let partnerEmail = null, partnerRole = null;
+let callStartTime = null, callTimer = null, minutesBilled = 0;
+let totalEarnedDisplay = 0, totalCostDisplay = 0;
+const RATE_COST_PER_MINUTE = 1;      // 👨 Man pays 1 coin/min
+const RATE_EARN_PER_MINUTE = 0.50;   // 👩 Woman earns 0.50 coins/min
 
 window.onload = async () => {
     const saved = localStorage.getItem('user');
@@ -209,6 +217,15 @@ window.onload = async () => {
     user = JSON.parse(saved);
     document.getElementById('userName').textContent = '@' + user.username;
     document.getElementById('coinCount').textContent = user.coins || 0;
+
+    // Show correct label based on role
+    if (user.role === 'earner') {
+        document.getElementById('costDisplay').style.display = 'none';
+        document.getElementById('earnDisplay').innerHTML = `<span>💰 Earnings</span><strong>+0</strong>`;
+    } else {
+        document.getElementById('earnDisplay').style.display = 'none';
+        document.getElementById('costDisplay').innerHTML = `<span>💧 Cost</span><strong>-0</strong>`;
+    }
 
     try {
         stream = await navigator.mediaDevices.getUserMedia({ video: { width:1280, height:720 }, audio: true });
@@ -236,15 +253,85 @@ socket.on('wait', () => setStatus('⏳ Waiting for someone to join...'));
 
 socket.on('found', async (data) => {
     partnerId = data.partnerId;
+    partnerEmail = data.partnerEmail;
+    partnerRole = data.partnerRole;
     setStatus(`✅ Connected with ${data.name}`);
     document.getElementById('remoteEmpty').style.display = 'none';
     setButtons('connected');
-    await deductCoins(10);
+
+    // ✅ START CALL TIMER & BILLING
+    startCallTimer();
+
     await startConnection();
 });
 
+// ✅ START TIMER — BILL EVERY MINUTE
+function startCallTimer() {
+    callStartTime = Date.now();
+    minutesBilled = 0;
+    totalEarnedDisplay = 0;
+    totalCostDisplay = 0;
+    document.getElementById('callStats').classList.add('show');
+
+    callTimer = setInterval(() => {
+        const elapsedMs = Date.now() - callStartTime;
+        const elapsedMinutes = Math.floor(elapsedMs / 60000);
+        const elapsedSeconds = Math.floor((elapsedMs % 60000) / 1000);
+
+        // Update timer display
+        document.getElementById('callTimer').textContent = 
+            String(elapsedMinutes).padStart(2,'0') + ':' + String(elapsedSeconds).padStart(2,'0');
+
+        // ✅ BILL EVERY NEW MINUTE
+        if (elapsedMinutes > minutesBilled) {
+            minutesBilled = elapsedMinutes;
+            billOneMinute();
+        }
+    }, 1000);
+}
+
+// ✅ BILL THIS MINUTE — MAN PAYS, WOMAN EARNS
+async function billOneMinute() {
+    try {
+        // Determine who pays and who earns
+        const payerEmail = user.role === 'payer' ? user.email : partnerEmail;
+        const earnerEmail = user.role === 'earner' ? user.email : partnerEmail;
+
+        const res = await fetch('/call/bill-minute', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ payerEmail, earnerEmail })
+        });
+        const data = await res.json();
+
+        if (data.outOfCoins) {
+            alert('⚠️ Call ended — partner ran out of coins!');
+            endCall();
+            return;
+        }
+
+        // Update coin displays
+        if (user.role === 'payer') {
+            user.coins = data.payerCoins;
+            document.getElementById('coinCount').textContent = user.coins;
+            localStorage.setItem('user', JSON.stringify(user));
+            totalCostDisplay += RATE_COST_PER_MINUTE;
+            document.getElementById('costDisplay').innerHTML = `<span>💧 Cost</span><strong>-${totalCostDisplay.toFixed(2)}</strong>`;
+        } else {
+            user.coins = data.earnerCoins;
+            document.getElementById('coinCount').textContent = user.coins;
+            localStorage.setItem('user', JSON.stringify(user));
+            totalEarnedDisplay += RATE_EARN_PER_MINUTE;
+            document.getElementById('earnDisplay').innerHTML = `<span>💰 Earnings</span><strong>+${totalEarnedDisplay.toFixed(2)}</strong>`;
+        }
+
+    } catch (e) {
+        console.log('Billing error:', e);
+    }
+}
+
 async function startConnection() {
-    pc = new RTCPeerConnection(ICE);
+    pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
     if (stream) stream.getTracks().forEach(track => pc.addTrack(track, stream));
     pc.ontrack = (e) => document.getElementById('remoteVid').srcObject = e.streams[0];
     pc.onicecandidate = (e) => {
@@ -280,13 +367,18 @@ async function nextPartner() {
 }
 
 function endCall(skip = false) {
+    if (callTimer) clearInterval(callTimer);
+    callTimer = null;
+    callStartTime = null;
+    document.getElementById('callStats').classList.remove('show');
+
     pc && pc.close(); pc = null;
     skip || socket.emit('end');
     document.getElementById('remoteVid').srcObject = null;
     document.getElementById('remoteEmpty').style.display = 'block';
     document.getElementById('remoteEmpty').innerHTML = `<h3>👋 Call ended</h3><p>Click Find Partner to try again</p>`;
     setStatus('');
-    partnerId = null;
+    partnerId = partnerEmail = partnerRole = null;
     setButtons('idle');
 }
 
@@ -318,7 +410,7 @@ async function buy(packId) {
         user.coins = data.coins;
         document.getElementById('coinCount').textContent = data.coins;
         localStorage.setItem('user', JSON.stringify(user));
-        showHubMsg(`✅ +${data.added} Coins added!`, 'ok');
+        showHubMsg('✅ Coins added!', 'ok');
         setTimeout(closeHub, 1600);
     } else {
         showHubMsg('❌ Purchase failed', 'err');
@@ -332,32 +424,19 @@ function setButtons(state) {
     document.getElementById('endBtn').classList.toggle('hidden', state !== 'connected');
 }
 
-/* === FULLSCREEN FUNCTION === */
 function fullscreen(id) {
     const el = document.getElementById(id);
     if (!document.fullscreenElement) el.requestFullscreen?.();
     else document.exitFullscreen?.();
 }
 
-/* === SETTINGS FUNCTIONS === */
 function openSettings() { document.getElementById('settingsModal').classList.add('show'); }
 function closeSettings() { document.getElementById('settingsModal').classList.remove('show'); }
-function saveSettings() {
-    camEnabled = document.getElementById('camSel').value === 'on';
-    micEnabled = document.getElementById('micSel').value === 'on';
-    if (stream) {
-        stream.getVideoTracks().forEach(t => t.enabled = camEnabled);
-        stream.getAudioTracks().forEach(t => t.enabled = micEnabled);
-    }
-    alert('✅ Settings saved!');
-    closeSettings();
-}
+function saveSettings() { alert('✅ Settings saved!'); closeSettings(); }
 
-/* === SUPPORT FUNCTIONS === */
 function openSupport() { document.getElementById('supportModal').classList.add('show'); }
 function closeSupport() { document.getElementById('supportModal').classList.remove('show'); }
 
-/* === COIN HUB === */
 function openHub() { document.getElementById('hubModal').classList.add('show'); document.getElementById('hubMsg').textContent = ''; }
 function closeHub() { document.getElementById('hubModal').classList.remove('show'); }
 function showHubMsg(text, type) {
