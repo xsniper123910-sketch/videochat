@@ -3,19 +3,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Register — Flitry</title>
+    <title>Login — Flitry</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
         body{background:linear-gradient(135deg,#0F0F23,#1A1A3A,#251640);min-height:100vh;color:white;display:flex;align-items:center;justify-content:center;padding:20px}
         .card{max-width:440px;width:100%;padding:30px;background:rgba(255,255,255,.03);border-radius:20px;border:1px solid rgba(255,255,255,.1)}
         h1{text-align:center;margin-bottom:6px}
         .sub{text-align:center;color:#aaa;margin-bottom:20px}
-        .tabs{display:flex;gap:10px;margin-bottom:20px}
-        .tab{flex:1;padding:12px;border-radius:10px;border:none;background:#222;color:white;cursor:pointer;font-weight:bold}
-        .tab.active{background:linear-gradient(135deg,#EC4899,#6366F1)}
-        .section{display:none}
-        .section.active{display:block}
-        .box{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);border-radius:8px;padding:12px;margin-bottom:15px;font-size:14px;color:#C4B5FD}
         input{width:100%;padding:14px;border-radius:8px;border:1px solid #333;background:#111522;color:white;margin-bottom:10px;font-size:15px}
         button{width:100%;padding:14px;border-radius:8px;border:none;background:linear-gradient(135deg,#EC4899,#6366F1);color:white;font-size:16px;font-weight:bold;cursor:pointer;margin-top:5px}
         .msg{margin-top:12px;padding:10px;border-radius:6px;text-align:center;font-size:14px;min-height:40px}
@@ -27,72 +21,30 @@
 </head>
 <body>
     <div class="card">
-        <h1>✨ Create Account</h1>
-        <p class="sub">Get 100 FREE coins on signup!</p>
-
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('user')">💎 User</button>
-            <button class="tab" onclick="switchTab('admin')">👑 Admin</button>
-        </div>
-
-        <div id="user" class="section active">
-            <div class="box">🎉 <strong>100 FREE coins</strong> added instantly!</div>
-            <input type="text" id="u" placeholder="Username">
-            <input type="email" id="e" placeholder="Email">
-            <input type="password" id="p" placeholder="Password (6+ chars)">
-            <button onclick="doReg()">📝 Create Account</button>
-            <div id="m" class="msg"></div>
-        </div>
-
-        <div id="admin" class="section">
-            <div class="box">👑 Enter your secret Admin Code</div>
-            <input type="text" id="au" placeholder="Admin Username">
-            <input type="email" id="ae" placeholder="Admin Email">
-            <input type="password" id="ac" placeholder="Admin Code">
-            <input type="password" id="ap" placeholder="Password">
-            <button onclick="doRegAdmin()">👑 Create Admin</button>
-            <div id="am" class="msg"></div>
-        </div>
-
-        <p class="foot">Have account? <a href="login.html">Login →</a></p>
+        <h1>🔑 Welcome Back</h1>
+        <p class="sub">Login to start video chatting</p>
+        <input type="email" id="e" placeholder="Email">
+        <input type="password" id="p" placeholder="Password">
+        <button onclick="doLogin()">🔑 Login</button>
+        <div id="m" class="msg"></div>
+        <p class="foot">No account? <a href="register.html">Sign up free →</a></p>
     </div>
 
 <script>
-function switchTab(t){
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-    event.target.classList.add('active');
-    document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
-    document.getElementById(t).classList.add('active');
+async function doLogin(){
+    const e=document.getElementById('e').value.trim();
+    const p=document.getElementById('p').value;
+    if(!e||!e.includes('@'))return show('m','❌ Enter valid email','err');
+    if(p.length<6)return show('m','❌ Enter password','err');
+    const r=await fetch('/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e,password:p})});
+    const d=await r.json();
+    if(d.success){localStorage.setItem('user',JSON.stringify(d.user));location='dashboard.html'}
+    else show('m','❌ '+(d.error||'Login failed'),'err');
 }
 function show(id,txt,type){
     const el=document.getElementById(id);
     el.className='msg '+type;
     el.textContent=txt;
-}
-async function doReg(){
-    const u=document.getElementById('u').value.trim();
-    const e=document.getElementById('e').value.trim();
-    const p=document.getElementById('p').value;
-    if(!u)return show('m','❌ Enter username','err');
-    if(!e||!e.includes('@'))return show('m','❌ Enter valid email','err');
-    if(p.length<6)return show('m','❌ Password min 6 chars','err');
-    const r=await fetch('/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({role:'payer',username:u,email:e,password:p})});
-    const d=await r.json();
-    if(d.success){show('m','✅ Created! Redirecting...','ok');setTimeout(()=>location='login.html',1800)}
-    else show('m','❌ '+(d.error||'Failed'),'err');
-}
-async function doRegAdmin(){
-    const u=document.getElementById('au').value.trim();
-    const e=document.getElementById('ae').value.trim();
-    const c=document.getElementById('ac').value;
-    const p=document.getElementById('ap').value;
-    if(!u||!e||!c||!p)return show('am','❌ Fill all fields','err');
-    if(!e.includes('@'))return show('am','❌ Invalid email','err');
-    if(p.length<6)return show('am','❌ Password min 6 chars','err');
-    const r=await fetch('/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({role:'admin',username:u,email:e,password:p,adminCode:c})});
-    const d=await r.json();
-    if(d.success){show('am','✅ Admin created!','ok');setTimeout(()=>location='login.html',1800)}
-    else show('am','❌ '+(d.error||'Failed'),'err');
 }
 </script>
 </body>
