@@ -1,0 +1,23 @@
+PORT=5000
+NODE_ENV=production
+
+# MONGO DATABASE
+MONGO_URI=mongodb+srv://USER:PASS@cluster0.xxx.mongodb.net/videochat
+
+# SECURITY
+JWT_SECRET=REPLACE_WITH_VERY_LONG_RANDOM_STRING_xxxxxx
+
+# STRIPE PAYMENTS
+STRIPE_SECRET_KEY=sk_live_xxxxxxx
+STRIPE_PUBLISHABLE_KEY=pk_live_xxxxxxx
+STRIPE_WEBHOOK_SECRET=whsec_xxxxxxx
+
+# DEEPL TRANSLATION
+DEEPL_API_KEY=xxxxxxx
+
+# YOUR DOMAIN
+BASE_URL=https://yourdomain.com
+
+# BITCOIN (for weekly payouts)
+BTC_SEND_WALLET_PRIVATE_KEY=xxxxxxx
+BTC_NETWORK=mainnet

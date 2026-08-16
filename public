@@ -1,0 +1,28 @@
+*{box-sizing:border-box; margin:0; padding:0; font-family:system-ui,-apple-system,sans-serif}
+:root{--bg:#0F172A; --card:#1E293B; --indigo:#6366F1; --pink:#EC4899; --green:#10B981; --red:#EF4444; --gray:#475569; --text:#F8FAFC; --border:#334155}
+body{background:var(--bg); color:var(--text); min-height:100vh; line-height:1.5}
+.container{max-width:1200px; margin:0 auto; padding:20px}
+.card{background:var(--card); border-radius:16px; padding:24px; margin:16px 0; box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.btn{padding:12px 24px; border:none; border-radius:12px; font-size:16px; font-weight:600; cursor:pointer; transition:.2s; color:white}
+.btn-primary{background:linear-gradient(135deg,var(--indigo),var(--pink))}
+.btn-primary:hover{transform:translateY(-1px)}
+.btn-danger{background:var(--red)}
+.btn-gray{background:var(--gray)}
+.btn-green{background:var(--green)}
+.btn-star{background:transparent; border:2px solid gold; color:gold}
+.btn-star.active{background:gold; color:black}
+input,textarea{width:100%; padding:12px; margin:8px 0; border-radius:8px; border:1px solid var(--border); background:var(--bg); color:white; font-size:16px}
+input:focus{outline:none; border-color:var(--indigo)}
+video{width:100%; border-radius:12px; background:#000}
+.video-container{position:relative; border-radius:16px; overflow:hidden; background:#000}
+.timer{position:absolute; top:12px; left:12px; background:rgba(0,0,0,.7); padding:6px 12px; border-radius:8px; font-size:14px}
+.blur-toggle{position:absolute; top:12px; right:12px; background:rgba(0,0,0,.7); padding:6px 12px; border-radius:8px; font-size:14px; cursor:pointer}
+.controls{display:flex; gap:12px; justify-content:center; margin:16px 0; flex-wrap:wrap}
+.grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px}
+.bundle-card{border:2px solid transparent; border-radius:12px; padding:20px; text-align:center; cursor:pointer; transition:.2s; background:rgba(99,102,241,.05)}
+.bundle-card:hover{border-color:var(--indigo); transform:translateY(-2px)}
+.locked{opacity:.6; text-align:center; padding:20px; color:#94A3B8}
+a{color:var(--indigo); text-decoration:none}
+hr{border:none; border-top:1px solid var(--border); margin:20px 0}
+.error{color:var(--red); margin:8px 0}
+.success{color:var(--green); margin:8px 0}

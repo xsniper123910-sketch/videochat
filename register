@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head><title>Register</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<div class="container">
+  <div class="card" style="max-width:520px; margin:40px auto">
+    <h1 style="text-align:center; margin-bottom:24px">🎥 Create Account</h1>
+    <div style="display:flex; gap:12px; margin-bottom:20px">
+      <button class="btn btn-primary" id="btnPayer" onclick="showForm('payer')">I am a Man</button>
+      <button class="btn btn-gray" id="btnEarner" onclick="showForm('earner')">I am a Woman</button>
+    </div>
+
+    <form id="formPayer">
+      <input type="email" id="email" placeholder="📧 Email Address" required>
+      <input type="password" id="password" placeholder="🔒 Password" required>
+      <label style="display:flex; gap:8px; align-items:center; margin:12px 0">
+        <input type="checkbox" required> I am 18+ and agree to Terms & Privacy
+      </label>
+      <button type="submit" class="btn btn-primary" style="width:100%; margin-top:8px">Register</button>
+    </form>
+
+    <form id="formEarner" style="display:none">
+      <input type="email" id="eEmail" placeholder="📧 Email Address" required>
+      <input type="password" id="ePassword" placeholder="🔒 Password" required>
+      <input type="text" id="fullName" placeholder="👤 Full Name" required>
+      <input type="text" id="address" placeholder="🏠 Street Address" required>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px">
+        <input type="text" id="city" placeholder="🏙️ City" required>
+        <input type="text" id="country" placeholder="🌍 Country (UA/RU auto-BTC)" required>
+      </div>
+      <input type="text" id="idPhoto" placeholder="📸 Government ID Photo URL" required>
+      <input type="text" id="selfie" placeholder="🤳 Selfie URL (must match ID)" required>
+      <input type="text" id="proofOfRes" placeholder="📄 Proof of Residence URL" required>
+      <label style="display:flex; gap:8px; align-items:center; margin:12px 0">
+        <input type="checkbox" required> I am 18+, all documents genuine
+      </label>
+      <button type="submit" class="btn btn-primary" style="width:100%; margin-top:8px">Submit for Verification</button>
+    </form>
+
+    <p style="text-align:center; margin-top:20px">Already have account? <a href="login.html">Login →</a></p>
+    <div id="msg" style="margin-top:16px"></div>
+  </div>
+</div>
+
+<script>
+function showForm(role){
+  document.getElementById('formPayer').style.display = role==='payer'?'block':'none';
+  document.getElementById('formEarner').style.display = role==='earner'?'block':'none';
+  document.getElementById('btnPayer').className = role==='payer'?'btn btn-primary':'btn btn-gray';
+  document.getElementById('btnEarner').className = role==='earner'?'btn btn-primary':'btn btn-gray';
+}
+
+document.getElementById('formPayer').addEventListener('submit', async e=>{
+  e.preventDefault(); document.getElementById('msg').innerHTML='';
+  const res = await fetch('/register', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      role:'payer', email:document.getElementById('email').value,
+      password:document.getElementById('password').value
+    })
+  });
+  const d = await res.json();
+  if(d.success){localStorage.setItem('token',d.token); localStorage.setItem('role','payer'); location.href='dashboard.html'}
+  else document.getElementById('msg').innerHTML=`<div class="error">${d.error}</div>`;
+});
+
+document.getElementById('formEarner').addEventListener('submit', async e=>{
+  e.preventDefault(); document.getElementById('msg').innerHTML='';
+  const res = await fetch('/register', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      role:'earner', email:document.getElementById('eEmail').value,
+      password:document.getElementById('ePassword').value,
+      fullName:document.getElementById('fullName').value,
+      address:document.getElementById('address').value,
+      city:document.getElementById('city').value,
+      country:document.getElementById('country').value,
+      idPhoto:document.getElementById('idPhoto').value,
+      selfie:document.getElementById('selfie').value,
+      proofOfResidence:document.getElementById('proofOfRes').value
+    })
+  });
+  const d = await res.json();
+  if(d.success){alert(d.message); location.href='login.html'}
+  else document.getElementById('msg').innerHTML=`<div class="error">${d.error}</div>`;
+});
+</script>
+</body>
+</html>
