@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Video Chat — Flitry</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+        body{background:linear-gradient(135deg,#0F0F23,#1A1A3A,#251640);min-height:100vh;color:white}
+        .top{display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:rgba(0,0,0,.4);border-bottom:1px solid rgba(255,255,255,.1)}
+        .logo{font-size:20px;font-weight:bold;background:linear-gradient(90deg,#FF6B9D,#9D65FF);-webkit-background-clip:text;color:transparent}
+        .coins{background:linear-gradient(135deg,#FACC15,#F59E0B);color:black;padding:8px 16px;border-radius:50px;font-weight:bold;border:none;cursor:pointer}
+        .vid-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:20px;max-width:1100px;margin:0 auto}
+        @media(max-width:768px){.vid-grid{grid-template-columns:1fr}}
+        .vid-box{background:#000;border-radius:16px;aspect-ratio:16/9;position:relative;overflow:hidden}
+        video{width:100%;height:100%;object-fit:cover}
+        .tag{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.7);padding:5px 12px;border-radius:20px;font-size:13px}
+        .empty{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#666;text-align:center}
+        .ctrls{display:flex;justify-content:center;gap:12px;padding:12px;flex-wrap:wrap}
+        .btn{padding:14px 24px;border-radius:50px;border:none;font-size:16px;font-weight:bold;cursor:pointer;transition:transform .15s}
+        .btn:hover{transform:scale(1.05)}
+        .btn-green{background:linear-gradient(135deg,#10B981,#34D399);color:white}
+        .btn-purple{background:linear-gradient(135deg,#6366F1,#8B5CF6);color:white}
+        .btn-red{background:linear-gradient(135deg,#EF4444,#F87171);color:white}
+        .hidden{display:none!important}
+        .status{text-align:center;padding:8px;color:#ccc}
+        .hub{position:fixed;inset:0;background:rgba(5,5,25,.92);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}
+        .hub.show{display:flex}
+        .hub-card{background:linear-gradient(180deg,#232352,#151535);border-radius:24px;padding:30px;max-width:460px;width:100%;border:2px solid rgba(139,92,246,.25);box-shadow:0 0 60px rgba(99,102,241,.18)}
+        .hub h2{text-align:center;margin-bottom:20px}
+        .pack{background:rgba(255,255,255,.05);border:2px solid transparent;border-radius:14px;padding:16px;margin:10px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .25s}
+        .pack:hover{border-color:rgba(139,92,246,.5);transform:translateY(-2px)}
+        .pack.popular{border-color:#FACC15;background:rgba(250,204,21,.08)}
+        .pack-left{display:flex;flex-direction:column;gap:4px}
+        .pack-name{font-weight:bold;font-size:16px}
+        .pack-bonus{font-size:12px;color:#34D399}
+        .pack-right{text-align:right}
+        .price{color:#FACC15;font-weight:bold;font-size:22px}
+        .close{width:100%;padding:14px;border-radius:10px;border:none;background:rgba(255,255,255,.08);color:#aaa;margin-top:20px;cursor:pointer;font-size:15px}
+        .close:hover{background:rgba(255,255,255,.15);color:white}
+        .msg{margin-top:12px;padding:10px;border-radius:8px;text-align:center;font-size:14px;min-height:40px}
+        .err{color:#F87171}
+        .ok{color:#34D399}
+    </style>
+</head>
+<body>
+
+<!-- COIN HUB MODAL -->
+<div id="hubModal" class="hub">
+    <div class="hub-card">
+        <h2>🪨 Buy Coins</h2>
+        <div class="pack" onclick="buy('small')">
+            <div class="pack-left"><span class="pack-name">💰 100 Coins</span></div>
+            <div class="pack-right"><span class="price">$4.99</span></div>
+        </div>
+        <div class="pack popular" onclick="buy('medium')">
+            <div class="pack-left"><span class="pack-name">⭐ 500 Coins</span><span class="pack-bonus">+50 FREE!</span></div>
+            <div class="pack-right"><span class="price">$19.99</span></div>
+        </div>
+        <div class="pack" onclick="buy('large')">
+            <div class="pack-left"><span class="pack-name">💎 1,500 Coins</span><span class="pack-bonus">+200 FREE!</span></div>
+            <div class="pack-right"><span class="price">$49.99</span></div>
+        </div>
+        <div class="pack" onclick="buy('mega')">
+            <div class="pack-left"><span class="pack-name">👑 5,000 Coins</span><span class="pack-bonus">+800 FREE!</span></div>
+            <div class="pack-right"><span class="price">$149.99</span></div>
+        </div>
+        <div id="hubMsg" class="msg"></div>
+        <button class="close" onclick="closeHub()">Close</button>
+    </div>
+</div>
+
+<!-- TOP BAR -->
+<div class="top">
+    <div class="logo">FLITRY</div>
+    <div style="display:flex;gap:12px;align-items:center">
+        <span id="userName" style="color:#aaa"></span>
+        <button class="coins" onclick="openHub()">💰 <span id="coinCount">0</span></button>
+        <button onclick="logout()" style="background:none;border:none;color:#888;cursor:pointer;font-size:14px">Logout</button>
+    </div>
+</div>
+
+<!-- VIDEO AREA -->
+<div class="vid-grid">
+    <div class="vid-box">
+        <span class="tag">You</span>
+        <video id="localVid" autoplay muted playsinline></video>
+        <div id="localStat" class="empty">📷 Camera loading...</div>
+    </div>
+    <div class="vid-box">
+        <span class="tag">Partner</span>
+        <video id="remoteVid" autoplay playsinline></video>
+        <div id="remoteStat" class="empty">👋 Click "Find Partner"</div>
+    </div>
+</div>
+
+<div id="callStatus" class="status"></div>
+
+<!-- CONTROLS -->
+<div class="ctrls">
+    <button id="findBtn" class="btn btn-green" onclick="findPartner()">🔍 Find Partner</button>
+    <button id="nextBtn" class="btn btn-purple hidden" onclick="nextPartner()">➡️ Next (10 coins)</button>
+    <button id="endBtn" class="btn btn-red hidden" onclick="endCall()">📞 End Call</button>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket = io();
+let user = null, stream = null, pc = null, partnerId = null;
+const ICE = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
+window.onload = async () => {
+    const saved = localStorage.getItem('user');
+    if (!saved) { alert('⚠️ Please login first!'); return window.location = 'login.html'; }
+    user = JSON.parse(saved);
+    document.getElementById('userName').textContent = '@' + user.username;
+    document.getElementById('coinCount').textContent = user.coins || 0;
+
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        document.getElementById('localVid').srcObject = stream;
+        document.getElementById('localStat').style.display = 'none';
+    } catch {
+        document.getElementById('localStat').textContent = '⚠️ Camera blocked — check permissions';
+    }
+};
+
+async function findPartner() {
+    if ((user.coins || 0) < 10) {
+        showHubMsg('❌ Need at least 10 coins!', 'err');
+        setTimeout(openHub, 600);
+        return;
+    }
+    setStatus('⏳ Searching...');
+    document.getElementById('remoteStat').textContent = '🔍 Looking for a match...';
+    setButtons('searching');
+    socket.emit('find', { username: user.username, email: user.email, role: user.role });
+}
+
+socket.on('wait', () => setStatus('⏳ Waiting for someone...'));
+
+socket.on('found', async (data) => {
+    partnerId = data.partnerId;
+    setStatus('✅ Connected with ' + data.name);
+    document.getElementById('remoteStat').style.display = 'none';
+    setButtons('connected');
+    await deductCoins(10);
+    await startConnection();
+});
+
+async function startConnection() {
+    pc = new RTCPeerConnection(ICE);
+    stream.getTracks().forEach(track => pc.addTrack(track, stream));
+    pc.ontrack = (e) => document.getElementById('remoteVid').srcObject = e.streams[0];
+    pc.onicecandidate = (e) => {
+        if (e.candidate) socket.emit('signal', { to: partnerId, s: { c: e.candidate } });
+    };
+    if (partnerId) {
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        socket.emit('signal', { to: partnerId, s: { o: offer } });
+    }
+}
+
+socket.on('signal', async (d) => {
+    partnerId = d.from;
+    if (!pc) await startConnection();
+    if (d.s.o) {
+        await pc.setRemoteDescription(new RTCSessionDescription(d.s.o));
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        socket.emit('signal', { to: d.from, s: { a: answer } });
+    } else if (d.s.a) {
+        await pc.setRemoteDescription(new RTCSessionDescription(d.s.a));
+    } else if (d.s.c) {
+        await pc.addIceCandidate(new RTCIceCandidate(d.s.c));
+    }
+});
+
+async function nextPartner() {
+    if ((user.coins || 0) < 10) { showHubMsg('❌ Need more coins!', 'err'); openHub(); return; }
+    await deductCoins(10);
+    endCall(true);
+    setTimeout(findPartner, 300);
+}
+
+function endCall(skip = false) {
+    pc && pc.close(); pc = null;
+    skip || socket.emit('end');
+    document.getElementById('remoteVid').srcObject = null;
+    document.getElementById('remoteStat').style.display = 'block';
+    document.getElementById('remoteStat').textContent = '👋 Call ended';
+    setStatus('');
+    partnerId = null;
+    setButtons('idle');
+}
+
+socket.on('ended', () => { endCall(); setStatus('👋 Partner disconnected'); });
+
+async function deductCoins(amount) {
+    const res = await fetch('/deduct-coins', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email, amount })
+    });
+    const data = await res.json();
+    if (data.success) {
+        user.coins = data.coins;
+        document.getElementById('coinCount').textContent = data.coins;
+        localStorage.setItem('user', JSON.stringify(user));
+    }
+}
+
+async function buyCoins(packId) {
+    showHubMsg('⏳ Processing...', 'ok');
+    const res = await fetch('/buy-coins', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email, pack: packId })
+    });
+    const data = await res.json();
+    if (data.success) {
+        user.coins = data.coins;
+        document.getElementById('coinCount').textContent = data.coins;
+        localStorage.setItem('user', JSON.stringify(user));
+        showHubMsg('✅ ' + data.added + ' Coins added!', 'ok');
+        setTimeout(closeHub, 1600);
+    } else {
+        showHubMsg('❌ Purchase failed', 'err');
+    }
+}
+
+function setStatus(text) { document.getElementById('callStatus').textContent = text; }
+function setButtons(state) {
+    document.getElementById('findBtn').classList.toggle('hidden', state !== 'idle');
+    document.getElementById('nextBtn').classList.toggle('hidden', state !== 'connected');
+    document.getElementById('endBtn').classList.toggle('hidden', state !== 'connected');
+}
+function openHub() { document.getElementById('hubModal').classList.add('show'); document.getElementById('hubMsg').textContent = ''; }
+function closeHub() { document.getElementById('hubModal').classList.remove('show'); document.getElementById('hubMsg').textContent = ''; }
+function showHubMsg(text, type) {
+    const el = document.getElementById('hubMsg');
+    el.className = 'msg ' + type;
+    el.textContent = text;
+}
+function logout() { localStorage.clear(); window.location = 'login.html'; }
+</script>
+</body>
+</html>
