@@ -5,77 +5,139 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style.css">
+    <style>
+        .role-tabs { display: flex; gap: 10px; margin-bottom: 24px; }
+        .role-tab { flex: 1; padding: 14px; border-radius: 12px; border: none; background: #222; color: white; cursor: pointer; font-size: 15px; font-weight: 600; transition: all 0.25s; }
+        .role-tab.active { background: linear-gradient(135deg, #EC4899, #6366F1); box-shadow: 0 4px 15px rgba(99,102,241,0.3); }
+        .form-section { display: none; animation: fadeIn 0.3s ease; }
+        .form-section.active { display: block; }
+        @keyframes fadeIn { from {opacity:0; transform: translateY(10px)} to {opacity:1; transform: translateY(0)} }
+        .form-box { max-width: 440px; margin: 30px auto; padding: 32px; background: rgba(255,255,255,0.03); border-radius: 24px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+        .form-box h1 { text-align: center; margin-bottom: 6px; font-size: 28px; }
+        .sub { text-align: center; color: #aaa; margin-bottom: 24px; font-size: 14px; }
+        input { width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid #333; background: #111522; color: white; margin-bottom: 14px; font-size: 15px; outline: none; transition: border 0.2s; }
+        input:focus { border-color: #8B5CF6; }
+        .info-box { background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.3); border-radius: 10px; padding: 12px; margin-bottom: 16px; font-size: 13px; color: #C4B5FD; line-height: 1.5; }
+        .link { text-align: center; margin-top: 20px; color: #aaa; font-size: 14px; }
+        .link a { color: #A78BFA; text-decoration: none; font-weight: 500; }
+        .msg { margin-top: 14px; text-align: center; padding: 10px; border-radius: 8px; font-size: 14px; }
+        .err { color: #F87171; background: rgba(239,68,68,0.1); }
+        .ok { color: #34D399; background: rgba(16,185,129,0.1); }
+        .btn { width: 100%; padding: 14px; border-radius: 12px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; transition: transform 0.15s; }
+        .btn:hover { transform: scale(1.02); }
+        .btn-primary { background: linear-gradient(135deg, #EC4899, #6366F1); color: white; }
+    </style>
 </head>
 <body>
     <div class="form-box">
-        <h1>📝 Create Account</h1>
-        <p class="sub">Register first — video chat comes AFTER login</p>
+        <h1>✨ Create Account</h1>
+        <p class="sub">Register first — video chat available after login</p>
 
-        <div class="tabs">
-            <button class="tab active" onclick="showTab('payer')">I want to call</button>
-            <button class="tab" onclick="showTab('admin')">Admin</button>
+        <!-- ROLE SELECTOR -->
+        <div class="role-tabs">
+            <button class="role-tab active" onclick="switchRole('payer')">💎 I want to call</button>
+            <button class="role-tab" onclick="switchRole('admin')">👑 Admin</button>
         </div>
 
         <!-- PAYER FORM -->
-        <div id="payer">
-            <input type="text" id="u" placeholder="Username" required>
-            <input type="email" id="e" placeholder="Email" required>
-            <input type="password" id="p" placeholder="Password (6+ chars)" required>
-            <button onclick="regPayer()" class="btn primary full">Create Account</button>
-            <div id="msgP" class="msg"></div>
+        <div id="payer-section" class="form-section active">
+            <div class="info-box">💎 You get <strong>100 FREE coins</strong> on signup!</div>
+            <input type="text" id="p-username" placeholder="Username" required>
+            <input type="email" id="p-email" placeholder="Email address" required>
+            <input type="password" id="p-pass" placeholder="Password (min. 6 characters)" required>
+            <button onclick="registerPayer()" class="btn btn-primary">📝 Create Account</button>
+            <div id="p-msg" class="msg"></div>
         </div>
 
         <!-- ADMIN FORM -->
-        <div id="admin" class="hidden">
-            <input type="text" id="au" placeholder="Admin Username">
-            <input type="email" id="ae" placeholder="Admin Email">
-            <input type="password" id="ac" placeholder="Secret Admin Code">
-            <input type="password" id="ap" placeholder="Password">
-            <button onclick="regAdmin()" class="btn primary full">Create Admin</button>
-            <div id="msgA" class="msg"></div>
+        <div id="admin-section" class="form-section">
+            <div class="info-box">👑 Enter your secret Admin Code to create an Admin account</div>
+            <input type="text" id="a-username" placeholder="Admin Username">
+            <input type="email" id="a-email" placeholder="Admin Email">
+            <input type="password" id="a-code" placeholder="Secret Admin Code">
+            <input type="password" id="a-pass" placeholder="Password (min. 6 characters)">
+            <button onclick="registerAdmin()" class="btn btn-primary">👑 Create Admin Account</button>
+            <div id="a-msg" class="msg"></div>
         </div>
 
-        <p class="link">Have account? <a href="login.html">Login →</a></p>
+        <p class="link">Already have an account? <a href="login.html">Login →</a></p>
     </div>
 
 <script>
-function showTab(t){
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+function switchRole(role) {
+    document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
     event.target.classList.add('active');
-    document.getElementById('payer').classList.toggle('hidden', t!=='payer');
-    document.getElementById('admin').classList.toggle('hidden', t!=='admin');
+    document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+    document.getElementById(role + '-section').classList.add('active');
 }
 
-async function regPayer(){
-    let u=document.getElementById('u').value.trim();
-    let e=document.getElementById('e').value.trim();
-    let p=document.getElementById('p').value;
-    let m=document.getElementById('msgP');
-    if(!u||!e||!p) return m.innerHTML='<span class="err">❌ Fill all fields</span>';
-    if(!e.includes('@')) return m.innerHTML='<span class="err">❌ Invalid email</span>';
-    if(p.length<6) return m.innerHTML='<span class="err">❌ Password 6+ chars</span>';
+async function registerPayer() {
+    const username = document.getElementById('p-username').value.trim();
+    const email = document.getElementById('p-email').value.trim();
+    const password = document.getElementById('p-pass').value;
+    const msgBox = document.getElementById('p-msg');
 
-    let r=await fetch('/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({role:'payer',username:u,email:e,password:p})});
-    let d=await r.json();
-    if(d.success){
-        m.innerHTML='<span class="ok">✅ Created! Going to login...</span>';
-        setTimeout(()=>window.location='login.html',1500);
-    }else m.innerHTML='<span class="err">'+d.error+'</span>';
+    msgBox.innerHTML = '';
+
+    if (!username) return showMsg(msgBox, '❌ Enter your username', 'err');
+    if (!email || !email.includes('@')) return showMsg(msgBox, '❌ Enter a valid email address', 'err');
+    if (password.length < 6) return showMsg(msgBox, '❌ Password must be at least 6 characters', 'err');
+
+    try {
+        const res = await fetch('/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role: 'payer', username, email, password })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            showMsg(msgBox, '✅ Account created! Redirecting to login...', 'ok');
+            setTimeout(() => window.location.href = 'login.html', 1800);
+        } else {
+            showMsg(msgBox, '❌ ' + (data.error || 'Registration failed'), 'err');
+        }
+    } catch (err) {
+        showMsg(msgBox, '❌ Server error. Please try again.', 'err');
+    }
 }
 
-async function regAdmin(){
-    let u=document.getElementById('au').value.trim();
-    let e=document.getElementById('ae').value.trim();
-    let c=document.getElementById('ac').value;
-    let p=document.getElementById('ap').value;
-    let m=document.getElementById('msgA');
-    if(!u||!e||!c||!p) return m.innerHTML='<span class="err">❌ Fill all fields</span>';
-    let r=await fetch('/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({role:'admin',username:u,email:e,password:p,adminCode:c})});
-    let d=await r.json();
-    if(d.success){
-        m.innerHTML='<span class="ok">✅ Admin created! Going to login...</span>';
-        setTimeout(()=>window.location='login.html',1500);
-    }else m.innerHTML='<span class="err">'+d.error+'</span>';
+async function registerAdmin() {
+    const username = document.getElementById('a-username').value.trim();
+    const email = document.getElementById('a-email').value.trim();
+    const adminCode = document.getElementById('a-code').value;
+    const password = document.getElementById('a-pass').value;
+    const msgBox = document.getElementById('a-msg');
+
+    msgBox.innerHTML = '';
+
+    if (!username) return showMsg(msgBox, '❌ Enter admin username', 'err');
+    if (!email || !email.includes('@')) return showMsg(msgBox, '❌ Enter valid email', 'err');
+    if (!adminCode) return showMsg(msgBox, '❌ Enter your secret Admin Code', 'err');
+    if (password.length < 6) return showMsg(msgBox, '❌ Password must be at least 6 characters', 'err');
+
+    try {
+        const res = await fetch('/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role: 'admin', username, email, password, adminCode })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            showMsg(msgBox, '👑 Admin created! Redirecting to login...', 'ok');
+            setTimeout(() => window.location.href = 'login.html', 1800);
+        } else {
+            showMsg(msgBox, '❌ ' + (data.error || 'Failed'), 'err');
+        }
+    } catch (err) {
+        showMsg(msgBox, '❌ Server error. Try again.', 'err');
+    }
+}
+
+function showMsg(el, text, type) {
+    el.className = 'msg ' + type;
+    el.textContent = text;
 }
 </script>
 </body>
