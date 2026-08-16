@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Video Chat — Flitry</title>
+    <title>Flitry — Video Chat</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif}
         :root {
@@ -14,148 +14,96 @@
             --green: linear-gradient(135deg,#10B981,#34D399);
             --purple: linear-gradient(135deg,#6366F1,#8B5CF6);
             --red: linear-gradient(135deg,#EF4444,#F87171);
-            --gold: linear-gradient(135deg,#F59E0B,#FBBF24);
         }
-        body{background:var(--bg);min-height:100vh;color:white;overflow-x:hidden}
+        body{background:var(--bg);min-height:100vh;color:white;overflow-x:hidden;padding-bottom:140px}
 
         /* === TOP NAVBAR === */
-        .top{display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:rgba(0,0,0,.35);border-bottom:1px solid var(--border);backdrop-filter:blur(10px);position:sticky;top:0;z-index:50}
+        .top{display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:rgba(0,0,0,.35);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:60}
         .logo{font-size:22px;font-weight:bold;background:linear-gradient(90deg,#FF6B9D,#9D65FF);-webkit-background-clip:text;color:transparent}
         .top-right{display:flex;align-items:center;gap:14px}
-        .coins{background:linear-gradient(135deg,#FACC15,#F59E0B);color:#000;padding:8px 18px;border-radius:50px;font-weight:bold;border:none;cursor:pointer;font-size:15px;box-shadow:0 2px 10px rgba(250,204,21,.25)}
-        .top-btn{background:rgba(255,255,255,.08);border:none;color:white;padding:8px 12px;border-radius:10px;cursor:pointer;font-size:14px;transition:all .2s}
-        .top-btn:hover{background:rgba(255,255,255,.15)}
+        .coins{background:linear-gradient(135deg,#FACC15,#F59E0B);color:#000;padding:8px 18px;border-radius:50px;font-weight:bold;border:none;cursor:pointer;font-size:15px}
+        .top-btn{background:rgba(255,255,255,.08);border:none;color:white;padding:8px 12px;border-radius:10px;cursor:pointer}
         .user-label{color:#ccc;font-size:14px}
 
-        /* === LIVE CALL TIMER & BILLING === */
-        .call-stats{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.15);border-radius:50px;padding:10px 24px;z-index:40;backdrop-filter:blur(10px);display:none;gap:20px;align-items:center}
+        /* === CALL TIMER & BILLING === */
+        .call-stats{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.15);border-radius:50px;padding:10px 24px;z-index:40;display:none;gap:20px;align-items:center}
         .call-stats.show{display:flex}
-        .timer{font-size:20px;font-weight:bold;font-variant-numeric:tabular-nums}
+        .timer{font-size:20px;font-weight:bold}
         .stat-item{text-align:center}
         .stat-item span{display:block;font-size:11px;color:#888}
         .stat-item strong{display:block;font-size:15px}
         .stat-item.cost strong{color:#F87171}
         .stat-item.earn strong{color:#34D399}
 
-        /* === VIDEO LAYOUT — PARTNER BIGGER === */
+        /* === VIDEO AREA === */
         .video-container{position:relative;width:94%;max-width:1200px;margin:20px auto;margin-top:80px}
-        
-        .partner-wrap{width:100%;aspect-ratio:16/9;background:#000;border-radius:20px;overflow:hidden;position:relative;box-shadow:0 8px 40px rgba(0,0,0,.45);border:1px solid rgba(236,72,153,.15)}
-        .partner-wrap video{width:100%;height:100%;object-fit:cover;background:#0a0a18}
-        .partner-label{position:absolute;top:16px;left:16px;background:rgba(0,0,0,.65);padding:6px 14px;border-radius:50px;font-size:14px;font-weight:500;backdrop-filter:blur(6px)}
+        .partner-wrap{width:100%;aspect-ratio:16/9;background:#000;border-radius:20px;overflow:hidden;position:relative;border:1px solid rgba(236,72,153,.15)}
+        .partner-wrap video{width:100%;height:100%;object-fit:cover}
+        .partner-label{position:absolute;top:16px;left:16px;background:rgba(0,0,0,.65);padding:6px 14px;border-radius:50px;font-size:14px}
         .partner-empty{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#777}
-        .partner-empty svg{width:80px;height:80px;opacity:.3;margin-bottom:12px}
-        .partner-empty h3{font-size:18px;color:#aaa;margin-bottom:6px}
-        .partner-empty p{font-size:14px;color:#666}
-
-        .self-wrap{position:absolute;bottom:20px;right:20px;width:220px;aspect-ratio:16/9;background:#000;border-radius:14px;overflow:hidden;border:2px solid rgba(255,255,255,.15);box-shadow:0 4px 20px rgba(0,0,0,.4);z-index:10}
+        .self-wrap{position:absolute;bottom:20px;right:20px;width:220px;aspect-ratio:16/9;background:#000;border-radius:14px;overflow:hidden;border:2px solid rgba(255,255,255,.15)}
         .self-wrap video{width:100%;height:100%;object-fit:cover}
-        .self-empty{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:#888;text-align:center;width:90%}
-
-        .fs-btn{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.65);border:none;color:white;padding:6px 8px;border-radius:8px;cursor:pointer;font-size:16px;z-index:15;backdrop-filter:blur(4px)}
-        .fs-btn:hover{background:rgba(255,255,255,.2)}
-
-        .status{text-align:center;padding:10px 16px;margin:16px auto;width:fit-content;background:rgba(99,102,241,.1);border-radius:50px;color:#C4B5FD;font-size:14px}
-
-        .ctrls{display:flex;justify-content:center;gap:14px;padding:10px 20px 30px;flex-wrap:wrap}
-        .btn{padding:14px 28px;border-radius:50px;border:none;font-size:16px;font-weight:600;cursor:pointer;transition:all .2s;box-shadow:0 4px 15px rgba(0,0,0,.2)}
-        .btn:hover{transform:translateY(-2px)}
-        .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+        .status{text-align:center;padding:10px 16px;margin:16px auto;width:fit-content;background:rgba(99,102,241,.1);border-radius:50px;color:#C4B5FD}
+        .ctrls{display:flex;justify-content:center;gap:14px;padding:10px 20px}
+        .btn{padding:14px 28px;border-radius:50px;border:none;font-size:16px;font-weight:600;cursor:pointer;transition:all .2s}
+        .btn:disabled{opacity:.5;cursor:not-allowed}
         .btn-green{background:var(--green);color:white}
         .btn-purple{background:var(--purple);color:white}
         .btn-red{background:var(--red);color:white}
         .hidden{display:none !important}
 
+        /* === 🔥 BOTTOM HUB — ONLINE WOMEN === */
+        .women-hub{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,24,.95);border-top:1px solid rgba(236,72,153,.25);padding:12px 16px;z-index:55;backdrop-filter:blur(12px)}
+        .hub-title{font-size:13px;color:#F472B6;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+        .hub-title span{display:flex;align-items:center;gap:6px}
+        .pulse{width:8px;height:8px;background:#10B981;border-radius:50%;animation:pulse 2s infinite}
+        @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(16,185,129,.7)}70%{box-shadow:0 0 0 8px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
+        .women-scroll{display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+        .women-scroll::-webkit-scrollbar{height:4px}
+        .women-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:4px}
+        .woman-card{min-width:100px;background:rgba(255,255,255,.04);border-radius:14px;padding:10px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,.08);transition:all .2s}
+        .woman-card:hover{border-color:#EC4899;transform:translateY(-3px);background:rgba(236,72,153,.06)}
+        .woman-avatar{width:60px;height:60px;border-radius:50%;background:#222;margin:0 auto 8px;overflow:hidden;border:2px solid #EC4899}
+        .woman-avatar img{width:100%;height:100%;object-fit:cover}
+        .woman-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .woman-status{font-size:11px;color:#10B981;margin-top:2px}
+        .empty-hub{padding:20px 10px;color:#666;font-size:13px;text-align:center;width:100%}
+
         /* === MODALS === */
-        .modal{position:fixed;inset:0;background:rgba(5,5,25,.85);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}
+        .modal{position:fixed;inset:0;background:rgba(5,5,25,.85);display:none;align-items:center;justify-content:center;z-index:100}
         .modal.show{display:flex}
-        .modal-card{background:linear-gradient(180deg,#232352,#151535);border-radius:24px;padding:30px;max-width:460px;width:100%;border:2px solid rgba(139,92,246,.25);box-shadow:0 0 60px rgba(99,102,241,.18)}
-        .modal-card h2{text-align:center;margin-bottom:20px;font-size:20px}
-        .modal-card p{color:#ccc;line-height:1.6;margin-bottom:12px;font-size:15px}
-        .modal-card input, .modal-card select{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #333;background:#111522;color:white;margin-bottom:12px;font-size:14px}
-        .modal-card label{display:block;margin:8px 0 4px;color:#ddd;font-size:14px}
-        .btn-wide{width:100%;padding:14px;border-radius:10px;border:none;background:var(--accent);color:white;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px}
-        .btn-wide.secondary{background:rgba(255,255,255,.08);color:#aaa;margin-top:10px}
-        .pack{background:rgba(255,255,255,.05);border:2px solid transparent;border-radius:14px;padding:14px;margin:8px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .2s}
-        .pack:hover{border-color:rgba(139,92,246,.5);transform:translateY(-2px)}
-        .pack.popular{border-color:#FACC15;background:rgba(250,204,21,.08)}
-        .pack-name{font-weight:bold;font-size:15px}
-        .pack-bonus{font-size:12px;color:#34D399;margin-top:2px}
+        .modal-card{background:linear-gradient(180deg,#232352,#151535);border-radius:24px;padding:30px;max-width:460px;width:100%;border:2px solid rgba(139,92,246,.25)}
+        .modal-card h2{text-align:center;margin-bottom:20px}
+        .pack{background:rgba(255,255,255,.05);border-radius:14px;padding:14px;margin:8px 0;cursor:pointer;display:flex;justify-content:space-between}
+        .pack:hover{border:1px solid #8B5CF6}
+        .pack.popular{border:1px solid #FACC15;background:rgba(250,204,21,.08)}
         .price{color:#FACC15;font-weight:bold;font-size:20px}
-        .msg{margin-top:12px;padding:10px;border-radius:8px;text-align:center;font-size:14px;min-height:40px}
+        .btn-wide{width:100%;padding:14px;border-radius:10px;border:none;background:var(--accent);color:white;font-weight:bold;cursor:pointer;margin-top:10px}
+        .secondary{background:rgba(255,255,255,.08);color:#aaa}
+        .msg{margin-top:12px;padding:10px;border-radius:8px;text-align:center;font-size:14px}
         .err{color:#F87171;background:rgba(239,68,68,.1)}
         .ok{color:#34D399;background:rgba(16,185,129,.1)}
     </style>
 </head>
 <body>
 
-<!-- === CALL TIMER & BILLING DISPLAY === -->
+<!-- === CALL TIMER & BILLING === -->
 <div id="callStats" class="call-stats">
     <div class="timer" id="callTimer">00:00</div>
-    <div class="stat-item cost" id="costDisplay"><span>You Pay</span><strong>-0</strong></div>
-    <div class="stat-item earn" id="earnDisplay"><span>You Earn</span><strong>+0</strong></div>
+    <div class="stat-item cost" id="costDisplay"><span>💧 Cost</span><strong>-0</strong></div>
+    <div class="stat-item earn" id="earnDisplay"><span>💰 Earned</span><strong>+0</strong></div>
 </div>
 
 <!-- === BUY COINS MODAL === -->
 <div id="hubModal" class="modal">
     <div class="modal-card">
-        <h2>🪨 Buy Coins</h2>
-        <div class="pack" onclick="buy('small')">
-            <div><div class="pack-name">💰 100 Coins</div></div>
-            <div class="price">$4.99</div>
-        </div>
-        <div class="pack popular" onclick="buy('medium')">
-            <div><div class="pack-name">⭐ 500 Coins</div><div class="pack-bonus">+50 FREE!</div></div>
-            <div class="price">$19.99</div>
-        </div>
-        <div class="pack" onclick="buy('large')">
-            <div><div class="pack-name">💎 1,500 Coins</div><div class="pack-bonus">+200 FREE!</div></div>
-            <div class="price">$49.99</div>
-        </div>
-        <div class="pack" onclick="buy('mega')">
-            <div><div class="pack-name">👑 5,000 Coins</div><div class="pack-bonus">+800 FREE!</div></div>
-            <div class="price">$149.99</div>
-        </div>
+        <h2>💰 Buy Coins</h2>
+        <div class="pack" onclick="buy('small')"><div><strong>100 Coins</strong></div><div class="price">$4.99</div></div>
+        <div class="pack popular" onclick="buy('medium')"><div><strong>500 Coins</strong><div style="color:#34D399;font-size:12px">+50 FREE</div></div><div class="price">$19.99</div></div>
+        <div class="pack" onclick="buy('large')"><div><strong>1,500 Coins</strong><div style="color:#34D399;font-size:12px">+200 FREE</div></div><div class="price">$49.99</div></div>
+        <div class="pack" onclick="buy('mega')"><div><strong>5,000 Coins</strong><div style="color:#34D399;font-size:12px">+800 FREE</div></div><div class="price">$149.99</div></div>
         <div id="hubMsg" class="msg"></div>
         <button class="btn-wide secondary" onclick="closeHub()">Close</button>
-    </div>
-</div>
-
-<!-- === SETTINGS MODAL === -->
-<div id="settingsModal" class="modal">
-    <div class="modal-card">
-        <h2>⚙️ Settings</h2>
-        <label>Camera</label>
-        <select id="camSel">
-            <option value="on">✅ Camera Enabled</option>
-            <option value="off">❌ Camera Disabled</option>
-        </select>
-        <label>Microphone</label>
-        <select id="micSel">
-            <option value="on">✅ Microphone Enabled</option>
-            <option value="off">❌ Microphone Disabled</option>
-        </select>
-        <label>Video Quality</label>
-        <select id="qualSel">
-            <option value="720">HD (720p) — Recommended</option>
-            <option value="1080">Full HD (1080p)</option>
-            <option value="480">SD (480p) — Faster</option>
-        </select>
-        <button class="btn-wide" onclick="saveSettings()">✅ Save Settings</button>
-        <button class="btn-wide secondary" onclick="closeSettings()">Cancel</button>
-    </div>
-</div>
-
-<!-- === CUSTOMER SUPPORT MODAL === -->
-<div id="supportModal" class="modal">
-    <div class="modal-card">
-        <h2>💬 Customer Support</h2>
-        <p><strong>Need help? Contact us anytime:</strong></p>
-        <p>📧 Email: <strong>support@flitry.com</strong></p>
-        <p>⏰ Response time: Within 24 hours</p>
-        <p style="margin-top:10px;color:#999;font-size:13px;">💡 Rates: Man pays 1 coin/minute • Woman earns 0.50 coins/minute</p>
-        <button class="btn-wide" onclick="window.location='mailto:support@flitry.com'">📧 Send Email</button>
-        <button class="btn-wide secondary" onclick="closeSupport()">Close</button>
     </div>
 </div>
 
@@ -165,40 +113,42 @@
     <div class="top-right">
         <span class="user-label" id="userName"></span>
         <button class="coins" onclick="openHub()">💰 <span id="coinCount">0</span></button>
-        <button class="top-btn" onclick="openSettings()">⚙️ Settings</button>
-        <button class="top-btn" onclick="openSupport()">💬 Support</button>
         <button class="top-btn" onclick="logout()" style="color:#F87171">Logout</button>
     </div>
 </div>
 
 <!-- === MAIN VIDEO AREA === -->
 <div class="video-container">
-    <div class="partner-wrap" id="partnerWrap">
+    <div class="partner-wrap">
         <span class="partner-label" id="partnerLabel">👩 Partner</span>
         <video id="remoteVid" autoplay playsinline></video>
         <div id="remoteEmpty" class="partner-empty">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M12.5 7a4 4 0 11-8 0 4 4 0 018 0zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
-            </svg>
-            <h3>Looking for someone...</h3>
-            <p>Click "Find Partner" below to start</p>
+            <h3>Ready to connect?</h3>
+            <p>Click "Find Partner" or call someone below</p>
         </div>
-        <button class="fs-btn" onclick="fullscreen('partnerWrap')">⛶</button>
     </div>
-
-    <div class="self-wrap" id="selfWrap">
+    <div class="self-wrap">
         <video id="localVid" autoplay muted playsinline></video>
         <div id="localEmpty" class="self-empty">📷 Camera loading...</div>
-        <button class="fs-btn" onclick="fullscreen('selfWrap')" style="font-size:12px;padding:3px 5px">⛶</button>
     </div>
 </div>
 
 <div id="callStatus" class="status"></div>
-
 <div class="ctrls">
     <button id="findBtn" class="btn btn-green" onclick="findPartner()">🔍 Find Partner</button>
-    <button id="nextBtn" class="btn btn-purple hidden" onclick="nextPartner()">➡️ Next (10 coins)</button>
+    <button id="nextBtn" class="btn btn-purple hidden" onclick="nextPartner()">➡️ Next (10 Coins)</button>
     <button id="endBtn" class="btn btn-red hidden" onclick="endCall()">📞 End Call</button>
+</div>
+
+<!-- === 🔥 BOTTOM HUB — ONLINE WOMEN === -->
+<div class="women-hub" id="womenHub">
+    <div class="hub-title">
+        <span><span class="pulse"></span> Online Women Nearby</span>
+        <span id="refreshLink" style="color:#8B5CF6;cursor:pointer;font-size:12px" onclick="loadOnlineWomen()">🔄 Refresh</span>
+    </div>
+    <div class="women-scroll" id="womenScroll">
+        <div class="empty-hub">⏳ Loading...</div>
+    </div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -207,9 +157,7 @@ const socket = io();
 let user = null, stream = null, pc = null, partnerId = null;
 let partnerEmail = null, partnerRole = null;
 let callStartTime = null, callTimer = null, minutesBilled = 0;
-let totalEarnedDisplay = 0, totalCostDisplay = 0;
-const RATE_COST_PER_MINUTE = 1;      // 👨 Man pays 1 coin/min
-const RATE_EARN_PER_MINUTE = 0.50;   // 👩 Woman earns 0.50 coins/min
+const RATE_COST_PER_MINUTE = 1, RATE_EARN_PER_MINUTE = 0.50;
 
 window.onload = async () => {
     const saved = localStorage.getItem('user');
@@ -218,13 +166,23 @@ window.onload = async () => {
     document.getElementById('userName').textContent = '@' + user.username;
     document.getElementById('coinCount').textContent = user.coins || 0;
 
-    // Show correct label based on role
+    // Show/hide billing display
     if (user.role === 'earner') {
         document.getElementById('costDisplay').style.display = 'none';
-        document.getElementById('earnDisplay').innerHTML = `<span>💰 Earnings</span><strong>+0</strong>`;
+        document.getElementById('earnDisplay').innerHTML = `<span>💰 Earned</span><strong>+0</strong>`;
     } else {
         document.getElementById('earnDisplay').style.display = 'none';
-        document.getElementById('costDisplay').innerHTML = `<span>💧 Cost</span><strong>-0</strong>`;
+    }
+
+    // Mark online
+    socket.emit('login-online', { email: user.email, username: user.username, role: user.role });
+
+    // Load online women immediately
+    if (user.role === 'payer') {
+        await loadOnlineWomen();
+        setInterval(loadOnlineWomen, 15000); // Auto-refresh every 15s
+    } else {
+        document.getElementById('womenHub').style.display = 'none'; // Hide for women
     }
 
     try {
@@ -232,24 +190,69 @@ window.onload = async () => {
         document.getElementById('localVid').srcObject = stream;
         document.getElementById('localEmpty').style.display = 'none';
     } catch {
-        document.getElementById('localEmpty').innerHTML = '⚠️ Camera blocked<br>Check permissions';
+        document.getElementById('localEmpty').innerHTML = '⚠️ Camera blocked';
     }
 };
 
-async function findPartner() {
+// ✅ LOAD ONLINE WOMEN FOR BOTTOM HUB
+async function loadOnlineWomen() {
+    try {
+        const res = await fetch('/api/online-women', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+        });
+        const data = await res.json();
+
+        if (!data.success || data.women.length === 0) {
+            document.getElementById('womenScroll').innerHTML = `<div class="empty-hub">🌐 No women online right now</div>`;
+            return;
+        }
+
+        // Render cards
+        document.getElementById('womenScroll').innerHTML = data.women.map(w => `
+            <div class="woman-card" onclick="callWoman('${w.email}','${w.username}')">
+                <div class="woman-avatar">
+                    ${w.selfiePhoto ? `<img src="${w.selfiePhoto}" alt="${w.username}">` : `<div style="line-height:60px;font-size:24px">👩</div>`}
+                </div>
+                <div class="woman-name">${w.username}</div>
+                <div class="woman-status">● Online</div>
+            </div>
+        `).join('');
+
+    } catch {
+        document.getElementById('womenScroll').innerHTML = `<div class="empty-hub">⚠️ Refresh to see online</div>`;
+    }
+}
+
+// ✅ CLICK A WOMAN → CALL HER
+async function callWoman(email, name) {
     if ((user.coins || 0) < 10) {
-        showHubMsg('❌ Need at least 10 coins!', 'err');
-        setTimeout(openHub, 600);
+        alert('⚠️ Need at least 10 coins to call!');
+        openHub();
         return;
     }
-    setStatus('⏳ Searching for someone...');
-    document.getElementById('remoteEmpty').innerHTML = `<h3>🔍 Searching...</h3><p>Waiting for a match</p>`;
+    if (!confirm(`📞 Call ${name}?\n\nCost: 1 coin per minute\nShe earns 0.50 coins per minute`)) return;
+    
+    setStatus(`📞 Calling ${name}...`);
+    document.getElementById('remoteEmpty').innerHTML = `<h3>📞 Calling ${name}...</h3><p>Waiting for answer</p>`;
+    document.getElementById('remoteEmpty').style.display = 'block';
+    setButtons('searching');
+    
+    // For now: use find partner — full direct call coming next
+    socket.emit('find', { username: user.username, email: user.email, role: user.role, targetEmail: email });
+}
+
+async function findPartner() {
+    if ((user.coins || 0) < 10) { alert('⚠️ Need at least 10 coins!'); openHub(); return; }
+    setStatus('⏳ Searching...');
+    document.getElementById('remoteEmpty').innerHTML = `<h3>🔍 Searching...</h3>`;
     document.getElementById('remoteEmpty').style.display = 'block';
     setButtons('searching');
     socket.emit('find', { username: user.username, email: user.email, role: user.role });
 }
 
-socket.on('wait', () => setStatus('⏳ Waiting for someone to join...'));
+socket.on('wait', () => setStatus('⏳ Waiting for someone...'));
 
 socket.on('found', async (data) => {
     partnerId = data.partnerId;
@@ -258,31 +261,22 @@ socket.on('found', async (data) => {
     setStatus(`✅ Connected with ${data.name}`);
     document.getElementById('remoteEmpty').style.display = 'none';
     setButtons('connected');
-
-    // ✅ START CALL TIMER & BILLING
     startCallTimer();
-
     await startConnection();
 });
 
-// ✅ START TIMER — BILL EVERY MINUTE
+// ✅ CALL TIMER & BILLING
 function startCallTimer() {
     callStartTime = Date.now();
     minutesBilled = 0;
-    totalEarnedDisplay = 0;
-    totalCostDisplay = 0;
     document.getElementById('callStats').classList.add('show');
-
     callTimer = setInterval(() => {
         const elapsedMs = Date.now() - callStartTime;
         const elapsedMinutes = Math.floor(elapsedMs / 60000);
         const elapsedSeconds = Math.floor((elapsedMs % 60000) / 1000);
-
-        // Update timer display
         document.getElementById('callTimer').textContent = 
             String(elapsedMinutes).padStart(2,'0') + ':' + String(elapsedSeconds).padStart(2,'0');
 
-        // ✅ BILL EVERY NEW MINUTE
         if (elapsedMinutes > minutesBilled) {
             minutesBilled = elapsedMinutes;
             billOneMinute();
@@ -290,43 +284,33 @@ function startCallTimer() {
     }, 1000);
 }
 
-// ✅ BILL THIS MINUTE — MAN PAYS, WOMAN EARNS
 async function billOneMinute() {
-    try {
-        // Determine who pays and who earns
-        const payerEmail = user.role === 'payer' ? user.email : partnerEmail;
-        const earnerEmail = user.role === 'earner' ? user.email : partnerEmail;
+    const payerEmail = user.role === 'payer' ? user.email : partnerEmail;
+    const earnerEmail = user.role === 'earner' ? user.email : partnerEmail;
 
-        const res = await fetch('/call/bill-minute', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ payerEmail, earnerEmail })
-        });
-        const data = await res.json();
+    const res = await fetch('/call/bill-minute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ payerEmail, earnerEmail })
+    });
+    const data = await res.json();
 
-        if (data.outOfCoins) {
-            alert('⚠️ Call ended — partner ran out of coins!');
-            endCall();
-            return;
-        }
+    if (data.outOfCoins) {
+        alert('⚠️ Partner ran out of coins — Call ended!');
+        endCall();
+        return;
+    }
 
-        // Update coin displays
-        if (user.role === 'payer') {
-            user.coins = data.payerCoins;
-            document.getElementById('coinCount').textContent = user.coins;
-            localStorage.setItem('user', JSON.stringify(user));
-            totalCostDisplay += RATE_COST_PER_MINUTE;
-            document.getElementById('costDisplay').innerHTML = `<span>💧 Cost</span><strong>-${totalCostDisplay.toFixed(2)}</strong>`;
-        } else {
-            user.coins = data.earnerCoins;
-            document.getElementById('coinCount').textContent = user.coins;
-            localStorage.setItem('user', JSON.stringify(user));
-            totalEarnedDisplay += RATE_EARN_PER_MINUTE;
-            document.getElementById('earnDisplay').innerHTML = `<span>💰 Earnings</span><strong>+${totalEarnedDisplay.toFixed(2)}</strong>`;
-        }
-
-    } catch (e) {
-        console.log('Billing error:', e);
+    if (user.role === 'payer') {
+        user.coins = data.payerCoins;
+        document.getElementById('coinCount').textContent = user.coins;
+        localStorage.setItem('user', JSON.stringify(user));
+        document.getElementById('costDisplay').innerHTML = `<span>💧 Cost</span><strong>-${minutesBilled.toFixed(2)}</strong>`;
+    } else {
+        user.coins = data.earnerCoins;
+        document.getElementById('coinCount').textContent = user.coins;
+        localStorage.setItem('user', JSON.stringify(user));
+        document.getElementById('earnDisplay').innerHTML = `<span>💰 Earned</span><strong>+${(minutesBilled * RATE_EARN_PER_MINUTE).toFixed(2)}</strong>`;
     }
 }
 
@@ -334,33 +318,29 @@ async function startConnection() {
     pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
     if (stream) stream.getTracks().forEach(track => pc.addTrack(track, stream));
     pc.ontrack = (e) => document.getElementById('remoteVid').srcObject = e.streams[0];
-    pc.onicecandidate = (e) => {
-        if (e.candidate) socket.emit('signal', { to: partnerId, s: { c: e.candidate } });
-    };
-    if (partnerId) {
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
-        socket.emit('signal', { to: partnerId, s: { o: offer } });
-    }
+    pc.onicecandidate = (e) => { if (e.candidate) socket.emit('signal', { to: partnerId, s: { c: e.candidate } }); };
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    socket.emit('signal', { to: partnerId, s: { o: offer } });
 }
 
 socket.on('signal', async (d) => {
     partnerId = d.from;
     if (!pc) await startConnection();
     if (d.s.o) {
-        await pc.setRemoteDescription(new RTCSessionDescription(d.s.o));
+        await pc.setRemoteDescription(new RTCIceDescription(d.s.o));
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
         socket.emit('signal', { to: d.from, s: { a: answer } });
     } else if (d.s.a) {
-        await pc.setRemoteDescription(new RTCSessionDescription(d.s.a));
+        await pc.setRemoteDescription(new RTCIceDescription(d.s.a));
     } else if (d.s.c) {
         await pc.addIceCandidate(new RTCIceCandidate(d.s.c));
     }
 });
 
 async function nextPartner() {
-    if ((user.coins || 0) < 10) { showHubMsg('❌ Need more coins!', 'err'); openHub(); return; }
+    if ((user.coins || 0) < 10) { alert('⚠️ Need more coins!'); return; }
     await deductCoins(10);
     endCall(true);
     setTimeout(findPartner, 400);
@@ -368,17 +348,14 @@ async function nextPartner() {
 
 function endCall(skip = false) {
     if (callTimer) clearInterval(callTimer);
-    callTimer = null;
-    callStartTime = null;
+    callTimer = callStartTime = null;
     document.getElementById('callStats').classList.remove('show');
-
     pc && pc.close(); pc = null;
     skip || socket.emit('end');
     document.getElementById('remoteVid').srcObject = null;
     document.getElementById('remoteEmpty').style.display = 'block';
     document.getElementById('remoteEmpty').innerHTML = `<h3>👋 Call ended</h3><p>Click Find Partner to try again</p>`;
-    setStatus('');
-    partnerId = partnerEmail = partnerRole = null;
+    setStatus(''); partnerId = partnerEmail = partnerRole = null;
     setButtons('idle');
 }
 
@@ -386,65 +363,34 @@ socket.on('ended', () => { endCall(true); setStatus('👋 Partner disconnected')
 
 async function deductCoins(amount) {
     const res = await fetch('/deduct-coins', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: user.email, amount })
     });
-    const data = await res.json();
-    if (data.success) {
-        user.coins = data.coins;
-        document.getElementById('coinCount').textContent = data.coins;
-        localStorage.setItem('user', JSON.stringify(user));
-    }
+    const d = await res.json();
+    if (d.success) { user.coins = d.coins; document.getElementById('coinCount').textContent = d.coins; localStorage.setItem('user', JSON.stringify(user)); }
 }
 
 async function buy(packId) {
-    showHubMsg('⏳ Processing...', 'ok');
     const res = await fetch('/buy-coins', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: user.email, pack: packId })
     });
-    const data = await res.json();
-    if (data.success) {
-        user.coins = data.coins;
-        document.getElementById('coinCount').textContent = data.coins;
-        localStorage.setItem('user', JSON.stringify(user));
-        showHubMsg('✅ Coins added!', 'ok');
-        setTimeout(closeHub, 1600);
-    } else {
-        showHubMsg('❌ Purchase failed', 'err');
-    }
+    const d = await res.json();
+    if (d.success) {
+        user.coins = d.coins; document.getElementById('coinCount').textContent = d.coins; localStorage.setItem('user', JSON.stringify(user));
+        showHubMsg('✅ Coins added!', 'ok'); setTimeout(closeHub, 1600);
+    } else showHubMsg('❌ Purchase failed', 'err');
 }
 
-function setStatus(text) { document.getElementById('callStatus').textContent = text; }
-function setButtons(state) {
-    document.getElementById('findBtn').classList.toggle('hidden', state !== 'idle');
-    document.getElementById('nextBtn').classList.toggle('hidden', state !== 'connected');
-    document.getElementById('endBtn').classList.toggle('hidden', state !== 'connected');
+function setStatus(t) { document.getElementById('callStatus').textContent = t; }
+function setButtons(s) {
+    document.getElementById('findBtn').classList.toggle('hidden', s !== 'idle');
+    document.getElementById('nextBtn').classList.toggle('hidden', s !== 'connected');
+    document.getElementById('endBtn').classList.toggle('hidden', s !== 'connected');
 }
-
-function fullscreen(id) {
-    const el = document.getElementById(id);
-    if (!document.fullscreenElement) el.requestFullscreen?.();
-    else document.exitFullscreen?.();
-}
-
-function openSettings() { document.getElementById('settingsModal').classList.add('show'); }
-function closeSettings() { document.getElementById('settingsModal').classList.remove('show'); }
-function saveSettings() { alert('✅ Settings saved!'); closeSettings(); }
-
-function openSupport() { document.getElementById('supportModal').classList.add('show'); }
-function closeSupport() { document.getElementById('supportModal').classList.remove('show'); }
-
-function openHub() { document.getElementById('hubModal').classList.add('show'); document.getElementById('hubMsg').textContent = ''; }
-function closeHub() { document.getElementById('hubModal').classList.remove('show'); }
-function showHubMsg(text, type) {
-    const el = document.getElementById('hubMsg');
-    el.className = 'msg ' + type;
-    el.textContent = text;
-}
-
+function openHub() { document.getElementById('hubModal').classList.add('show'); }
+function closeHub() { document.getElementById('hubModal').classList.remove('show'); document.getElementById('hubMsg').textContent = ''; }
+function showHubMsg(t, type) { const el = document.getElementById('hubMsg'); el.className = 'msg ' + type; el.textContent = t; }
 function logout() { localStorage.clear(); window.location = 'login.html'; }
 </script>
 </body>
