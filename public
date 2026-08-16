@@ -1,17 +1,233 @@
-*{box-sizing:border-box; margin:0; padding:0; font-family:system-ui,-apple-system,sans-serif}
-:root{--bg:#0F172A; --card:#1E293B; --indigo:#6366F1; --pink:#EC4899; --green:#10B981; --red:#EF4444; --gray:#475569; --text:#F8FAFC; --border:#334155}
-body{background:var(--bg); color:var(--text); min-height:100vh; line-height:1.5}
-.container{max-width:1200px; margin:0 auto; padding:20px}
-.card{background:var(--card); border-radius:16px; padding:24px; margin:16px 0; box-shadow:0 4px 20px rgba(0,0,0,.3)}
-.btn{padding:12px 24px; border:none; border-radius:12px; font-size:16px; font-weight:600; cursor:pointer; transition:.2s; color:white}
-.btn-primary{background:linear-gradient(135deg,var(--indigo),var(--pink))}
-.btn-primary:hover{transform:translateY(-1px)}
-.btn-danger{background:var(--red)}
-.btn-gray{background:var(--gray)}
-.btn-green{background:var(--green)}
-input{width:100%; padding:12px; margin:8px 0; border-radius:8px; border:1px solid var(--border); background:var(--bg); color:white; font-size:16px}
-input:focus{outline:none; border-color:var(--indigo)}
-a{color:var(--indigo); text-decoration:none}
-hr{border:none; border-top:1px solid var(--border); margin:20px 0}
-.error{color:var(--red); margin:8px 0}
-.success{color:var(--green); margin:8px 0}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flitry — Meet & Chat</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * {margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+        body {
+            background: linear-gradient(135deg, #0F0F23 0%, #1A1A3A 50%, #251640 100%);
+            min-height:100vh;
+            color:white;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:20px;
+        }
+        .container {max-width:600px;width:100%}
+        .logo {text-align:center;margin-bottom:30px}
+        .logo h1 {font-size:42px;font-weight:800;background:linear-gradient(90deg,#FF6B9D,#9D65FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .logo p {color:#B8B8D1;font-size:16px;margin-top:8px}
+        .choice-card {
+            background:rgba(255,255,255,0.05);
+            border-radius:24px;
+            padding:40px 30px;
+            backdrop-filter:blur(10px);
+            border:1px solid rgba(255,255,255,0.1);
+            box-shadow:0 8px 40px rgba(0,0,0,0.3);
+        }
+        .choice-title {text-align:center;margin-bottom:30px}
+        .choice-title h2 {font-size:24px;margin-bottom:6px}
+        .choice-title p {color:#B8B8D1;font-size:15px}
+        .buttons {display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:30px}
+        .role-btn {
+            padding:28px 20px;
+            border-radius:18px;
+            border:2px solid transparent;
+            font-size:20px;
+            font-weight:700;
+            cursor:pointer;
+            transition:all 0.3s ease;
+            color:white;
+            background:rgba(255,255,255,0.06);
+        }
+        .role-btn:hover {transform:translateY(-4px);box-shadow:0 10px 30px rgba(0,0,0,0.25)}
+        .role-btn.active {border-color:#FF6B9D;box-shadow:0 0 20px rgba(255,107,157,0.35)}
+        .btn-man:hover, .btn-man.active {background:linear-gradient(135deg,#4F46E5,#7C3AED);border-color:#7C3AED}
+        .btn-woman:hover, .btn-woman.active {background:linear-gradient(135deg,#EC4899,#F472B6);border-color:#F472B6}
+        .form-container {display:none}
+        .form-box {background:rgba(255,255,255,0.04);border-radius:16px;padding:30px;margin-top:20px}
+        input {
+            width:100%;
+            padding:14px 16px;
+            margin:10px 0;
+            border-radius:12px;
+            border:1px solid rgba(255,255,255,0.15);
+            background:rgba(255,255,255,0.05);
+            color:white;
+            font-size:16px;
+            outline:none;
+            transition:border 0.2s
+        }
+        input:focus {border-color:#9D65FF}
+        .submit-btn {
+            width:100%;
+            padding:15px;
+            border-radius:12px;
+            border:none;
+            font-size:17px;
+            font-weight:700;
+            cursor:pointer;
+            margin-top:10px;
+            transition:transform 0.2s
+        }
+        .submit-btn:hover {transform:scale(1.02)}
+        .btn-man-submit {background:linear-gradient(135deg,#4F46E5,#7C3AED);color:white}
+        .btn-woman-submit {background:linear-gradient(135deg,#EC4899,#F472B6);color:white}
+        .back-link {text-align:center;margin-top:20px}
+        .back-btn {color:#9D65FF;cursor:pointer;font-size:15px}
+        .small-note {color:#999;font-size:13px;margin-top:6px}
+        .link {color:#9D65FF;text-decoration:none}
+        .error {color:#FF8EAD;margin-top:12px;text-align:center}
+        .grid-row {display:grid;grid-template-columns:1fr 1fr;gap:12px}
+        label {color:#D4D4E4;font-size:14px;display:flex;align-items:center;gap:8px;margin-top:14px}
+        @media(max-width:520px){.buttons{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="logo">
+        <h1>FLITRY</h1>
+        <p>Instant video calls with amazing people</p>
+    </div>
+
+    <div class="choice-card" id="choiceScreen">
+        <div class="choice-title">
+            <h2>Join as a...</h2>
+            <p>Choose your account type</p>
+        </div>
+        <div class="buttons">
+            <button class="role-btn btn-man" id="btnPayer" onclick="chooseRole('payer')">
+                🧍<br><strong>MAN</strong>
+            </button>
+            <button class="role-btn btn-woman" id="btnEarner" onclick="chooseRole('earner')">
+                👩<br><strong>WOMAN</strong>
+            </button>
+        </div>
+    </div>
+
+    <!-- MAN'S FORM -->
+    <div class="form-container" id="formPayer">
+        <div class="choice-title">
+            <h2>Create Account</h2>
+            <p>Join and start meeting people</p>
+        </div>
+        <div class="form-box">
+            <form onsubmit="registerPayer(event)">
+                <input type="email" id="email" placeholder="📧 Email address" required>
+                <input type="password" id="password" placeholder="🔒 Create password" required>
+                <label><input type="checkbox" required> I am 18+ years old</label>
+                <label><input type="checkbox" required> I agree to the <a href="#" class="link">Terms</a> & <a href="#" class="link">Privacy Policy</a></label>
+                <button type="submit" class="submit-btn btn-man-submit">✅ Create Account</button>
+                <div class="back-link"><span class="back-btn" onclick="goBack()">← Go back</span></div>
+                <div id="msgPayer" class="error"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- WOMAN'S FORM -->
+    <div class="form-container" id="formEarner">
+        <div class="choice-title">
+            <h2>Creator Account</h2>
+            <p>Get paid for your time</p>
+        </div>
+        <div class="form-box">
+            <form onsubmit="registerEarner(event)">
+                <input type="email" id="eEmail" placeholder="📧 Email address" required>
+                <input type="password" id="ePassword" placeholder="🔒 Create password" required>
+                <input type="text" id="fullName" placeholder="👤 Full name" required>
+                <input type="text" id="address" placeholder="🏠 Street address" required>
+                <div class="grid-row">
+                    <input type="text" id="city" placeholder="🏙️ City" required>
+                    <input type="text" id="country" placeholder="🌍 Country" required>
+                </div>
+                <input type="text" id="idPhoto" placeholder="📸 Government ID photo URL" required>
+                <input type="text" id="selfie" placeholder="🤳 Selfie photo URL" required>
+                <input type="text" id="proofOfRes" placeholder="📄 Proof of residence URL" required>
+                <label><input type="checkbox" required> I am 18+ and all documents are genuine</label>
+                <label><input type="checkbox" required> I agree to the <a href="#" class="link">Terms</a> & <a href="#" class="link">Privacy Policy</a></label>
+                <button type="submit" class="submit-btn btn-woman-submit">✅ Submit for Approval</button>
+                <div class="back-link"><span class="back-btn" onclick="goBack()">← Go back</span></div>
+                <div id="msgEarner" class="error"></div>
+            </form>
+        </div>
+    </div>
+
+    <div style="text-align:center;margin-top:24px;color:#999;font-size:15px">
+        Already have an account? <a href="login.html" class="link">Login →</a>
+    </div>
+</div>
+
+<script>
+let selectedRole = null;
+
+function chooseRole(role){
+    selectedRole = role;
+    // Hide choice screen
+    document.getElementById('choiceScreen').style.display = 'none';
+    // Show correct form
+    document.getElementById('formPayer').style.display = role==='payer' ? 'block' : 'none';
+    document.getElementById('formEarner').style.display = role==='earner' ? 'block' : 'none';
+}
+
+function goBack(){
+    selectedRole = null;
+    document.getElementById('choiceScreen').style.display = 'block';
+    document.getElementById('formPayer').style.display = 'none';
+    document.getElementById('formEarner').style.display = 'none';
+}
+
+async function registerPayer(e){
+    e.preventDefault();
+    document.getElementById('msgPayer').innerHTML = '';
+    const res = await fetch('/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            role: 'payer',
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value
+        })
+    });
+    const d = await res.json();
+    if(d.success){
+        localStorage.setItem('token', d.token);
+        localStorage.setItem('role', 'payer');
+        window.location.href = 'dashboard.html';
+    } else {
+        document.getElementById('msgPayer').textContent = d.error;
+    }
+}
+
+async function registerEarner(e){
+    e.preventDefault();
+    document.getElementById('msgEarner').innerHTML = '';
+    const res = await fetch('/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            role: 'earner',
+            email: document.getElementById('eEmail').value,
+            password: document.getElementById('ePassword').value,
+            fullName: document.getElementById('fullName').value,
+            address: document.getElementById('address').value,
+            city: document.getElementById('city').value,
+            country: document.getElementById('country').value,
+            idPhoto: document.getElementById('idPhoto').value,
+            selfie: document.getElementById('selfie').value,
+            proofOfResidence: document.getElementById('proofOfRes').value
+        })
+    });
+    const d = await res.json();
+    if(d.success){
+        alert('✅ Account created! Waiting for admin approval.');
+        window.location.href = 'login.html';
+    } else {
+        document.getElementById('msgEarner').textContent = d.error;
+    }
+}
+</script>
+</body>
+</html>
