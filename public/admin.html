@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin — Approve Users</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+        body{background:linear-gradient(135deg,#0F0F23,#1A1A3A,#251640);min-height:100vh;color:white;padding:20px}
+        .top{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:rgba(0,0,0,.4);border-radius:14px;margin-bottom:24px}
+        h1{font-size:24px}
+        .card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:20px;margin-bottom:16px}
+        .user-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+        .user-info{font-size:15px;line-height:1.6}
+        .photos{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+        .photo-box{border-radius:10px;overflow:hidden;border:1px solid #333;background:#000;height:180px}
+        .photo-box img{width:100%;height:100%;object-fit:contain}
+        .btn-row{display:flex;gap:10px;margin-top:14px}
+        button{padding:10px 20px;border-radius:8px;border:none;font-weight:bold;cursor:pointer;font-size:15px}
+        .btn-approve{background:linear-gradient(135deg,#10B981,#34D399);color:white}
+        .btn-reject{background:linear-gradient(135deg,#EF4444,#F87171);color:white}
+        .btn-refresh{background:linear-gradient(135deg,#6366F1,#8B5CF6);color:white;margin-bottom:20px}
+        .login-box{max-width:420px;margin:60px auto}
+        input{width:100%;padding:14px;border-radius:10px;border:1px solid #333;background:#111522;color:white;margin-bottom:12px;font-size:15px}
+        .empty{text-align:center;color:#888;padding:40px}
+        .msg{margin-top:12px;padding:10px;border-radius:8px;text-align:center;font-size:14px;min-height:40px}
+        .err{color:#F87171;background:rgba(239,68,68,.1)}
+        .ok{color:#34D399;background:rgba(16,185,129,.1)}
+    </style>
+</head>
+<body>
+
+<div id="loginSection">
+    <div class="card login-box">
+        <h1 style="text-align:center;margin-bottom:20px">👑 Admin Login</h1>
+        <input type="email" id="adminEmail" placeholder="Admin Email">
+        <input type="password" id="adminPass" placeholder="Admin Password">
+        <button class="btn-refresh" onclick="adminLogin()" style="width:100%">🔐 Login</button>
+        <div id="loginMsg" class="msg"></div>
+    </div>
+</div>
+
+<div id="adminSection" style="display:none">
+    <div class="top">
+        <h1>👑 Pending Approval Requests</h1>
+        <button class="btn-refresh" onclick="loadPending()">🔄 Refresh</button>
+    </div>
+    <div id="listArea"></div>
+</div>
+
+<script>
+let adminCreds = { email: '', pass: '' };
+
+async function adminLogin() {
+    const e = document.getElementById('adminEmail').value.trim();
+    const p = document.getElementById('adminPass').value;
+    if (!e || !p) return showLoginMsg('❌ Fill all fields', 'err');
+
+    adminCreds.email = e;
+    adminCreds.pass = p;
+    await loadPending();
+}
+
+async function loadPending() {
+    showLoginMsg('⏳ Loading...', 'ok');
+    try {
+        const res = await fetch('/admin/pending', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ adminEmail: adminCreds.email, adminPassword: adminCreds.pass })
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error);
+
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('adminSection').style.display = 'block';
+
+        if (data.pending.length === 0) {
+            document.getElementById('listArea').innerHTML = `<div class="empty">✅ No pending approvals</div>`;
+            return;
+        }
+
+        document.getElementById('listArea').innerHTML = data.pending.map(u => `
+            <div class="card">
+                <div class="user-head">
+                    <div class="user-info">
+                        <strong>@${u.username}</strong> | ${u.email}<br>
+                        Registered: ${new Date(u.registeredAt).toLocaleString()}
+                    </div>
+                </div>
+                <div class="photos">
+                    <div class="photo-box">
+                        <small style="padding:6px;display:block;background:#111">📷 Passport / ID</small>
+                        <img src="${u.passportPhoto}">
+                    </div>
+                    <div class="photo-box">
+                        <small style="padding:6px;display:block;background:#111">🤳 Selfie</small>
+                        <img src="${u.selfiePhoto}">
+                    </div>
+                </div>
+                <div class="btn-row">
+                    <button class="btn-approve" onclick="approve('${u.id}')">✅ Approve + Give 50 Coins</button>
+                    <button class="btn-reject" onclick="reject('${u.id}')">❌ Reject & Delete</button>
+                </div>
+            </div>
+        `).join('');
+
+    } catch (err) {
+        showLoginMsg('❌ ' + err.message, 'err');
+    }
+}
+
+async function approve(userId) {
+    if (!confirm('✅ Approve this user? They will get 50 coins!')) return;
+    const res = await fetch('/admin/approve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminEmail: adminCreds.email, adminPassword: adminCreds.pass, userId })
+    });
+    const data = await res.json();
+    if (data.success) alert(`✅ Approved ${data.username}!`);
+    loadPending();
+}
+
+async function reject(userId) {
+    if (!confirm('❌ Reject & DELETE this user?')) return;
+    const res = await fetch('/admin/reject', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminEmail: adminCreds.email, adminPassword: adminCreds.pass, userId })
+    });
+    const data = await res.json();
+    if (data.success) alert(`❌ Rejected ${data.username}`);
+    loadPending();
+}
+
+function showLoginMsg(text, type) {
+    const el = document.getElementById('loginMsg');
+    el.className = 'msg ' + type;
+    el.textContent = text;
+}
+</script>
+</body>
+</html>
