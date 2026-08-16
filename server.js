@@ -1,11 +1,12 @@
 const express = require('express');
 const http = require('http');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const server = http.createServer(app);
 
-// ✅ CORS FIX — ALLOW ALL REQUESTS
+// ✅ CORS
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -14,16 +15,16 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 const ADMIN_CODE = "FlitryAdmin2026!";
 let users = [];
 
-// ✅ REGISTER ENDPOINT
+// ✅ REGISTER — WITH VERIFICATION UPLOAD
 app.post('/register', (req, res) => {
   console.log('📩 REGISTER:', req.body);
-  const { role, username, email, password, adminCode } = req.body;
+  const { role, username, email, password, adminCode, passportPhoto, selfiePhoto } = req.body;
 
   if (!username || !email || !password) {
     return res.json({ success: false, error: 'Fill all fields' });
@@ -34,6 +35,17 @@ app.post('/register', (req, res) => {
   if (password.length < 6) {
     return res.json({ success: false, error: 'Password min 6 chars' });
   }
+
+  // ✅ FEMALE MUST UPLOAD ID + SELFIE
+  if (role === 'earner') {
+    if (!passportPhoto || passportPhoto.length < 100) {
+      return res.json({ success: false, error: '⚠️ Please upload Passport/ID photo' });
+    }
+    if (!selfiePhoto || selfiePhoto.length < 100) {
+      return res.json({ success: false, error: '⚠️ Please upload Selfie photo' });
+    }
+  }
+
   if (role === 'admin' && adminCode !== ADMIN_CODE) {
     return res.json({ success: false, error: 'Wrong Admin Code' });
   }
@@ -47,8 +59,8 @@ app.post('/register', (req, res) => {
   }
 
   let coins = 0, approved = false, isAdmin = false;
-  if (role === 'payer') { coins = 100; approved = true; }
-  if (role === 'earner') { coins = 0; approved = false; }
+  if (role === 'payer') { coins = 100; approved = true; } // ✅ Male = Instant
+  if (role === 'earner') { coins = 0; approved = false; } // ⏳ Female = Pending Approval
   if (role === 'admin') { coins = 9999; approved = true; isAdmin = true; }
 
   users.push({
@@ -59,21 +71,28 @@ app.post('/register', (req, res) => {
     role,
     coins,
     isApproved: approved,
-    isAdmin
+    isAdmin,
+    passportPhoto: passportPhoto || null,
+    selfiePhoto: selfiePhoto || null,
+    registeredAt: new Date().toISOString()
   });
 
-  console.log('✅ CREATED:', username);
-  return res.json({ success: true });
+  console.log('✅ CREATED:', username, '| Approved:', approved ? 'YES ✅' : 'PENDING ⏳');
+  return res.json({ 
+    success: true, 
+    pendingApproval: !approved,
+    message: approved ? 'Account created! Login below.' : '⏳ Account created — waiting for admin approval.'
+  });
 });
 
-// ✅ LOGIN ENDPOINT
+// ✅ LOGIN
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
   const user = users.find(u => 
     u.email.toLowerCase() === email.toLowerCase() && u.password === password
   );
   if (!user) return res.json({ success: false, error: 'Wrong email or password' });
-  if (!user.isApproved) return res.json({ success: false, error: 'Account waiting approval' });
+  if (!user.isApproved) return res.json({ success: false, error: '⏳ Account waiting admin approval — check back soon!' });
   return res.json({ success: true, user: {
     username: user.username,
     email: user.email,
@@ -81,6 +100,60 @@ app.post('/login', (req, res) => {
     coins: user.coins,
     isAdmin: user.isAdmin
   }});
+});
+
+// ✅ ADMIN: GET ALL PENDING USERS
+app.post('/admin/pending', (req, res) => {
+  const { adminEmail, adminPassword } = req.body;
+  const admin = users.find(u => 
+    u.email.toLowerCase() === adminEmail.toLowerCase() && 
+    u.password === adminPassword && 
+    u.isAdmin
+  );
+  if (!admin) return res.json({ success: false, error: 'Unauthorized' });
+  const pending = users.filter(u => !u.isApproved && u.role === 'earner').map(u => ({
+    id: u.id,
+    username: u.username,
+    email: u.email,
+    passportPhoto: u.passportPhoto,
+    selfiePhoto: u.selfiePhoto,
+    registeredAt: u.registeredAt
+  }));
+  return res.json({ success: true, pending });
+});
+
+// ✅ ADMIN: APPROVE USER
+app.post('/admin/approve', (req, res) => {
+  const { adminEmail, adminPassword, userId } = req.body;
+  const admin = users.find(u => 
+    u.email.toLowerCase() === adminEmail.toLowerCase() && 
+    u.password === adminPassword && 
+    u.isAdmin
+  );
+  if (!admin) return res.json({ success: false, error: 'Unauthorized' });
+  const target = users.find(u => u.id === userId);
+  if (!target) return res.json({ success: false, error: 'User not found' });
+  target.isApproved = true;
+  target.coins = 50; // ✅ Give 50 coins on approval
+  console.log('✅ APPROVED:', target.username);
+  return res.json({ success: true, username: target.username });
+});
+
+// ✅ ADMIN: REJECT USER
+app.post('/admin/reject', (req, res) => {
+  const { adminEmail, adminPassword, userId } = req.body;
+  const admin = users.find(u => 
+    u.email.toLowerCase() === adminEmail.toLowerCase() && 
+    u.password === adminPassword && 
+    u.isAdmin
+  );
+  if (!admin) return res.json({ success: false, error: 'Unauthorized' });
+  const idx = users.findIndex(u => u.id === userId);
+  if (idx === -1) return res.json({ success: false, error: 'User not found' });
+  const name = users[idx].username;
+  users.splice(idx, 1);
+  console.log('❌ REJECTED:', name);
+  return res.json({ success: true, username: name });
 });
 
 // ✅ COINS ENDPOINTS
@@ -129,4 +202,4 @@ io.on('connection', socket => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`✅ SERVER RUNNING ON PORT ${PORT}`));
+server.listen(PORT, () => console.log(`✅ SERVER RUNNING PORT ${PORT} | ADMIN CODE: ${ADMIN_CODE}`));
