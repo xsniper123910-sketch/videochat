@@ -5,15 +5,24 @@ const path = require('path');
 const app = express();
 const server = http.createServer(app);
 
+// ✅ CORS FIX — ALLOW ALL REQUESTS
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.sendStatus(200);
+  next();
+});
+
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 const ADMIN_CODE = "FlitryAdmin2026!";
 let users = [];
 
-// REGISTER ENDPOINT
+// ✅ REGISTER ENDPOINT
 app.post('/register', (req, res) => {
-  console.log('REGISTER:', req.body);
+  console.log('📩 REGISTER:', req.body);
   const { role, username, email, password, adminCode } = req.body;
 
   if (!username || !email || !password) {
@@ -34,7 +43,7 @@ app.post('/register', (req, res) => {
     u.username.toLowerCase() === username.toLowerCase()
   );
   if (exists) {
-    return res.json({ success: false, error: 'Email or Username exists' });
+    return res.json({ success: false, error: 'Email or Username already exists' });
   }
 
   let coins = 0, approved = false, isAdmin = false;
@@ -53,11 +62,11 @@ app.post('/register', (req, res) => {
     isAdmin
   });
 
-  console.log('CREATED:', username);
+  console.log('✅ CREATED:', username);
   return res.json({ success: true });
 });
 
-// LOGIN ENDPOINT
+// ✅ LOGIN ENDPOINT
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
   const user = users.find(u => 
@@ -74,7 +83,7 @@ app.post('/login', (req, res) => {
   }});
 });
 
-// COINS ENDPOINTS
+// ✅ COINS ENDPOINTS
 app.post('/buy-coins', (req, res) => {
   const { email, pack } = req.body;
   const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
@@ -94,9 +103,9 @@ app.post('/deduct-coins', (req, res) => {
   return res.json({ success: true, coins: user.coins });
 });
 
-// SOCKET.IO
+// ✅ SOCKET.IO
 const { Server } = require('socket.io');
-const io = new Server(server);
+const io = new Server(server, { cors: { origin: '*' } });
 let waiting = [];
 
 io.on('connection', socket => {
@@ -120,4 +129,4 @@ io.on('connection', socket => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`✅ SERVER RUNNING PORT ${PORT}`));
+server.listen(PORT, () => console.log(`✅ SERVER RUNNING ON PORT ${PORT}`));
