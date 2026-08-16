@@ -7,79 +7,72 @@
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
         body{background:linear-gradient(135deg,#0F0F23,#1A1A3A,#251640);min-height:100vh;color:white;display:flex;align-items:center;justify-content:center;padding:20px}
-        .card{max-width:440px;width:100%;padding:30px;background:rgba(255,255,255,.03);border-radius:24px;border:1px solid rgba(255,255,255,.15);box-shadow:0 10px 40px rgba(0,0,0,.3)}
+        .card{max-width:440px;width:100%;padding:30px;background:rgba(255,255,255,.03);border-radius:24px;border:1px solid rgba(255,255,255,.15)}
         h1{text-align:center;margin-bottom:6px;font-size:24px}
         .sub{text-align:center;color:#aaa;margin-bottom:24px;font-size:14px}
-        .tabs{display:flex;gap:10px;margin-bottom:20px}
-        .tab{flex:1;padding:12px;border-radius:10px;border:none;background:#222;color:white;cursor:pointer;font-weight:bold;font-size:14px;transition:all .2s}
-        .tab.active{background:linear-gradient(135deg,#EC4899,#6366F1);box-shadow:0 4px 15px rgba(99,102,241,.3)}
-        .section{display:none;animation:fade .3s ease}
+        .tabs{display:flex;gap:8px;margin-bottom:20px}
+        .tab{flex:1;padding:12px;border-radius:10px;border:none;background:#222;color:white;cursor:pointer;font-weight:bold;font-size:13px}
+        .tab.active{background:linear-gradient(135deg,#EC4899,#6366F1)}
+        .section{display:none}
         .section.active{display:block}
-        @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-        .box{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);border-radius:10px;padding:12px;margin-bottom:16px;font-size:13px;color:#C4B5FD;line-height:1.5}
-        input{width:100%;padding:14px 16px;border-radius:10px;border:1px solid #333;background:#111522;color:white;margin-bottom:12px;font-size:15px;outline:none;transition:border .2s}
-        input:focus{border-color:#8B5CF6}
-        button{width:100%;padding:14px;border-radius:10px;border:none;background:linear-gradient(135deg,#EC4899,#6366F1);color:white;font-size:16px;font-weight:bold;cursor:pointer;transition:transform .15s}
-        button:hover{transform:scale(1.02)}
+        .box{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);border-radius:10px;padding:12px;margin-bottom:16px;font-size:13px;color:#C4B5FD}
+        input{width:100%;padding:14px 16px;border-radius:10px;border:1px solid #333;background:#111522;color:white;margin-bottom:12px;font-size:15px;outline:none}
+        button{width:100%;padding:14px;border-radius:10px;border:none;background:linear-gradient(135deg,#EC4899,#6366F1);color:white;font-size:16px;font-weight:bold;cursor:pointer}
         .msg{margin-top:12px;padding:10px;border-radius:8px;text-align:center;font-size:14px;min-height:40px}
         .err{color:#F87171;background:rgba(239,68,68,.1)}
         .ok{color:#34D399;background:rgba(16,185,129,.1)}
         .foot{text-align:center;margin-top:20px;color:#888;font-size:14px}
-        .foot a{color:#A78BFA;text-decoration:none;font-weight:500}
-        .male .box{background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.3);color:#BFDBFE}
-        .female .box{background:rgba(236,72,153,.1);border-color:rgba(236,72,153,.3);color:#FBCFE8}
+        .foot a{color:#A78BFA;text-decoration:none}
     </style>
 </head>
 <body>
     <div class="card">
         <h1>✨ Create Your Account</h1>
-        <p class="sub">Select your role below to register</p>
+        <p class="sub">Select your role below</p>
 
-        <!-- ROLE TABS -->
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('male')">👨 Male</button>
-            <button class="tab" onclick="switchTab('female')">👩 Female</button>
+            <button class="tab active" onclick="switchTab('payer')">👨 Male</button>
+            <button class="tab" onclick="switchTab('earner')">👩 Female</button>
             <button class="tab" onclick="switchTab('admin')">👑 Admin</button>
         </div>
 
-        <!-- 👨 MALE FORM -->
-        <div id="male" class="section active male">
-            <div class="box">💙 <strong>Get 100 FREE coins</strong> when you join today!</div>
-            <input type="text" id="m-user" placeholder="Create Username">
-            <input type="email" id="m-email" placeholder="Email Address">
-            <input type="password" id="m-pass" placeholder="Create Password (min. 6 characters)">
-            <input type="password" id="m-pass2" placeholder="Confirm Password">
-            <button onclick="registerMale()">📝 Create Male Account</button>
-            <div id="m-msg" class="msg"></div>
+        <!-- MALE / PAYER -->
+        <div id="payer" class="section active">
+            <div class="box">💙 Get <strong>100 FREE coins</strong> — instant approval!</div>
+            <input type="text" id="u1" placeholder="Username">
+            <input type="email" id="e1" placeholder="Email Address">
+            <input type="password" id="p1" placeholder="Password (min 6 characters)">
+            <input type="password" id="p1c" placeholder="Confirm Password">
+            <button onclick="register('payer')">📝 Create Male Account</button>
+            <div id="m1" class="msg"></div>
         </div>
 
-        <!-- 👩 FEMALE FORM -->
-        <div id="female" class="section female">
-            <div class="box">💖 <strong>Welcome!</strong> Create your account below — approval usually takes under 1 hour.</div>
-            <input type="text" id="f-user" placeholder="Create Username">
-            <input type="email" id="f-email" placeholder="Email Address">
-            <input type="password" id="f-pass" placeholder="Create Password (min. 6 characters)">
-            <input type="password" id="f-pass2" placeholder="Confirm Password">
-            <button onclick="registerFemale()">📝 Create Female Account</button>
-            <div id="f-msg" class="msg"></div>
+        <!-- FEMALE / EARNER -->
+        <div id="earner" class="section">
+            <div class="box">💖 Account created after approval — usually within 24 hours.</div>
+            <input type="text" id="u2" placeholder="Username">
+            <input type="email" id="e2" placeholder="Email Address">
+            <input type="password" id="p2" placeholder="Password (min 6 characters)">
+            <input type="password" id="p2c" placeholder="Confirm Password">
+            <button onclick="register('earner')">📝 Create Female Account</button>
+            <div id="m2" class="msg"></div>
         </div>
 
-        <!-- 👑 ADMIN FORM -->
+        <!-- ADMIN -->
         <div id="admin" class="section">
-            <div class="box">👑 Enter your secret Admin Code to create an Admin account</div>
-            <input type="text" id="a-user" placeholder="Admin Username">
-            <input type="email" id="a-email" placeholder="Admin Email Address">
-            <input type="password" id="a-code" placeholder="Secret Admin Code">
-            <input type="password" id="a-pass" placeholder="Create Password">
-            <button onclick="registerAdmin()">👑 Create Admin Account</button>
-            <div id="a-msg" class="msg"></div>
+            <div class="box">👑 Enter your Admin Code below</div>
+            <input type="text" id="u3" placeholder="Admin Username">
+            <input type="email" id="e3" placeholder="Email Address">
+            <input type="password" id="code" placeholder="Admin Code">
+            <input type="password" id="p3" placeholder="Password">
+            <button onclick="register('admin')">👑 Create Admin Account</button>
+            <div id="m3" class="msg"></div>
         </div>
 
-        <p class="foot">Already have an account? <a href="login.html">Login instead →</a></p>
+        <p class="foot">Already have an account? <a href="login.html">Login →</a></p>
     </div>
 
 <script>
-// Switch between forms
 function switchTab(role) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     event.target.classList.add('active');
@@ -87,99 +80,73 @@ function switchTab(role) {
     document.getElementById(role).classList.add('active');
 }
 
-// Show messages
-function showMsg(elId, text, type) {
-    const el = document.getElementById(elId);
+function showMsg(id, text, type) {
+    const el = document.getElementById(id);
     el.className = 'msg ' + type;
     el.textContent = text;
 }
 
-// 👨 REGISTER MALE (Payer)
-async function registerMale() {
-    const username = document.getElementById('m-user').value.trim();
-    const email = document.getElementById('m-email').value.trim();
-    const pass = document.getElementById('m-pass').value;
-    const pass2 = document.getElementById('m-pass2').value;
+async function register(role) {
+    let username, email, password, confirm, adminCode;
+    let msgId = 'm1';
 
-    if (!username) return showMsg('m-msg', '❌ Enter a username', 'err');
-    if (!email || !email.includes('@')) return showMsg('m-msg', '❌ Enter a valid email address', 'err');
-    if (pass.length < 6) return showMsg('m-msg', '❌ Password must be at least 6 characters', 'err');
-    if (pass !== pass2) return showMsg('m-msg', '❌ Passwords do not match', 'err');
-
-    try {
-        const res = await fetch('/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ role: 'payer', username, email, password: pass })
-        });
-        const d = await res.json();
-        if (d.success) {
-            showMsg('m-msg', '✅ Account created! Taking you to login...', 'ok');
-            setTimeout(() => window.location = 'login.html', 1800);
-        } else {
-            showMsg('m-msg', '❌ ' + (d.error || 'Registration failed'), 'err');
-        }
-    } catch {
-        showMsg('m-msg', '❌ Server error — try again', 'err');
+    if (role === 'payer') {
+        username = document.getElementById('u1').value.trim();
+        email = document.getElementById('e1').value.trim();
+        password = document.getElementById('p1').value;
+        confirm = document.getElementById('p1c').value;
+        msgId = 'm1';
+    } else if (role === 'earner') {
+        username = document.getElementById('u2').value.trim();
+        email = document.getElementById('e2').value.trim();
+        password = document.getElementById('p2').value;
+        confirm = document.getElementById('p2c').value;
+        msgId = 'm2';
+    } else if (role === 'admin') {
+        username = document.getElementById('u3').value.trim();
+        email = document.getElementById('e3').value.trim();
+        adminCode = document.getElementById('code').value;
+        password = document.getElementById('p3').value;
+        confirm = password;
+        msgId = 'm3';
     }
-}
 
-// 👩 REGISTER FEMALE (Earner)
-async function registerFemale() {
-    const username = document.getElementById('f-user').value.trim();
-    const email = document.getElementById('f-email').value.trim();
-    const pass = document.getElementById('f-pass').value;
-    const pass2 = document.getElementById('f-pass2').value;
+    // VALIDATION
+    if (!username || !email || !password) return showMsg(msgId, '❌ Fill all fields', 'err');
+    if (!email.includes('@') || !email.includes('.')) return showMsg(msgId, '❌ Enter valid email', 'err');
+    if (password.length < 6) return showMsg(msgId, '❌ Password min 6 characters', 'err');
+    if (password !== confirm) return showMsg(msgId, '❌ Passwords do not match', 'err');
 
-    if (!username) return showMsg('f-msg', '❌ Enter a username', 'err');
-    if (!email || !email.includes('@')) return showMsg('f-msg', '❌ Enter a valid email address', 'err');
-    if (pass.length < 6) return showMsg('f-msg', '❌ Password must be at least 6 characters', 'err');
-    if (pass !== pass2) return showMsg('f-msg', '❌ Passwords do not match', 'err');
+    showMsg(msgId, '⏳ Creating account...', 'ok');
 
     try {
+        const payload = { role, username, email, password };
+        if (adminCode) payload.adminCode = adminCode;
+
+        console.log('📤 Sending:', payload);
+
         const res = await fetch('/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ role: 'earner', username, email, password: pass })
+            body: JSON.stringify(payload)
         });
-        const d = await res.json();
-        if (d.success) {
-            showMsg('f-msg', '✅ Account created! Waiting for approval...', 'ok');
-            setTimeout(() => window.location = 'login.html', 2500);
+
+        const text = await res.text();
+        console.log('📥 Raw response:', text);
+
+        let data;
+        try { data = JSON.parse(text); } 
+        catch { return showMsg(msgId, '❌ Server returned invalid response', 'err'); }
+
+        if (data.success) {
+            showMsg(msgId, '✅ Account created! Redirecting...', 'ok');
+            setTimeout(() => window.location = 'login.html', 2000);
         } else {
-            showMsg('f-msg', '❌ ' + (d.error || 'Registration failed'), 'err');
+            showMsg(msgId, '❌ ' + (data.error || 'Failed'), 'err');
         }
-    } catch {
-        showMsg('f-msg', '❌ Server error — try again', 'err');
-    }
-}
-
-// 👑 REGISTER ADMIN
-async function registerAdmin() {
-    const username = document.getElementById('a-user').value.trim();
-    const email = document.getElementById('a-email').value.trim();
-    const code = document.getElementById('a-code').value;
-    const pass = document.getElementById('a-pass').value;
-
-    if (!username || !email || !code || !pass) return showMsg('a-msg', '❌ Fill in all fields', 'err');
-    if (!email.includes('@')) return showMsg('a-msg', '❌ Enter a valid email address', 'err');
-    if (pass.length < 6) return showMsg('a-msg', '❌ Password must be at least 6 characters', 'err');
-
-    try {
-        const res = await fetch('/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ role: 'admin', username, email, password: pass, adminCode: code })
-        });
-        const d = await res.json();
-        if (d.success) {
-            showMsg('a-msg', '✅ Admin account created! Taking you to login...', 'ok');
-            setTimeout(() => window.location = 'login.html', 1800);
-        } else {
-            showMsg('a-msg', '❌ ' + (d.error || 'Registration failed'), 'err');
-        }
-    } catch {
-        showMsg('a-msg', '❌ Server error — try again', 'err');
+    } catch (err) {
+        console.error('❌ Fetch error:', err);
+        showMsg(msgId, '❌ Cannot connect to server — check server status', 'err');
     }
 }
 </script>
