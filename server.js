@@ -369,3 +369,28 @@ io.on('connection', socket => {
 const PORT = process.env.PORT || 3000;
 console.log(`🔑 ADMIN CODE: ${ADMIN_CODE || '🔒 LOCKED'} | SMS UNLOCK: ${UNLOCK_MINUTES} min | SMS COST: ${SMS_COST_PER_TEXT} → ${SMS_EARN_PER_TEXT}`);
 server.listen(PORT, () => console.log(`✅ SERVER RUNNING | Rate: 1/min → 0.50/min earned`));
+// WELCOME EMAIL FOR NEW USERS
+const nodemailer = require('nodemailer');
+
+app.post('/api/send-welcome-email', async (req, res) => {
+  try {
+    const { email, username } = req.body;
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'your-real-email@gmail.com',   // ← YOUR EMAIL
+        pass: 'your-app-password-here'        // ← YOUR GMAIL APP PASSWORD
+      }
+    });
+    await transporter.sendMail({
+      from: 'your-real-email@gmail.com',
+      to: email,
+      subject: 'Welcome to Flitry! ✨',
+      html: `<h2>Welcome ${username}!</h2><p>Thanks for joining Flitry!</p>`
+    });
+    res.json({ success: true });
+  } catch (e) {
+    console.log('Email error:', e.message);
+    res.json({ success: false });
+  }
+});
