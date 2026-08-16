@@ -7,9 +7,12 @@ async function doLogin(e){
     if(!email || !email.includes('@')) return msgBox.innerHTML='<div class="error">❌ Enter valid email</div>';
     if(password.length < 6) return msgBox.innerHTML='<div class="error">❌ Enter password</div>';
 
+    msgBox.innerHTML = '<div style="color:#aaa">⏳ Logging in...</div>';
+
     try {
         const res = await fetch('/login', {
-            method: 'POST', headers: {'Content-Type': 'application/json'},
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ email, password })
         });
         const d = await res.json();
@@ -17,12 +20,12 @@ async function doLogin(e){
             localStorage.setItem('token', d.token);
             localStorage.setItem('role', d.role);
             localStorage.setItem('isAdmin', d.isAdmin ? 'true' : 'false');
-            localStorage.setItem('userEmail', email); // ← SAVE EMAIL FOR DASHBOARD
-            window.location.href = 'dashboard.html'; // ← REDIRECT TO CAMERA PAGE!
+            localStorage.setItem('userEmail', email);
+            window.location.href = 'dashboard.html';
         } else {
             msgBox.innerHTML = '<div class="error">❌ ' + (d.error || 'Login failed') + '</div>';
         }
     } catch(err) {
-        msgBox.innerHTML = '<div class="error">❌ Server error. Try again.</div>';
+        msgBox.innerHTML = '<div class="error">❌ Server error — try again</div>';
     }
 }
