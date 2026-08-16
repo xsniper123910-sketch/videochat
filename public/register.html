@@ -3,152 +3,185 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Video Chat — Flitry</title>
+    <title>Sign Up — Flitry</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-        body{background:linear-gradient(135deg,#0F0F23,#1A1A3A,#251640);min-height:100vh;color:white}
-        .top{display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:rgba(0,0,0,.4);border-bottom:1px solid rgba(255,255,255,.1)}
-        .logo{font-size:20px;font-weight:bold;background:linear-gradient(90deg,#FF6B9D,#9D65FF);-webkit-background-clip:text;color:transparent}
-        .coins{background:linear-gradient(135deg,#FACC15,#F59E0B);color:black;padding:8px 16px;border-radius:50px;font-weight:bold;border:none;cursor:pointer}
-        .vid-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:20px;max-width:1100px;margin:0 auto}
-        @media(max-width:768px){.vid-grid{grid-template-columns:1fr}}
-        .vid-box{background:black;border-radius:16px;aspect-ratio:16/9;position:relative;overflow:hidden}
-        video{width:100%;height:100%;object-fit:cover}
-        .tag{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.7);padding:5px 12px;border-radius:20px;font-size:13px}
-        .empty{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#666;text-align:center}
-        .ctrls{display:flex;justify-content:center;gap:12px;padding:12px}
-        .btn{padding:14px 24px;border-radius:50px;border:none;font-size:16px;font-weight:bold;cursor:pointer}
-        .btn-green{background:linear-gradient(135deg,#10B981,#34D399);color:white}
-        .btn-purple{background:linear-gradient(135deg,#6366F1,#8B5CF6);color:white}
-        .btn-red{background:linear-gradient(135deg,#EF4444,#F87171);color:white}
-        .hidden{display:none!important}
-        .status{text-align:center;padding:8px;color:#ccc}
-        .hub{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;padding:20px}
-        .hub.show{display:flex}
-        .hub-card{background:linear-gradient(180deg,#232352,#151535);border-radius:24px;padding:30px;max-width:460px;width:100%;border:2px solid rgba(139,92,246,.25)}
-        .pack{background:rgba(255,255,255,.05);border-radius:12px;padding:16px;margin:10px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;border:2px solid transparent}
-        .pack:hover{border-color:rgba(139,92,246,.5)}
-        .pack.popular{border-color:#FACC15}
-        .price{color:#FACC15;font-weight:bold;font-size:20px}
-        .close{width:100%;padding:12px;border-radius:10px;border:none;background:#374151;color:white;margin-top:15px;cursor:pointer}
+        body{background:linear-gradient(135deg,#0F0F23,#1A1A3A,#251640);min-height:100vh;color:white;display:flex;align-items:center;justify-content:center;padding:20px}
+        .card{max-width:440px;width:100%;padding:30px;background:rgba(255,255,255,.03);border-radius:24px;border:1px solid rgba(255,255,255,.15);box-shadow:0 10px 40px rgba(0,0,0,.3)}
+        h1{text-align:center;margin-bottom:6px;font-size:24px}
+        .sub{text-align:center;color:#aaa;margin-bottom:24px;font-size:14px}
+        .tabs{display:flex;gap:10px;margin-bottom:20px}
+        .tab{flex:1;padding:12px;border-radius:10px;border:none;background:#222;color:white;cursor:pointer;font-weight:bold;font-size:14px;transition:all .2s}
+        .tab.active{background:linear-gradient(135deg,#EC4899,#6366F1);box-shadow:0 4px 15px rgba(99,102,241,.3)}
+        .section{display:none;animation:fade .3s ease}
+        .section.active{display:block}
+        @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+        .box{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);border-radius:10px;padding:12px;margin-bottom:16px;font-size:13px;color:#C4B5FD;line-height:1.5}
+        input{width:100%;padding:14px 16px;border-radius:10px;border:1px solid #333;background:#111522;color:white;margin-bottom:12px;font-size:15px;outline:none;transition:border .2s}
+        input:focus{border-color:#8B5CF6}
+        button{width:100%;padding:14px;border-radius:10px;border:none;background:linear-gradient(135deg,#EC4899,#6366F1);color:white;font-size:16px;font-weight:bold;cursor:pointer;transition:transform .15s}
+        button:hover{transform:scale(1.02)}
+        .msg{margin-top:12px;padding:10px;border-radius:8px;text-align:center;font-size:14px;min-height:40px}
+        .err{color:#F87171;background:rgba(239,68,68,.1)}
+        .ok{color:#34D399;background:rgba(16,185,129,.1)}
+        .foot{text-align:center;margin-top:20px;color:#888;font-size:14px}
+        .foot a{color:#A78BFA;text-decoration:none;font-weight:500}
+        .male .box{background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.3);color:#BFDBFE}
+        .female .box{background:rgba(236,72,153,.1);border-color:rgba(236,72,153,.3);color:#FBCFE8}
     </style>
 </head>
 <body>
+    <div class="card">
+        <h1>✨ Create Your Account</h1>
+        <p class="sub">Select your role below to register</p>
 
-<!-- COIN HUB -->
-<div id="hub" class="hub">
-    <div class="hub-card">
-        <h2 style="text-align:center;margin-bottom:20px">🪙 Buy Coins</h2>
-        <div class="pack" onclick="buy('small')"><span>💰 100 Coins</span><span class="price">$4.99</span></div>
-        <div class="pack popular" onclick="buy('medium')"><span>⭐ 500 Coins +50 FREE</span><span class="price">$19.99</span></div>
-        <div class="pack" onclick="buy('large')"><span>💎 1,500 Coins +200 FREE</span><span class="price">$49.99</span></div>
-        <div class="pack" onclick="buy('mega')"><span>👑 5,000 Coins +800 FREE</span><span class="price">$149.99</span></div>
-        <button class="close" onclick="closeHub()">Close</button>
+        <!-- ROLE TABS -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('male')">👨 Male</button>
+            <button class="tab" onclick="switchTab('female')">👩 Female</button>
+            <button class="tab" onclick="switchTab('admin')">👑 Admin</button>
+        </div>
+
+        <!-- 👨 MALE FORM -->
+        <div id="male" class="section active male">
+            <div class="box">💙 <strong>Get 100 FREE coins</strong> when you join today!</div>
+            <input type="text" id="m-user" placeholder="Create Username">
+            <input type="email" id="m-email" placeholder="Email Address">
+            <input type="password" id="m-pass" placeholder="Create Password (min. 6 characters)">
+            <input type="password" id="m-pass2" placeholder="Confirm Password">
+            <button onclick="registerMale()">📝 Create Male Account</button>
+            <div id="m-msg" class="msg"></div>
+        </div>
+
+        <!-- 👩 FEMALE FORM -->
+        <div id="female" class="section female">
+            <div class="box">💖 <strong>Welcome!</strong> Create your account below — approval usually takes under 1 hour.</div>
+            <input type="text" id="f-user" placeholder="Create Username">
+            <input type="email" id="f-email" placeholder="Email Address">
+            <input type="password" id="f-pass" placeholder="Create Password (min. 6 characters)">
+            <input type="password" id="f-pass2" placeholder="Confirm Password">
+            <button onclick="registerFemale()">📝 Create Female Account</button>
+            <div id="f-msg" class="msg"></div>
+        </div>
+
+        <!-- 👑 ADMIN FORM -->
+        <div id="admin" class="section">
+            <div class="box">👑 Enter your secret Admin Code to create an Admin account</div>
+            <input type="text" id="a-user" placeholder="Admin Username">
+            <input type="email" id="a-email" placeholder="Admin Email Address">
+            <input type="password" id="a-code" placeholder="Secret Admin Code">
+            <input type="password" id="a-pass" placeholder="Create Password">
+            <button onclick="registerAdmin()">👑 Create Admin Account</button>
+            <div id="a-msg" class="msg"></div>
+        </div>
+
+        <p class="foot">Already have an account? <a href="login.html">Login instead →</a></p>
     </div>
-</div>
 
-<!-- TOP BAR -->
-<div class="top">
-    <div class="logo">FLITRY</div>
-    <div style="display:flex;gap:12px;align-items:center">
-        <span id="user" style="color:#aaa"></span>
-        <button class="coins" onclick="openHub()">💰 <span id="count">0</span></button>
-        <button onclick="localStorage.clear();location='login.html'" style="background:none;border:none;color:#888;cursor:pointer">Logout</button>
-    </div>
-</div>
-
-<!-- VIDEO -->
-<div class="vid-grid">
-    <div class="vid-box">
-        <span class="tag">You</span>
-        <video id="local" autoplay muted playsinline></video>
-        <div id="localStat" class="empty">📷 Camera loading...</div>
-    </div>
-    <div class="vid-box">
-        <span class="tag">Partner</span>
-        <video id="remote" autoplay playsinline></video>
-        <div id="remoteStat" class="empty">👋 Click Find Partner</div>
-    </div>
-</div>
-
-<div id="status" class="status"></div>
-
-<div class="ctrls">
-    <button id="findBtn" class="btn btn-green" onclick="find()">🔍 Find Partner</button>
-    <button id="nextBtn" class="btn btn-purple hidden" onclick="next()">➡️ Next (10)</button>
-    <button id="endBtn" class="btn btn-red hidden" onclick="end()">📞 End</button>
-</div>
-
-<script src="/socket.io/socket.io.js"></script>
 <script>
-const socket=io();
-let user=null,stream=null,pc=null,pid=null;
-const ICE={iceServers:[{urls:'stun:stun.l.google.com:19302'}]};
+// Switch between forms
+function switchTab(role) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(role).classList.add('active');
+}
 
-window.onload=async()=>{
-    const s=localStorage.getItem('user');
-    if(!s){alert('⚠️ Login first!');return location='login.html'}
-    user=JSON.parse(s);
-    document.getElementById('user').textContent='@'+user.username;
-    document.getElementById('count').textContent=user.coins||0;
-    try{
-        stream=await navigator.mediaDevices.getUserMedia({video:true,audio:true});
-        document.getElementById('local').srcObject=stream;
-        document.getElementById('localStat').style.display='none';
-    }catch{document.getElementById('localStat').textContent='⚠️ Camera blocked'}
-};
+// Show messages
+function showMsg(elId, text, type) {
+    const el = document.getElementById(elId);
+    el.className = 'msg ' + type;
+    el.textContent = text;
+}
 
-async function find(){
-    if((user.coins||0)<10)return alert('❌ Need 10 coins!')||openHub();
-    status('⏳ Searching...');
-    setBtns('wait');
-    socket.emit('find',{username:user.username,email:user.email,role:user.role});
-}
-socket.on('wait',()=>status('⏳ Waiting for someone...'));
-socket.on('found',async d=>{
-    pid=d.partnerId;
-    status('✅ Connected with '+d.name);
-    document.getElementById('remoteStat').style.display='none';
-    setBtns('call');
-    await deduct(10);
-    await startPC();
-});
+// 👨 REGISTER MALE (Payer)
+async function registerMale() {
+    const username = document.getElementById('m-user').value.trim();
+    const email = document.getElementById('m-email').value.trim();
+    const pass = document.getElementById('m-pass').value;
+    const pass2 = document.getElementById('m-pass2').value;
 
-async function startPC(){
-    pc=new RTCPeerConnection(ICE);
-    stream.getTracks().forEach(t=>pc.addTrack(t,stream));
-    pc.ontrack=e=>document.getElementById('remote').srcObject=e.streams[0];
-    pc.onicecandidate=e=>e.candidate&&socket.emit('signal',{to:pid,s:{c:e.candidate}});
-    if(pid){const o=await pc.createOffer();await pc.setLocalDescription(o);socket.emit('signal',{to:pid,s:{o}})}
-}
-socket.on('signal',async d=>{
-    pid=d.from;if(!pc)await startPC();
-    if(d.s.o){await pc.setRemoteDescription(new RTCSessionDescription(d.s.o));const a=await pc.createAnswer();await pc.setLocalDescription(a);socket.emit('signal',{to:d.from,s:{a}})}
-    else if(d.s.a)await pc.setRemoteDescription(new RTCSessionDescription(d.s.a));
-    else if(d.s.c)await pc.addIceCandidate(new RTCIceCandidate(d.s.c));
-});
-async function next(){if((user.coins||0)<10)return alert('Need coins!');await deduct(10);end(true);setTimeout(find,300)}
-function end(skip){pc&&pc.close();pc=null;skip||socket.emit('end');document.getElementById('remote').srcObject=null;document.getElementById('remoteStat').style.display='block';document.getElementById('remoteStat').textContent='👋 Call ended';status('');pid=null;setBtns('idle')}
-socket.on('ended',()=>end());
+    if (!username) return showMsg('m-msg', '❌ Enter a username', 'err');
+    if (!email || !email.includes('@')) return showMsg('m-msg', '❌ Enter a valid email address', 'err');
+    if (pass.length < 6) return showMsg('m-msg', '❌ Password must be at least 6 characters', 'err');
+    if (pass !== pass2) return showMsg('m-msg', '❌ Passwords do not match', 'err');
 
-async function deduct(amt){
-    const r=await fetch('/deduct-coins',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:user.email,amount:amt})});
-    const d=await r.json();
-    if(d.success){user.coins=d.coins;document.getElementById('count').textContent=d.coins;localStorage.setItem('user',JSON.stringify(user))}
+    try {
+        const res = await fetch('/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role: 'payer', username, email, password: pass })
+        });
+        const d = await res.json();
+        if (d.success) {
+            showMsg('m-msg', '✅ Account created! Taking you to login...', 'ok');
+            setTimeout(() => window.location = 'login.html', 1800);
+        } else {
+            showMsg('m-msg', '❌ ' + (d.error || 'Registration failed'), 'err');
+        }
+    } catch {
+        showMsg('m-msg', '❌ Server error — try again', 'err');
+    }
 }
-async function buy(pack){
-    const r=await fetch('/buy-coins',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:user.email,pack})});
-    const d=await r.json();
-    if(d.success){user.coins=d.coins;document.getElementById('count').textContent=d.coins;localStorage.setItem('user',JSON.stringify(user));alert('✅ Coins added!')}
+
+// 👩 REGISTER FEMALE (Earner)
+async function registerFemale() {
+    const username = document.getElementById('f-user').value.trim();
+    const email = document.getElementById('f-email').value.trim();
+    const pass = document.getElementById('f-pass').value;
+    const pass2 = document.getElementById('f-pass2').value;
+
+    if (!username) return showMsg('f-msg', '❌ Enter a username', 'err');
+    if (!email || !email.includes('@')) return showMsg('f-msg', '❌ Enter a valid email address', 'err');
+    if (pass.length < 6) return showMsg('f-msg', '❌ Password must be at least 6 characters', 'err');
+    if (pass !== pass2) return showMsg('f-msg', '❌ Passwords do not match', 'err');
+
+    try {
+        const res = await fetch('/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role: 'earner', username, email, password: pass })
+        });
+        const d = await res.json();
+        if (d.success) {
+            showMsg('f-msg', '✅ Account created! Waiting for approval...', 'ok');
+            setTimeout(() => window.location = 'login.html', 2500);
+        } else {
+            showMsg('f-msg', '❌ ' + (d.error || 'Registration failed'), 'err');
+        }
+    } catch {
+        showMsg('f-msg', '❌ Server error — try again', 'err');
+    }
 }
-function status(t){document.getElementById('status').textContent=t}
-function setBtns(s){
-    document.getElementById('findBtn').classList.toggle('hidden',s!=='idle');
-    document.getElementById('nextBtn').classList.toggle('hidden',s!=='call');
-    document.getElementById('endBtn').classList.toggle('hidden',s!=='call');
+
+// 👑 REGISTER ADMIN
+async function registerAdmin() {
+    const username = document.getElementById('a-user').value.trim();
+    const email = document.getElementById('a-email').value.trim();
+    const code = document.getElementById('a-code').value;
+    const pass = document.getElementById('a-pass').value;
+
+    if (!username || !email || !code || !pass) return showMsg('a-msg', '❌ Fill in all fields', 'err');
+    if (!email.includes('@')) return showMsg('a-msg', '❌ Enter a valid email address', 'err');
+    if (pass.length < 6) return showMsg('a-msg', '❌ Password must be at least 6 characters', 'err');
+
+    try {
+        const res = await fetch('/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role: 'admin', username, email, password: pass, adminCode: code })
+        });
+        const d = await res.json();
+        if (d.success) {
+            showMsg('a-msg', '✅ Admin account created! Taking you to login...', 'ok');
+            setTimeout(() => window.location = 'login.html', 1800);
+        } else {
+            showMsg('a-msg', '❌ ' + (d.error || 'Registration failed'), 'err');
+        }
+    } catch {
+        showMsg('a-msg', '❌ Server error — try again', 'err');
+    }
 }
-function openHub(){document.getElementById('hub').classList.add('show')}
-function closeHub(){document.getElementById('hub').classList.remove('show')}
 </script>
 </body>
 </html>
