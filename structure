@@ -1,9 +1,0 @@
-flitry/
-├── package.json       ← NEW FILE
-├── server.js          ← NEW FILE
-└── public/            ← FOLDER — name it EXACTLY "public"
-    ├── index.html     ← Homepage
-    ├── register.html  ← Register
-    ├── login.html     ← Login
-    ├── dashboard.html ← Video Chat (Camera HERE ONLY)
-    └── style.css      ← Shared styles
