@@ -83,3 +83,4 @@ app.post('/login', async (req, res) => {
     res.json({ success: false, error: 'Login error: ' + err.message });
   }
 });
+const ADMIN_SECRET_CODE = "arturr20011";
