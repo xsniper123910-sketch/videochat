@@ -13,7 +13,7 @@
             --glass-hover: rgba(255,255,255,.12);
             --border: rgba(168, 85, 247, 0.2);
             --accent: linear-gradient(135deg,#EC4899,#8B5CF6);
-            --accent-soft: linear-gradient(135deg,rgba(236,72,153,.12),rgba(139,92,246,.12));
+            --accent-soft: linear-gradient(135deg,rgba(236,72,153,.12),rgba(139,92,247,.12));
             --green: linear-gradient(135deg,#10B981,#34D399);
             --purple: linear-gradient(135deg,#6366F1,#A855F7);
             --red: linear-gradient(135deg,#EF4444,#F87171);
@@ -78,7 +78,7 @@
         .btn-red:hover{box-shadow:0 6px 20px rgba(239,68,68,.35)}
         .hidden{display:none !important}
 
-        /* === 💬 CHAT HUB — FULLY UPGRADED === */
+        /* === 💬 CHAT HUB === */
         .chat-hub{position:fixed;left:20px;top:100px;width:320px;background:var(--card-bg);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:20px;z-index:50;max-height:72vh;display:flex;flex-direction:column;box-shadow:0 16px 48px rgba(15,15,35,.5);overflow:hidden}
         .chat-hub-header{padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,rgba(139,92,247,.1),transparent)}
         .chat-hub-header h3{font-size:16px;font-weight:700;letter-spacing:.3px;background:linear-gradient(90deg,#EC4899,#A855F7);-webkit-background-clip:text;color:transparent}
@@ -128,7 +128,7 @@
         .sms-send{border-radius:50px;padding:12px 18px;border:none;background:var(--pink);color:white;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 12px rgba(236,72,153,.3)}
         .sms-send:hover{transform:scale(1.05)}
 
-        /* === 👩 ONLINE WOMEN HUB — BOTTOM === */
+        /* === 👩 ONLINE WOMEN HUB === */
         .women-hub{position:fixed;bottom:0;left:0;right:0;background:var(--card-bg);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:14px 20px;z-index:55;box-shadow:0 -8px 32px rgba(15,15,35,.4)}
         .hub-title{font-size:14px;color:#F472B6;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;font-weight:600;letter-spacing:.3px}
         .hub-title span{display:flex;align-items:center;gap:8px}
@@ -146,7 +146,7 @@
         .woman-status{font-size:12px;color:#34D399;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:4px}
         .woman-status::before{content:'●';font-size:10px}
 
-        /* === MODALS === */
+        /* === MODALS — BUY COINS === */
         .modal{position:fixed;inset:0;background:rgba(5,5,25,.85);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:100}
         .modal.show{display:flex}
         .modal-card{background:linear-gradient(180deg,#232352,#151535);border-radius:24px;padding:32px;max-width:480px;width:94%;border:2px solid rgba(139,92,246,.25);box-shadow:0 20px 60px rgba(0,0,0,.5)}
@@ -176,7 +176,7 @@
     <button id="blurBtn" class="btn blur-btn btn-sm hidden" onclick="toggleBlur()">🫣 Blur Him</button>
 </div>
 
-<!-- 💬 CHAT HUB — UNLOCKED WOMEN -->
+<!-- 💬 CHAT HUB -->
 <div id="chatHub" class="chat-hub hidden">
     <div class="chat-hub-header">
         <h3>💬 My Unlocked Chats</h3>
@@ -186,7 +186,7 @@
         <div class="empty-hub">
             <div class="icon">🔒</div>
             <p><strong>No chats unlocked yet</strong></p>
-            <p style="margin-top:8px">Spend <strong>900 minutes</strong> calling a woman to unlock messaging here 💬</p>
+            <p style="margin-top:8px">Spend <strong>900 minutes</strong> calling a woman to unlock messaging 💬</p>
         </div>
     </div>
 </div>
@@ -317,7 +317,7 @@ window.onload = async () => {
     }
 };
 
-// 💬 Load Chat Hub — Unlocked Women
+// 💬 Load Chat Hub
 async function loadChatHub() {
     if (user.role !== 'payer') return;
     try {
@@ -542,7 +542,7 @@ async function toggleBlur() {
     });
 }
 
-// === Rest of your functions (startCallTimer, startConnection, billing, etc.) stay the same ===
+// === CALL TIMER & BILLING ===
 function startCallTimer() {
     callStartTime = Date.now();
     minutesBilled = 0;
@@ -621,7 +621,17 @@ function endCall(){
 
 socket.on('ended',endCall);
 
-function openHub(){document.getElementById('hubModal').classList.add('show')}
-function closeHub(){document.getElementById('hubModal').classList.remove('show');document.getElementById('hubMsg').textContent=''}
+// ✅ BUY COINS FUNCTIONS — NOW FULLY WORKING
+function openHub(){
+    document.getElementById('hubModal').classList.add('show');
+    document.getElementById('hubMsg').textContent = '';
+    document.getElementById('hubMsg').className = 'msg';
+}
+function closeHub(){
+    document.getElementById('hubModal').classList.remove('show');
+    document.getElementById('hubMsg').textContent = '';
+}
 async function buy(pack){
-    const res=await fetch('/buy-coins',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:user.email,pack})
+    const msgBox = document.getElementById('hubMsg');
+    try {
+        const res = await fetch('/buy
