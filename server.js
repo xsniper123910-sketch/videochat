@@ -17,15 +17,18 @@ app.use((req, res, next) => {
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 💰 RATES — EXACTLY AS YOU WANTED
-const RATE_COST_PER_MINUTE = 1;      // 👨 Man pays 1 coin per minute
-const RATE_EARN_PER_MINUTE = 0.50;   // 👩 Woman earns 0.50 coins per minute
+// 💰 RATES
+const RATE_COST_PER_MINUTE = 1;
+const RATE_EARN_PER_MINUTE = 0.50;
 
-const ADMIN_CODE = "FlitryAdmin2026!";
+// ✅ ONE-TIME ADMIN CODE — CAN BE USED ONLY ONCE!
+let ADMIN_CODE = "FlitryAdmin2026!";
+let adminCodeHasBeenUsed = false; // Locks after first use
+
 let users = [];
-let activeCalls = {}; // Track active calls for billing
+let activeCalls = {};
 
-// ✅ REGISTER — WITH VERIFICATION UPLOAD
+// ✅ REGISTER — WITH ONE-TIME ADMIN CODE
 app.post('/register', (req, res) => {
   const { role, username, email, password, adminCode, passportPhoto, selfiePhoto } = req.body;
 
@@ -49,8 +52,18 @@ app.post('/register', (req, res) => {
     }
   }
 
-  if (role === 'admin' && adminCode !== ADMIN_CODE) {
-    return res.json({ success: false, error: 'Wrong Admin Code' });
+  // ✅ ADMIN CODE CHECK — ONE-TIME USE ONLY!
+  if (role === 'admin') {
+    if (adminCode !== ADMIN_CODE) {
+      return res.json({ success: false, error: '❌ Wrong Admin Code' });
+    }
+    if (adminCodeHasBeenUsed) {
+      return res.json({ success: false, error: '❌ CODE EXPIRED — This code can only be used ONCE! Contact developer for a new code.' });
+    }
+    // ✅ LOCK THE CODE — CANNOT BE USED AGAIN!
+    adminCodeHasBeenUsed = true;
+    ADMIN_CODE = null; // Destroy the code forever
+    console.log('🔒 ADMIN CODE USED — NOW LOCKED FOREVER!');
   }
 
   const exists = users.find(u => 
@@ -62,8 +75,8 @@ app.post('/register', (req, res) => {
   }
 
   let coins = 0, approved = false, isAdmin = false;
-  if (role === 'payer') { coins = 100; approved = true; } // ✅ Male = Instant + 100 coins
-  if (role === 'earner') { coins = 0; approved = false; } // ⏳ Female = Pending Approval
+  if (role === 'payer') { coins = 100; approved = true; }
+  if (role === 'earner') { coins = 0; approved = false; }
   if (role === 'admin') { coins = 9999; approved = true; isAdmin = true; }
 
   users.push({
@@ -77,8 +90,8 @@ app.post('/register', (req, res) => {
     isAdmin,
     passportPhoto: passportPhoto || null,
     selfiePhoto: selfiePhoto || null,
-    totalEarned: 0,      // 💰 Total coins earned from calls
-    totalCallMinutes: 0, // ⏱️ Total minutes on calls
+    totalEarned: 0,
+    totalCallMinutes: 0,
     registeredAt: new Date().toISOString()
   });
 
@@ -86,7 +99,7 @@ app.post('/register', (req, res) => {
   return res.json({ 
     success: true, 
     pendingApproval: !approved,
-    message: approved ? 'Account created! Login below.' : '⏳ Account created — waiting for admin approval.'
+    message: approved ? '✅ Admin created! Code is now LOCKED.' : '⏳ Account created — waiting for admin approval.'
   });
 });
 
@@ -109,59 +122,27 @@ app.post('/login', (req, res) => {
   }});
 });
 
-// ✅ START CALL — RECORD START TIME
-app.post('/call/start', (req, res) => {
-  const { userEmail, partnerEmail } = req.body;
-  const user = users.find(u => u.email.toLowerCase() === userEmail.toLowerCase());
-  const partner = users.find(u => u.email.toLowerCase() === partnerEmail.toLowerCase());
-  
-  if (!user || !partner) return res.json({ success: false, error: 'User not found' });
-
-  const callId = userEmail + '_' + partnerEmail + '_' + Date.now();
-  activeCalls[callId] = {
-    callerEmail: userEmail,
-    callerRole: user.role,
-    receiverEmail: partnerEmail,
-    receiverRole: partner.role,
-    startTime: Date.now(),
-    lastBilledMinute: 0
-  };
-
-  res.json({ success: true, callId, startTime: Date.now() });
-});
-
-// ✅ BILL PER MINUTE — CORE SYSTEM
+// ✅ CALL BILLING
 app.post('/call/bill-minute', (req, res) => {
-  const { callId, minutesElapsed, payerEmail, earnerEmail } = req.body;
-  
+  const { payerEmail, earnerEmail } = req.body;
   const payer = users.find(u => u.email.toLowerCase() === payerEmail.toLowerCase());
   const earner = users.find(u => u.email.toLowerCase() === earnerEmail.toLowerCase());
 
   if (!payer || !earner) return res.json({ success: false, error: 'User not found' });
-
-  // 👨 DEDUCT from Man
   if (payer.coins < RATE_COST_PER_MINUTE) {
     return res.json({ success: false, error: '⚠️ Insufficient coins — Call ended!', outOfCoins: true });
   }
-  payer.coins -= RATE_COST_PER_MINUTE;
 
-  // 👩 ADD to Woman
+  payer.coins -= RATE_COST_PER_MINUTE;
   earner.coins += RATE_EARN_PER_MINUTE;
   earner.totalEarned = (earner.totalEarned || 0) + RATE_EARN_PER_MINUTE;
   earner.totalCallMinutes = (earner.totalCallMinutes || 0) + 1;
 
-  console.log(`💰 BILLED: ${payer.username} -1 | ${earner.username} +${RATE_EARN_PER_MINUTE}`);
-
-  res.json({ 
-    success: true, 
-    payerCoins: payer.coins,
-    earnerCoins: earner.coins,
-    earnedThisMinute: RATE_EARN_PER_MINUTE,
-    costThisMinute: RATE_COST_PER_MINUTE
-  });
+  console.log(`💰 BILLED: ${payer.username} -1 | ${earner.username} +0.50`);
+  res.json({ success: true, payerCoins: payer.coins, earnerCoins: earner.coins });
 });
 
-// ✅ ADMIN: GET ALL PENDING USERS
+// ✅ ADMIN: GET ALL USERS
 app.post('/admin/pending', (req, res) => {
   const { adminEmail, adminPassword } = req.body;
   const admin = users.find(u => 
@@ -184,7 +165,7 @@ app.post('/admin/pending', (req, res) => {
   return res.json({ success: true, pending });
 });
 
-// ✅ ADMIN: APPROVE USER
+// ✅ ADMIN: APPROVE
 app.post('/admin/approve', (req, res) => {
   const { adminEmail, adminPassword, userId } = req.body;
   const admin = users.find(u => 
@@ -196,12 +177,12 @@ app.post('/admin/approve', (req, res) => {
   const target = users.find(u => u.id === userId);
   if (!target) return res.json({ success: false, error: 'User not found' });
   target.isApproved = true;
-  target.coins = 50; // ✅ Give 50 coins on approval
+  target.coins = 50;
   console.log('✅ APPROVED:', target.username);
   return res.json({ success: true, username: target.username });
 });
 
-// ✅ ADMIN: REJECT USER
+// ✅ ADMIN: REJECT
 app.post('/admin/reject', (req, res) => {
   const { adminEmail, adminPassword, userId } = req.body;
   const admin = users.find(u => 
@@ -218,7 +199,7 @@ app.post('/admin/reject', (req, res) => {
   return res.json({ success: true, username: name });
 });
 
-// ✅ COINS ENDPOINTS
+// ✅ COINS & PURCHASE
 app.post('/buy-coins', (req, res) => {
   const { email, pack } = req.body;
   const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
@@ -252,16 +233,12 @@ io.on('connection', socket => {
       socket.partner = partner.id;
       io.to(partner.id).partner = socket.id;
       io.to(socket.id).emit('found', { 
-        name: partner.username, 
-        partnerId: partner.id,
-        partnerEmail: partner.email,
-        partnerRole: partner.role
+        name: partner.username, partnerId: partner.id,
+        partnerEmail: partner.email, partnerRole: partner.role
       });
       io.to(partner.id).emit('found', { 
-        name: data.username, 
-        partnerId: socket.id,
-        partnerEmail: data.email,
-        partnerRole: data.role
+        name: data.username, partnerId: socket.id,
+        partnerEmail: data.email, partnerRole: data.role
       });
     } else {
       waiting.push({ ...data, id: socket.id });
@@ -274,4 +251,5 @@ io.on('connection', socket => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`✅ SERVER RUNNING PORT ${PORT} | RATE: Man pays 1/min → Woman earns 0.50/min`));
+console.log(`🔑 CURRENT ADMIN CODE: ${ADMIN_CODE || '🔒 LOCKED — ALREADY USED'}`);
+server.listen(PORT, () => console.log(`✅ SERVER RUNNING PORT ${PORT} | RATE: 1/min → 0.50/min earned`));
