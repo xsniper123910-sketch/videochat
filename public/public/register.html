@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register — Flitry</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="form-box">
+        <h1>📝 Create Account</h1>
+        <p class="sub">Register first — video chat comes AFTER login</p>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('payer')">I want to call</button>
+            <button class="tab" onclick="showTab('admin')">Admin</button>
+        </div>
+
+        <!-- PAYER FORM -->
+        <div id="payer">
+            <input type="text" id="u" placeholder="Username" required>
+            <input type="email" id="e" placeholder="Email" required>
+            <input type="password" id="p" placeholder="Password (6+ chars)" required>
+            <button onclick="regPayer()" class="btn primary full">Create Account</button>
+            <div id="msgP" class="msg"></div>
+        </div>
+
+        <!-- ADMIN FORM -->
+        <div id="admin" class="hidden">
+            <input type="text" id="au" placeholder="Admin Username">
+            <input type="email" id="ae" placeholder="Admin Email">
+            <input type="password" id="ac" placeholder="Secret Admin Code">
+            <input type="password" id="ap" placeholder="Password">
+            <button onclick="regAdmin()" class="btn primary full">Create Admin</button>
+            <div id="msgA" class="msg"></div>
+        </div>
+
+        <p class="link">Have account? <a href="login.html">Login →</a></p>
+    </div>
+
+<script>
+function showTab(t){
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('payer').classList.toggle('hidden', t!=='payer');
+    document.getElementById('admin').classList.toggle('hidden', t!=='admin');
+}
+
+async function regPayer(){
+    let u=document.getElementById('u').value.trim();
+    let e=document.getElementById('e').value.trim();
+    let p=document.getElementById('p').value;
+    let m=document.getElementById('msgP');
+    if(!u||!e||!p) return m.innerHTML='<span class="err">❌ Fill all fields</span>';
+    if(!e.includes('@')) return m.innerHTML='<span class="err">❌ Invalid email</span>';
+    if(p.length<6) return m.innerHTML='<span class="err">❌ Password 6+ chars</span>';
+
+    let r=await fetch('/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({role:'payer',username:u,email:e,password:p})});
+    let d=await r.json();
+    if(d.success){
+        m.innerHTML='<span class="ok">✅ Created! Going to login...</span>';
+        setTimeout(()=>window.location='login.html',1500);
+    }else m.innerHTML='<span class="err">'+d.error+'</span>';
+}
+
+async function regAdmin(){
+    let u=document.getElementById('au').value.trim();
+    let e=document.getElementById('ae').value.trim();
+    let c=document.getElementById('ac').value;
+    let p=document.getElementById('ap').value;
+    let m=document.getElementById('msgA');
+    if(!u||!e||!c||!p) return m.innerHTML='<span class="err">❌ Fill all fields</span>';
+    let r=await fetch('/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({role:'admin',username:u,email:e,password:p,adminCode:c})});
+    let d=await r.json();
+    if(d.success){
+        m.innerHTML='<span class="ok">✅ Admin created! Going to login...</span>';
+        setTimeout(()=>window.location='login.html',1500);
+    }else m.innerHTML='<span class="err">'+d.error+'</span>';
+}
+</script>
+</body>
+</html>
