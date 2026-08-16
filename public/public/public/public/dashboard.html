@@ -6,176 +6,311 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style.css">
     <style>
-        .top{display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:rgba(0,0,0,.3)}
-        .coins{background:linear-gradient(135deg,#FACC15,#F59E0B);color:#000;padding:6px 14px;border-radius:20px;font-weight:bold;cursor:pointer}
-        .vid-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:20px;max-width:1100px;margin:0 auto}
-        .vid-box{background:#000;border-radius:16px;aspect-ratio:16/9;position:relative;overflow:hidden}
-        video{width:100%;height:100%;object-fit:cover}
-        .lbl{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.7);padding:4px 10px;border-radius:12px;font-size:14px}
-        .empty{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#888;text-align:center}
-        .ctrls{display:flex;justify-content:center;gap:12px;padding:10px}
-        .btn-hub{background:linear-gradient(135deg,#FACC15,#F59E0B);color:#000}
-        .hidden{display:none!important}
-        .modal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center}
-        .modal.show{display:flex}
-        .m-content{background:#1A1A3A;border-radius:20px;padding:24px;width:90%;max-width:420px}
-        .pack{padding:12px;background:rgba(255,255,255,.05);border-radius:10px;margin:8px 0;cursor:pointer}
-        .pack:hover{background:rgba(255,255,255,.1)}
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: linear-gradient(135deg, #0F0F23 0%, #1A1A3A 50%, #251640 100%); min-height: 100vh; color: white; }
+
+        /* TOP BAR */
+        .top-bar { background: rgba(0,0,0,0.35); padding: 14px 28px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .logo { font-size: 24px; font-weight: 800; background: linear-gradient(90deg, #FF6B9D, #9D65FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .top-right { display: flex; align-items: center; gap: 16px; }
+        .user-tag { font-size: 14px; color: #ccc; }
+        .coins-btn { background: linear-gradient(135deg, #FACC15, #F59E0B); color: #000; padding: 8px 18px; border-radius: 50px; font-weight: 700; font-size: 15px; cursor: pointer; border: none; transition: transform 0.2s; }
+        .coins-btn:hover { transform: scale(1.05); }
+        .logout-btn { background: transparent; color: #888; border: none; cursor: pointer; font-size: 14px; padding: 6px 12px; }
+        .logout-btn:hover { color: white; }
+
+        /* VIDEO AREA */
+        .video-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 20px; max-width: 1150px; margin: 0 auto; }
+        @media (max-width: 768px) { .video-grid { grid-template-columns: 1fr; } }
+        .video-box { background: #000; border-radius: 18px; aspect-ratio: 16/9; position: relative; overflow: hidden; border: 2px solid rgba(255,255,255,0.05); }
+        video { width: 100%; height: 100%; object-fit: cover; background: #0a0a14; }
+        .vid-label { position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.7); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+        .empty-state { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #666; text-align: center; font-size: 15px; }
+
+        /* CONTROLS */
+        .controls { display: flex; justify-content: center; gap: 14px; padding: 16px; flex-wrap: wrap; }
+        .ctrl-btn { padding: 14px 28px; border-radius: 50px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .ctrl-btn:hover { transform: scale(1.05); }
+        .btn-find { background: linear-gradient(135deg, #10B981, #34D399); color: white; }
+        .btn-next { background: linear-gradient(135deg, #6366F1, #8B5CF6); color: white; }
+        .btn-end { background: linear-gradient(135deg, #EF4444, #F87171); color: white; }
+        .ctrl-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+        .status-text { text-align: center; padding: 8px; font-size: 15px; color: #ccc; }
+        .hidden { display: none !important; }
+
+        /* 🪙 LUCKYCRUSH-STYLE HUB MODAL */
+        .hub-modal { position: fixed; inset: 0; background: rgba(5,5,15,0.92); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
+        .hub-modal.show { display: flex; }
+        .hub-content { background: linear-gradient(180deg, #1A1A3A 0%, #121229 100%); border-radius: 28px; padding: 32px; max-width: 480px; width: 100%; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+        .hub-title { text-align: center; font-size: 26px; font-weight: 800; margin-bottom: 6px; }
+        .hub-subtitle { text-align: center; color: #999; margin-bottom: 24px; font-size: 14px; }
+        .coin-pack { background: rgba(255,255,255,0.04); border: 2px solid transparent; border-radius: 16px; padding: 18px 20px; margin: 10px 0; cursor: pointer; transition: all 0.2s; display: flex; justify-content: space-between; align-items: center; position: relative; }
+        .coin-pack:hover { background: rgba(255,255,255,0.08); border-color: rgba(139,92,246,0.4); transform: translateY(-2px); }
+        .coin-pack.popular { border-color: #FACC15; background: linear-gradient(90deg, rgba(250,204,21,0.08), rgba(250,204,21,0.02)); }
+        .popular-badge { position: absolute; top: -10px; right: 16px; background: linear-gradient(90deg, #FACC15, #F59E0B); color: #000; font-size: 11px; font-weight: 800; padding: 2px 10px; border-radius: 12px; text-transform: uppercase; }
+        .pack-left { display: flex; flex-direction: column; }
+        .pack-amount { font-size: 18px; font-weight: 700; }
+        .pack-bonus { font-size: 12px; color: #34D399; margin-top: 3px; }
+        .pack-price { font-size: 20px; font-weight: 800; color: #FACC15; }
+        .hub-close { margin-top: 20px; width: 100%; padding: 12px; border-radius: 12px; border: none; background: #374151; color: white; font-size: 15px; cursor: pointer; }
+        .hub-msg { text-align: center; margin-top: 14px; font-size: 14px; }
     </style>
 </head>
 <body>
 
-<!-- HUB MODAL -->
-<div id="hub" class="modal">
-    <div class="m-content">
-        <h2 style="text-align:center;margin-bottom:16px">💰 Buy Coins</h2>
-        <div class="pack" onclick="buy('small')"><strong>100 Coins</strong> — $4.99</div>
-        <div class="pack" onclick="buy('medium')"><strong>500 Coins</strong> — $19.99</div>
-        <div class="pack" onclick="buy('large')"><strong>1,500 Coins</strong> — $49.99</div>
-        <div class="pack" onclick="buy('mega')"><strong>5,000 Coins</strong> — $149.99</div>
-        <p id="m-msg" style="text-align:center;margin-top:10px"></p>
-        <button onclick="hubClose()" class="btn secondary full" style="margin-top:12px">Close</button>
+<!-- 🪙 LUCKYCRUSH-STYLE COIN HUB -->
+<div id="hubModal" class="hub-modal">
+    <div class="hub-content">
+        <h2 class="hub-title">🪙 Buy Coins</h2>
+        <p class="hub-subtitle">Coins let you connect with new people instantly</p>
+
+        <div class="coin-pack" onclick="buyCoins('small')">
+            <div class="pack-left">
+                <span class="pack-amount">💰 100 Coins</span>
+            </div>
+            <span class="pack-price">$4.99</span>
+        </div>
+
+        <div class="coin-pack popular" onclick="buyCoins('medium')">
+            <span class="popular-badge">⭐ Popular</span>
+            <div class="pack-left">
+                <span class="pack-amount">💰 500 Coins</span>
+                <span class="pack-bonus">+50 FREE Bonus!</span>
+            </div>
+            <span class="pack-price">$19.99</span>
+        </div>
+
+        <div class="coin-pack" onclick="buyCoins('large')">
+            <div class="pack-left">
+                <span class="pack-amount">💎 1,500 Coins</span>
+                <span class="pack-bonus">+200 FREE Bonus!</span>
+            </div>
+            <span class="pack-price">$49.99</span>
+        </div>
+
+        <div class="coin-pack" onclick="buyCoins('mega')">
+            <div class="pack-left">
+                <span class="pack-amount">👑 5,000 Coins</span>
+                <span class="pack-bonus">+800 FREE Bonus!</span>
+            </div>
+            <span class="pack-price">$149.99</span>
+        </div>
+
+        <div id="hubMsg" class="hub-msg"></div>
+        <button class="hub-close" onclick="closeHub()">Close</button>
     </div>
 </div>
 
 <!-- TOP BAR -->
-<div class="top">
-    <h2 style="margin:0">FLITRY</h2>
-    <div style="display:flex;gap:14px;align-items:center">
-        <span id="uname"></span>
-        <span class="coins" onclick="hubOpen()">💰 <span id="coins">0</span></span>
-        <button onclick="logout()" class="btn secondary" style="padding:6px 12px;font-size:14px">Logout</button>
+<div class="top-bar">
+    <div class="logo">FLITRY</div>
+    <div class="top-right">
+        <span class="user-tag" id="userName"></span>
+        <button class="coins-btn" onclick="openHub()">💰 <span id="coinCount">0</span> Coins</button>
+        <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
 </div>
 
 <!-- VIDEO AREA -->
-<div class="vid-grid">
-    <div class="vid-box">
-        <span class="lbl">You</span>
-        <video id="me" autoplay muted playsinline></video>
-        <div id="me-empty" class="empty">📷 Camera loading...</div>
+<div class="video-grid">
+    <div class="video-box">
+        <span class="vid-label">You</span>
+        <video id="localVideo" autoplay muted playsinline></video>
+        <div id="localStatus" class="empty-state">📷 Camera loading...</div>
     </div>
-    <div class="vid-box">
-        <span class="lbl">Partner</span>
-        <video id="you" autoplay playsinline></video>
-        <div id="you-empty" class="empty">👋 Click Find Partner</div>
+    <div class="video-box">
+        <span class="vid-label">Partner</span>
+        <video id="remoteVideo" autoplay playsinline></video>
+        <div id="remoteStatus" class="empty-state">👋 Click "Find Partner" to start</div>
     </div>
 </div>
 
-<div id="status" style="text-align:center"></div>
+<div id="callStatus" class="status-text"></div>
 
 <!-- CONTROLS -->
-<div class="ctrls">
-    <button id="findBtn" onclick="find()" class="btn primary">🔍 Find Partner</button>
-    <button id="nextBtn" onclick="next()" class="btn hidden" style="background:linear-gradient(135deg,#6366F1,#8B5CF6)">➡️ Next</button>
-    <button id="endBtn" onclick="end()" class="btn hidden" style="background:linear-gradient(135deg,#EF4444,#F87171)">📞 End</button>
-    <button onclick="hubOpen()" class="btn btn-hub">💰 Coins</button>
+<div class="controls">
+    <button id="findBtn" class="ctrl-btn btn-find" onclick="findPartner()">🔍 Find Partner</button>
+    <button id="nextBtn" class="ctrl-btn btn-next hidden" onclick="nextPartner()">➡️ Next (10 coins)</button>
+    <button id="endBtn" class="ctrl-btn btn-end hidden" onclick="endCall()">📞 End Call</button>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-const socket=io();
-let user,stream,pc,partnerId=null;
-const ICE={iceServers:[{urls:'stun:stun.l.google.com:19302'}]};
+const socket = io();
+let user = null;
+let localStream = null;
+let peerConnection = null;
+let partnerSocketId = null;
+const ICE_SERVERS = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
-window.onload=async()=>{
-    user=JSON.parse(localStorage.getItem('user'));
-    if(!user) return window.location='login.html';
-    document.getElementById('uname').textContent='@'+user.username;
-    document.getElementById('coins').textContent=user.coins;
+window.onload = async () => {
+    // CHECK LOGIN
+    const savedUser = localStorage.getItem('user');
+    if (!savedUser) {
+        alert('⚠️ Please login first!');
+        window.location.href = 'login.html';
+        return;
+    }
+    user = JSON.parse(savedUser);
 
-    // CAMERA ONLY STARTS HERE — AFTER LOGIN!
-    try{
-        stream=await navigator.mediaDevices.getUserMedia({video:true,audio:true});
-        document.getElementById('me').srcObject=stream;
-        document.getElementById('me-empty').style.display='none';
-    }catch(e){
-        document.getElementById('me-empty').textContent='⚠️ Camera blocked';
+    // UPDATE UI
+    document.getElementById('userName').textContent = '@' + user.username;
+    document.getElementById('coinCount').textContent = user.coins || 0;
+
+    // 🎥 CAMERA STARTS ONLY AFTER LOGIN!
+    try {
+        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        document.getElementById('localVideo').srcObject = localStream;
+        document.getElementById('localStatus').style.display = 'none';
+    } catch (err) {
+        document.getElementById('localStatus').textContent = '⚠️ Camera access denied';
     }
 };
 
-async function find(){
-    if(user.coins<10) return alert('❌ Need 10 coins! Click 💰 Coins to buy.')||hubOpen();
-    document.getElementById('status').textContent='⏳ Searching...';
-    document.getElementById('you-empty').textContent='🔍 Looking...';
-    setBtns('wait');
-    socket.emit('find',{username:user.username,email:user.email,role:user.role});
+// 🔍 FIND PARTNER
+async function findPartner() {
+    if ((user.coins || 0) < 10) {
+        document.getElementById('hubMsg').innerHTML = '<span style="color:#F87171">❌ Need at least 10 coins!</span>';
+        openHub();
+        return;
+    }
+    document.getElementById('callStatus').textContent = '⏳ Searching for someone...';
+    document.getElementById('remoteStatus').textContent = '🔍 Looking for a partner...';
+    setButtons('searching');
+    socket.emit('find', { username: user.username, email: user.email, role: user.role });
 }
 
-socket.on('wait',()=>document.getElementById('status').textContent='⏳ Waiting for someone...');
-
-socket.on('found',async(d)=>{
-    partnerId=d.partnerId;
-    document.getElementById('status').textContent='✅ Connected with '+d.name;
-    document.getElementById('you-empty').style.display='none';
-    setBtns('call');
-    await deduct();
-    await startPC();
+// ⏳ WAITING
+socket.on('wait', () => {
+    document.getElementById('callStatus').textContent = '⏳ Waiting for someone to join...';
 });
 
-async function startPC(){
-    pc=new RTCPeerConnection(ICE);
-    stream.getTracks().forEach(t=>pc.addTrack(t,stream));
-    pc.ontrack=e=>document.getElementById('you').srcObject=e.streams[0];
-    pc.onicecandidate=e=>e.candidate&&socket.emit('signal',{to:partnerId,s:{c:e.candidate}});
+// ✅ PARTNER FOUND!
+socket.on('found', async (data) => {
+    partnerSocketId = data.partnerId;
+    document.getElementById('callStatus').innerHTML = '✅ Connected with <strong>' + data.name + '</strong>';
+    document.getElementById('remoteStatus').style.display = 'none';
+    setButtons('connected');
+    await deductCoins(10);
+    await startConnection();
+});
 
-    if(partnerId){
-        let offer=await pc.createOffer();
-        await pc.setLocalDescription(offer);
-        socket.emit('signal',{to:partnerId,s:{o:offer}});
+// 📡 WEBRTC CONNECTION
+async function startConnection() {
+    peerConnection = new RTCPeerConnection(ICE_SERVERS);
+    localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+    peerConnection.ontrack = (event) => {
+        document.getElementById('remoteVideo').srcObject = event.streams[0];
+    };
+
+    peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+            socket.emit('signal', { to: partnerSocketId, s: { candidate: event.candidate } });
+        }
+    };
+
+    if (partnerSocketId) {
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        socket.emit('signal', { to: partnerSocketId, s: { offer } });
     }
 }
 
-socket.on('signal',async d=>{
-    partnerId=d.from;
-    if(!pc) await startPC();
-    if(d.s.o){
-        await pc.setRemoteDescription(new RTCSessionDescription(d.s.o));
-        let a=await pc.createAnswer();
-        await pc.setLocalDescription(a);
-        socket.emit('signal',{to:d.from,s:{a:a}});
-    }else if(d.s.a) await pc.setRemoteDescription(new RTCSessionDescription(d.s.a));
-    else if(d.s.c) await pc.addIceCandidate(new RTCIceCandidate(d.s.c));
+// 📡 SIGNAL HANDLING
+socket.on('signal', async (data) => {
+    partnerSocketId = data.from;
+    if (!peerConnection) await startConnection();
+
+    if (data.s.offer) {
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(data.s.offer));
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+        socket.emit('signal', { to: data.from, s: { answer } });
+    } else if (data.s.answer) {
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(data.s.answer));
+    } else if (data.s.candidate) {
+        await peerConnection.addIceCandidate(new RTCIceCandidate(data.s.candidate));
+    }
 });
 
-async function next(){ await deduct(); end(true); find(); }
-function end(skip){
-    pc&&pc.close();pc=null;
-    skip||socket.emit('end');
-    document.getElementById('you').srcObject=null;
-    document.getElementById('you-empty').style.display='block';
-    document.getElementById('you-empty').textContent='👋 Call ended';
-    document.getElementById('status').textContent='';
-    partnerId=null;
-    setBtns('idle');
-}
-socket.on('ended',()=>end());
-
-async function deduct(){
-    let r=await fetch('/deduct-coins',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:user.email,amount:10})});
-    let d=await r.json();
-    if(d.success){user.coins=d.coins;document.getElementById('coins').textContent=d.coins;}
+// ➡️ NEXT PARTNER
+async function nextPartner() {
+    if ((user.coins || 0) < 10) {
+        alert('❌ Need 10 more coins!');
+        openHub();
+        return;
+    }
+    await deductCoins(10);
+    endCall(true);
+    setTimeout(findPartner, 300);
 }
 
-async function buy(pack){
-    let r=await fetch('/buy-coins',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:user.email,pack})});
-    let d=await r.json();
-    if(d.success){
-        user.coins=d.coins;
-        document.getElementById('coins').textContent=d.coins;
-        document.getElementById('m-msg').innerHTML='<span style="color:lime">✅ Coins added!</span>';
-        localStorage.setItem('user',JSON.stringify(user));
+// 📞 END CALL
+function endCall(skip = false) {
+    if (peerConnection) { peerConnection.close(); peerConnection = null; }
+    if (!skip) socket.emit('end');
+    document.getElementById('remoteVideo').srcObject = null;
+    document.getElementById('remoteStatus').style.display = 'block';
+    document.getElementById('remoteStatus').textContent = '👋 Call ended';
+    document.getElementById('callStatus').textContent = '';
+    partnerSocketId = null;
+    setButtons('idle');
+}
+
+// 👋 PARTNER ENDED
+socket.on('ended', () => {
+    endCall();
+    document.getElementById('callStatus').textContent = '👋 Partner disconnected';
+});
+
+// 💰 DEDUCT COINS
+async function deductCoins(amount) {
+    const res = await fetch('/deduct-coins', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email, amount })
+    });
+    const data = await res.json();
+    if (data.success) {
+        user.coins = data.coins;
+        document.getElementById('coinCount').textContent = data.coins;
+        localStorage.setItem('user', JSON.stringify(user));
     }
 }
 
-function setBtns(s){
-    document.getElementById('findBtn').classList.toggle('hidden',s!=='idle');
-    document.getElementById('nextBtn').classList.toggle('hidden',s!=='call');
-    document.getElementById('endBtn').classList.toggle('hidden',s!=='call');
+// 🪙 BUY COINS
+async function buyCoins(packageId) {
+    const res = await fetch('/buy-coins', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email, pack: packageId })
+    });
+    const data = await res.json();
+    if (data.success) {
+        user.coins = data.coins;
+        document.getElementById('coinCount').textContent = data.coins;
+        localStorage.setItem('user', JSON.stringify(user));
+        document.getElementById('hubMsg').innerHTML = '<span style="color:#34D399; font-weight:bold">✅ Coins added successfully!</span>';
+        setTimeout(closeHub, 1200);
+    } else {
+        document.getElementById('hubMsg').innerHTML = '<span style="color:#F87171">❌ Purchase failed</span>';
+    }
 }
-function hubOpen(){document.getElementById('hub').classList.add('show')}
-function hubClose(){document.getElementById('hub').classList.remove('show');document.getElementById('m-msg').textContent=''}
-function logout(){localStorage.clear();window.location='login.html'}
+
+// 🔘 BUTTON STATES
+function setButtons(state) {
+    document.getElementById('findBtn').classList.toggle('hidden', state !== 'idle');
+    document.getElementById('nextBtn').classList.toggle('hidden', state !== 'connected');
+    document.getElementById('endBtn').classList.toggle('hidden', state !== 'connected');
+}
+
+// 🪙 HUB CONTROLS
+function openHub() { document.getElementById('hubModal').classList.add('show'); document.getElementById('hubMsg').textContent = ''; }
+function closeHub() { document.getElementById('hubModal').classList.remove('show'); document.getElementById('hubMsg').textContent = ''; }
+
+// 🚪 LOGOUT
+function logout() { localStorage.clear(); window.location.href = 'login.html'; }
 </script>
 </body>
 </html>
