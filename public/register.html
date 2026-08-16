@@ -7,7 +7,7 @@
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
         body{background:linear-gradient(135deg,#0F0F23,#1A1A3A,#251640);min-height:100vh;color:white;display:flex;align-items:center;justify-content:center;padding:20px}
-        .card{max-width:440px;width:100%;padding:30px;background:rgba(255,255,255,.03);border-radius:24px;border:1px solid rgba(255,255,255,.15)}
+        .card{max-width:460px;width:100%;padding:30px;background:rgba(255,255,255,.03);border-radius:24px;border:1px solid rgba(255,255,255,.15)}
         h1{text-align:center;margin-bottom:6px;font-size:24px}
         .sub{text-align:center;color:#aaa;margin-bottom:24px;font-size:14px}
         .tabs{display:flex;gap:8px;margin-bottom:20px}
@@ -15,8 +15,12 @@
         .tab.active{background:linear-gradient(135deg,#EC4899,#6366F1)}
         .section{display:none}
         .section.active{display:block}
-        .box{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);border-radius:10px;padding:12px;margin-bottom:16px;font-size:13px;color:#C4B5FD}
+        .box{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);border-radius:10px;padding:12px;margin-bottom:16px;font-size:13px;color:#C4B5FD;line-height:1.5}
+        .box.warn{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.3);color:#FCA5A5}
         input{width:100%;padding:14px 16px;border-radius:10px;border:1px solid #333;background:#111522;color:white;margin-bottom:12px;font-size:15px}
+        input[type=file]{padding:10px 12px;cursor:pointer}
+        .preview{width:100%;height:120px;background:#000;border-radius:10px;margin:8px 0 12px;overflow:hidden;border:1px solid #333}
+        .preview img{width:100%;height:100%;object-fit:cover}
         button{width:100%;padding:14px;border-radius:10px;border:none;background:linear-gradient(135deg,#EC4899,#6366F1);color:white;font-size:16px;font-weight:bold;cursor:pointer}
         .msg{margin-top:12px;padding:10px;border-radius:8px;text-align:center;font-size:14px;min-height:40px}
         .err{color:#F87171;background:rgba(239,68,68,.1)}
@@ -36,8 +40,9 @@
             <button class="tab" onclick="switchTab('admin')">👑 Admin</button>
         </div>
 
+        <!-- === MALE — SIMPLE === -->
         <div id="payer" class="section active">
-            <div class="box">💙 Get <strong>100 FREE coins</strong> — instant approval!</div>
+            <div class="box">💙 Get <strong>100 FREE coins</strong> — instant approval! No verification needed.</div>
             <input type="text" id="u1" placeholder="Username">
             <input type="email" id="e1" placeholder="Email Address">
             <input type="password" id="p1" placeholder="Password (min 6 characters)">
@@ -46,18 +51,29 @@
             <div id="m1" class="msg"></div>
         </div>
 
+        <!-- === FEMALE — UPLOAD ID + SELFIE === -->
         <div id="earner" class="section">
-            <div class="box">💖 Account created after approval.</div>
+            <div class="box warn">⚠️ <strong>Verification Required</strong><br>Upload Passport/ID + Selfie. Admin must approve your account before you can login.</div>
             <input type="text" id="u2" placeholder="Username">
             <input type="email" id="e2" placeholder="Email Address">
             <input type="password" id="p2" placeholder="Password (min 6 characters)">
             <input type="password" id="p2c" placeholder="Confirm Password">
-            <button onclick="doReg('earner','u2','e2','p2','p2c','m2')">📝 Create Account</button>
+
+            <label style="font-size:14px;color:#ddd;margin:8px 0 4px;display:block;">📷 Passport / Government ID Photo</label>
+            <input type="file" id="idPic" accept="image/*" onchange="previewImg(this,'idPrev')">
+            <div class="preview"><img id="idPrev"></div>
+
+            <label style="font-size:14px;color:#ddd;margin:8px 0 4px;display:block;">🤳 Selfie Photo</label>
+            <input type="file" id="selfiePic" accept="image/*" onchange="previewImg(this,'selfiePrev')">
+            <div class="preview"><img id="selfiePrev"></div>
+
+            <button onclick="doRegFemale()">📤 Submit for Approval</button>
             <div id="m2" class="msg"></div>
         </div>
 
+        <!-- === ADMIN === -->
         <div id="admin" class="section">
-            <div class="box">👑 Enter your Admin Code</div>
+            <div class="box">👑 Enter your Admin Code — instant approval</div>
             <input type="text" id="u3" placeholder="Admin Username">
             <input type="email" id="e3" placeholder="Email Address">
             <input type="password" id="code" placeholder="Admin Code">
@@ -81,6 +97,25 @@ function showMsg(id, text, type) {
     const el = document.getElementById(id);
     el.className = 'msg ' + type;
     el.textContent = text;
+}
+
+// Preview uploaded images
+function previewImg(input, imgId) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => document.getElementById(imgId).src = e.target.result;
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// Convert file to base64
+function fileToBase64(file) {
+    return new Promise((resolve) => {
+        if (!file) return resolve(null);
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.readAsDataURL(file);
+    });
 }
 
 async function doReg(role, uid, eid, pid, pcid, mid) {
@@ -114,6 +149,43 @@ async function doReg(role, uid, eid, pid, pcid, mid) {
     }
 }
 
+async function doRegFemale() {
+    const u = document.getElementById('u2').value.trim();
+    const e = document.getElementById('e2').value.trim();
+    const p = document.getElementById('p2').value;
+    const pc = document.getElementById('p2c').value;
+    const idFile = document.getElementById('idPic').files[0];
+    const selfieFile = document.getElementById('selfiePic').files[0];
+    const mid = 'm2';
+
+    if (!u || !e || !p || !idFile || !selfieFile) return showMsg(mid, '❌ Fill all fields & upload both photos', 'err');
+    if (!e.includes('@')) return showMsg(mid, '❌ Enter valid email', 'err');
+    if (p.length < 6) return showMsg(mid, '❌ Password min 6 chars', 'err');
+    if (p !== pc) return showMsg(mid, '❌ Passwords do not match', 'err');
+
+    showMsg(mid, '⏳ Uploading photos...', 'ok');
+
+    const passportPhoto = await fileToBase64(idFile);
+    const selfiePhoto = await fileToBase64(selfieFile);
+
+    try {
+        const res = await fetch('/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role: 'earner', username: u, email: e, password: p, passportPhoto, selfiePhoto })
+        });
+        const data = await res.json();
+        if (data.success) {
+            showMsg(mid, '✅ Submitted! Waiting for admin approval...', 'ok');
+            setTimeout(() => window.location = 'login.html', 3000);
+        } else {
+            showMsg(mid, '❌ ' + (data.error || 'Failed'), 'err');
+        }
+    } catch {
+        showMsg(mid, '❌ Server error', 'err');
+    }
+}
+
 async function doRegAdmin() {
     const u = document.getElementById('u3').value.trim();
     const e = document.getElementById('e3').value.trim();
@@ -136,7 +208,7 @@ async function doRegAdmin() {
         const data = await res.json();
         if (data.success) {
             showMsg(mid, '✅ Admin created!', 'ok');
-            setTimeout(() => window.location = 'login.html', 2000);
+            setTimeout(() => window.location = 'admin.html', 2000);
         } else {
             showMsg(mid, '❌ ' + (data.error || 'Failed'), 'err');
         }
