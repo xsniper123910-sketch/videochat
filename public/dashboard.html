@@ -8,36 +8,32 @@
         *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif}
         :root {
             --bg: linear-gradient(135deg,#0F0F23,#1A1A3A,#251640);
-            --card-bg: rgba(20, 18, 40, 0.85);
+            --card-bg: rgba(20,18,40,.85);
             --glass: rgba(255,255,255,.06);
             --glass-hover: rgba(255,255,255,.12);
-            --border: rgba(168, 85, 247, 0.2);
+            --border: rgba(168,85,247,.2);
             --accent: linear-gradient(135deg,#EC4899,#8B5CF6);
-            --accent-soft: linear-gradient(135deg,rgba(236,72,153,.12),rgba(139,92,247,.12));
+            --accent-soft: rgba(236,72,153,.12);
             --green: linear-gradient(135deg,#10B981,#34D399);
             --purple: linear-gradient(135deg,#6366F1,#A855F7);
             --red: linear-gradient(135deg,#EF4444,#F87171);
             --pink: linear-gradient(135deg,#EC4899,#F472B6);
             --gold: linear-gradient(135deg,#FACC15,#F59E0B);
-            --star: #FACC15;
-            --online-dot: #10B981;
-            --locked: #6B7280;
-            --unlocked: #EC4899;
         }
-        body{background:var(--bg);min-height:100vh;color:white;overflow-x:hidden;padding-bottom:160px}
+        body{background:var(--bg);min-height:100vh;color:#fff;overflow-x:hidden;padding-bottom:160px}
 
-        /* === TOP NAVBAR === */
+        /* TOP NAVBAR */
         .top{display:flex;justify-content:space-between;align-items:center;padding:14px 28px;background:rgba(0,0,0,.4);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:60}
-        .logo{font-size:24px;font-weight:800;background:linear-gradient(90deg,#FF6B9D,#A855F7);-webkit-background-clip:text;color:transparent;letter-spacing:.5px}
+        .logo{font-size:24px;font-weight:800;background:linear-gradient(90deg,#FF6B9D,#A855F7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:.5px}
         .top-right{display:flex;align-items:center;gap:16px}
         .coins{background:var(--gold);color:#000;padding:8px 20px;border-radius:50px;font-weight:700;border:none;cursor:pointer;font-size:15px;box-shadow:0 4px 14px rgba(250,204,21,.25);transition:transform .2s,box-shadow .2s}
         .coins:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(250,204,21,.35)}
-        .top-btn{background:var(--glass);border:1px solid rgba(255,255,255,.08);color:white;padding:8px 14px;border-radius:12px;cursor:pointer;transition:all .2s}
+        .top-btn{background:var(--glass);border:1px solid rgba(255,255,255,.08);color:#fff;padding:8px 14px;border-radius:12px;cursor:pointer;transition:all .2s}
         .top-btn:hover{background:var(--glass-hover);border-color:#A855F7}
         .user-label{color:#D1D5DB;font-size:15px;font-weight:500}
 
-        /* === CALL STATS BAR === */
-        .call-stats{position:fixed;top:75px;left:50%;transform:translateX(-50%);background:var(--card-bg);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:50px;padding:12px 28px;z-index:40;display:none;gap:18px;align-items:center;flex-wrap:wrap;justify-content:center;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+        /* CALL STATS */
+        .call-stats{position:fixed;top:75px;left:50%;transform:translateX(-50%);background:var(--card-bg);border:1px solid var(--border);border-radius:50px;padding:12px 28px;z-index:40;display:none;gap:18px;align-items:center;flex-wrap:wrap;justify-content:center;box-shadow:0 8px 32px rgba(0,0,0,.3)}
         .call-stats.show{display:flex}
         .timer{font-size:22px;font-weight:800;letter-spacing:1px}
         .stat-item{text-align:center;min-width:80px}
@@ -47,116 +43,82 @@
         .stat-item.earn strong{color:#34D399}
         .stat-item.min strong{color:#EC4899}
         .btn-sm{padding:8px 16px;font-size:13px;border-radius:50px;border:none;cursor:pointer;font-weight:700;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-        .btn-pink{background:var(--pink);color:white}
+        .btn-pink{background:var(--pink);color:#fff}
         .btn-pink:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(236,72,153,.35)}
-        .btn-purple{background:var(--purple);color:white}
-        .btn-purple:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(139,92,247,.35)}
+        .btn-purple{background:var(--purple);color:#fff}
+        .btn-purple:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(139,92,246,.35)}
         .blur-btn{background:rgba(239,68,68,.15);color:#F87171;border:1px solid rgba(239,68,68,.3)}
-        .blur-btn.active{background:var(--red);color:white;box-shadow:0 2px 10px rgba(239,68,68,.3)}
+        .blur-btn.active{background:var(--red);color:#fff;box-shadow:0 2px 10px rgba(239,68,68,.3)}
 
-        /* === VIDEO AREA === */
+        /* VIDEO AREA */
         .video-container{position:relative;width:94%;max-width:1200px;margin:24px auto;margin-top:90px}
-        .partner-wrap{width:100%;aspect-ratio:16/9;background:#000;border-radius:24px;overflow:hidden;position:relative;border:2px solid rgba(236,72,153,.2);box-shadow:0 12px 48px rgba(139,92,247,.15)}
+        .partner-wrap{width:100%;aspect-ratio:16/9;background:#000;border-radius:24px;overflow:hidden;position:relative;border:2px solid rgba(236,72,153,.2);box-shadow:0 12px 48px rgba(139,92,246,.15)}
         .partner-wrap video{width:100%;height:100%;object-fit:cover}
         .partner-label{position:absolute;top:18px;left:18px;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);padding:8px 18px;border-radius:50px;font-size:14px;font-weight:600;border:1px solid rgba(255,255,255,.1)}
         .partner-empty{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#9CA3AF}
         .partner-empty h3{font-size:22px;margin-bottom:8px;color:#F3E8FF}
-        .self-wrap{position:absolute;bottom:24px;right:24px;width:240px;aspect-ratio:16/9;background:#000;border-radius:18px;overflow:hidden;border:3px solid rgba(255,255,255,.15);box-shadow:0 8px 24px rgba(0,0,0,.4);position:relative}
+        .self-wrap{position:absolute;bottom:24px;right:24px;width:240px;aspect-ratio:16/9;background:#000;border-radius:18px;overflow:hidden;border:3px solid rgba(255,255,255,.15);box-shadow:0 8px 24px rgba(0,0,0,.4)}
         .self-wrap video{width:100%;height:100%;object-fit:cover}
         .self-wrap.blur video{filter:blur(20px);transition:filter .4s ease}
-        .blur-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;pointer-events:none;font-weight:500}
+        .blur-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;font-weight:500}
         .status{text-align:center;padding:12px 20px;margin:20px auto;width:fit-content;background:var(--accent-soft);border-radius:50px;color:#E9D5FF;font-weight:500;border:1px solid rgba(167,139,250,.2)}
         .ctrls{display:flex;justify-content:center;gap:16px;padding:12px 20px;flex-wrap:wrap}
         .btn{padding:14px 32px;border-radius:50px;border:none;font-size:16px;font-weight:700;cursor:pointer;transition:all .25s;box-shadow:0 4px 16px rgba(0,0,0,.2)}
         .btn:hover{transform:translateY(-2px)}
-        .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-        .btn-green{background:var(--green);color:white}
+        .btn-green{background:var(--green);color:#fff}
         .btn-green:hover{box-shadow:0 6px 20px rgba(16,185,129,.35)}
-        .btn-purple{background:var(--purple);color:white}
+        .btn-purple{background:var(--purple);color:#fff}
         .btn-purple:hover{box-shadow:0 6px 20px rgba(99,102,241,.35)}
-        .btn-red{background:var(--red);color:white}
+        .btn-red{background:var(--red);color:#fff}
         .btn-red:hover{box-shadow:0 6px 20px rgba(239,68,68,.35)}
         .hidden{display:none !important}
 
-        /* === 💬 CHAT HUB === */
-        .chat-hub{position:fixed;left:20px;top:100px;width:320px;background:var(--card-bg);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:20px;z-index:50;max-height:72vh;display:flex;flex-direction:column;box-shadow:0 16px 48px rgba(15,15,35,.5);overflow:hidden}
-        .chat-hub-header{padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,rgba(139,92,247,.1),transparent)}
-        .chat-hub-header h3{font-size:16px;font-weight:700;letter-spacing:.3px;background:linear-gradient(90deg,#EC4899,#A855F7);-webkit-background-clip:text;color:transparent}
+        /* CHAT HUB */
+        .chat-hub{position:fixed;left:20px;top:100px;width:320px;background:var(--card-bg);border:1px solid var(--border);border-radius:20px;z-index:50;max-height:72vh;display:flex;flex-direction:column;box-shadow:0 16px 48px rgba(15,15,35,.5);overflow:hidden}
+        .chat-hub-header{padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,rgba(139,92,246,.1),transparent)}
+        .chat-hub-header h3{font-size:16px;font-weight:700;letter-spacing:.3px;background:linear-gradient(90deg,#EC4899,#A855F7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
         .chat-hub-list{overflow-y:auto;padding:10px;flex:1}
-        .chat-hub-list::-webkit-scrollbar{width:5px}
-        .chat-hub-list::-webkit-scrollbar-thumb{background:rgba(139,92,247,.25);border-radius:6px}
-
-        .chat-hub-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;cursor:pointer;transition:all .2s ease;margin-bottom:8px;background:var(--glass);border:1px solid transparent;position:relative;overflow:hidden}
-        .chat-hub-item:hover{background:rgba(139,92,247,.12);border-color:rgba(167,139,250,.3);transform:translateX(4px)}
-        .chat-hub-item.active{background:linear-gradient(90deg,rgba(236,72,153,.15),rgba(139,92,247,.15));border:1px solid rgba(236,72,153,.3);box-shadow:0 4px 16px rgba(236,72,153,.1)}
-        .chat-hub-avatar{width:50px;height:50px;border-radius:50%;overflow:hidden;border:3px solid transparent;background:var(--accent);padding:2px;flex-shrink:0;box-shadow:0 4px 12px rgba(236,72,153,.2)}
-        .chat-hub-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
-        .chat-hub-avatar .fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px}
-        .chat-hub-info{flex:1;min-width:0;padding-right:6px}
-        .chat-hub-name{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#F9FAFB;display:flex;align-items:center;gap:6px}
-        .chat-hub-meta{font-size:12px;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px;line-height:1.3}
-        .chat-hub-badges{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap}
-        .badge{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;letter-spacing:.3px}
-        .badge-unlocked{background:rgba(16,185,129,.15);color:#34D399}
-        .badge-fav{background:rgba(250,204,21,.15);color:#FACC15}
-        .star-icon{color:var(--star);font-size:18px;cursor:pointer;flex-shrink:0;transition:all .2s ease;text-shadow:0 0 6px rgba(250,204,21,.4)}
-        .star-icon:hover{transform:scale(1.3);filter:brightness(1.2)}
-        .star-icon.inactive{color:#4B5563;text-shadow:none}
         .empty-hub{padding:40px 20px;text-align:center;color:#6B7280;font-size:14px;line-height:1.6}
         .empty-hub .icon{font-size:40px;margin-bottom:12px;opacity:.6}
-        .progress-bar{height:6px;background:rgba(255,255,255,.08);border-radius:3px;margin-top:8px;overflow:hidden}
-        .progress-fill{height:100%;background:var(--accent);width:0%;transition:width .6s ease;border-radius:3px}
 
-        /* === 💬 SMS PANEL === */
-        .sms-panel{position:fixed;right:20px;top:100px;width:350px;background:var(--card-bg);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:20px;z-index:50;display:none;flex-direction:column;max-height:72vh;box-shadow:0 16px 48px rgba(15,15,35,.5);overflow:hidden}
+        /* SMS PANEL */
+        .sms-panel{position:fixed;right:20px;top:100px;width:350px;background:var(--card-bg);border:1px solid var(--border);border-radius:20px;z-index:50;display:none;flex-direction:column;max-height:72vh;box-shadow:0 16px 48px rgba(15,15,35,.5);overflow:hidden}
         .sms-panel.show{display:flex}
         .sms-header{padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,rgba(236,72,153,.08),transparent)}
         .sms-header h3{font-size:16px;font-weight:700}
         .sms-status{font-size:12px;padding:4px 10px;border-radius:12px;font-weight:600;letter-spacing:.3px}
         .sms-status.locked{background:rgba(239,68,68,.12);color:#F87171;border:1px solid rgba(239,68,68,.2)}
         .sms-status.unlocked{background:rgba(16,185,129,.12);color:#34D399;border:1px solid rgba(16,185,129,.2)}
-        .sms-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:linear-gradient(180deg,transparent,rgba(139,92,247,.02))}
-        .sms-messages::-webkit-scrollbar{width:5px}
-        .sms-messages::-webkit-scrollbar-thumb{background:rgba(139,92,247,.2);border-radius:6px}
-        .sms-msg{max-width:80%;padding:10px 14px;border-radius:18px;font-size:14px;line-height:1.5;box-shadow:0 2px 8px rgba(0,0,0,.15)}
-        .sms-msg.sent{background:var(--pink);align-self:flex-end;border-bottom-right-radius:6px}
-        .sms-msg.received{background:rgba(255,255,255,.07);align-self:flex-start;border-bottom-left-radius:6px;border:1px solid rgba(255,255,255,.08)}
-        .sms-meta{font-size:10px;opacity:.55;margin-top:4px;text-align:right}
+        .sms-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:linear-gradient(180deg,transparent,rgba(139,92,246,.02))}
         .sms-input-wrap{padding:14px;border-top:1px solid rgba(255,255,255,.08);display:flex;gap:10px;background:rgba(0,0,0,.15)}
-        .sms-input{flex:1;padding:12px 16px;border-radius:50px;border:1px solid rgba(139,92,247,.3);background:rgba(17,21,34,.9);color:white;outline:none;font-size:14px;transition:border .2s}
+        .sms-input{flex:1;padding:12px 16px;border-radius:50px;border:1px solid rgba(139,92,246,.3);background:rgba(17,21,34,.9);color:#fff;outline:none;font-size:14px}
         .sms-input:focus{border-color:#EC4899}
-        .sms-send{border-radius:50px;padding:12px 18px;border:none;background:var(--pink);color:white;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 12px rgba(236,72,153,.3)}
+        .sms-send{border-radius:50px;padding:12px 18px;border:none;background:var(--pink);color:#fff;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 12px rgba(236,72,153,.3)}
         .sms-send:hover{transform:scale(1.05)}
 
-        /* === 👩 ONLINE WOMEN HUB === */
-        .women-hub{position:fixed;bottom:0;left:0;right:0;background:var(--card-bg);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:14px 20px;z-index:55;box-shadow:0 -8px 32px rgba(15,15,35,.4)}
+        /* WOMEN HUB */
+        .women-hub{position:fixed;bottom:0;left:0;right:0;background:var(--card-bg);border-top:1px solid var(--border);padding:14px 20px;z-index:55;box-shadow:0 -8px 32px rgba(15,15,35,.4)}
         .hub-title{font-size:14px;color:#F472B6;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;font-weight:600;letter-spacing:.3px}
         .hub-title span{display:flex;align-items:center;gap:8px}
-        .pulse{width:10px;height:10px;background:#10B981;border-radius:50%;animation:pulse 2s infinite;box-shadow:0 0 0 rgba(16,185,129,.5)}
+        .pulse{width:10px;height:10px;background:#10B981;border-radius:50%;animation:pulse 2s infinite}
         @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(16,185,129,.7)}70%{box-shadow:0 0 0 10px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
-        .women-scroll{display:flex;gap:14px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
-        .women-scroll::-webkit-scrollbar{height:6px}
-        .women-scroll::-webkit-scrollbar-thumb{background:rgba(139,92,247,.25);border-radius:6px}
-        .woman-card{min-width:110px;background:var(--glass);border-radius:18px;padding:14px 10px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,.08);transition:all .25s ease;position:relative;overflow:hidden}
-        .woman-card:hover{border-color:#EC4899;transform:translateY(-6px);background:rgba(236,72,153,.08);box-shadow:0 10px 24px rgba(236,72,153,.15)}
-        .woman-avatar{width:64px;height:64px;border-radius:50%;background:var(--accent);margin:0 auto 10px;overflow:hidden;border:3px solid transparent;padding:2px;box-shadow:0 4px 12px rgba(236,72,153,.25)}
-        .woman-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
-        .woman-avatar .fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:24px}
+        .women-scroll{display:flex;gap:14px;overflow-x:auto;padding-bottom:6px}
+        .woman-card{min-width:110px;background:var(--glass);border-radius:18px;padding:14px 10px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,.08);transition:all .25s ease}
+        .woman-card:hover{border-color:#EC4899;transform:translateY(-6px);box-shadow:0 10px 24px rgba(236,72,153,.15)}
+        .woman-avatar{width:64px;height:64px;border-radius:50%;background:var(--accent);margin:0 auto 10px;overflow:hidden}
         .woman-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#F3E8FF}
-        .woman-status{font-size:12px;color:#34D399;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:4px}
-        .woman-status::before{content:'●';font-size:10px}
+        .woman-status{font-size:12px;color:#34D399;margin-top:4px}
 
-        /* === MODALS — BUY COINS === */
-        .modal{position:fixed;inset:0;background:rgba(5,5,25,.85);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:100}
+        /* BUY COINS MODAL */
+        .modal{position:fixed;inset:0;background:rgba(5,5,25,.85);display:none;align-items:center;justify-content:center;z-index:100}
         .modal.show{display:flex}
         .modal-card{background:linear-gradient(180deg,#232352,#151535);border-radius:24px;padding:32px;max-width:480px;width:94%;border:2px solid rgba(139,92,246,.25);box-shadow:0 20px 60px rgba(0,0,0,.5)}
         .modal-card h2{text-align:center;margin-bottom:24px;font-size:22px}
         .pack{background:rgba(255,255,255,.04);border-radius:16px;padding:16px;margin:10px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;border:1px solid transparent;transition:all .2s}
-        .pack:hover{border-color:#8B5CF6;background:rgba(139,92,247,.08);transform:translateX(4px)}
-        .pack.popular{border:2px solid #FACC15;background:rgba(250,204,21,.08);box-shadow:0 4px 16px rgba(250,204,21,.1)}
+        .pack:hover{border-color:#8B5CF6;background:rgba(139,92,246,.08);transform:translateX(4px)}
+        .pack.popular{border:2px solid #FACC15;background:rgba(250,204,21,.08)}
         .price{color:#FACC15;font-weight:800;font-size:22px}
-        .btn-wide{width:100%;padding:14px;border-radius:14px;border:none;background:var(--accent);color:white;font-weight:700;cursor:pointer;margin-top:14px;font-size:16px;transition:transform .2s}
-        .btn-wide:hover{transform:scale(1.02)}
+        .btn-wide{width:100%;padding:14px;border-radius:14px;border:none;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;margin-top:14px;font-size:16px}
         .secondary{background:rgba(255,255,255,.06);color:#D1D5DB}
         .msg{margin-top:14px;padding:12px;border-radius:10px;text-align:center;font-size:14px;font-weight:500}
         .err{color:#F87171;background:rgba(239,68,68,.1)}
@@ -165,60 +127,14 @@
 </head>
 <body>
 
-<!-- CALL TIMER & BILLING -->
-<div id="callStats" class="call-stats">
-    <div class="timer" id="callTimer">00:00</div>
-    <div class="stat-item min"><span>⏳ Together</span><strong id="minCount">0/900</strong></div>
-    <div class="stat-item cost" id="costDisplay"><span>💧 Cost</span><strong>-0</strong></div>
-    <div class="stat-item earn" id="earnDisplay"><span>💰 Earned</span><strong>+0</strong></div>
-    <button id="smsToggle" class="btn btn-pink btn-sm hidden" onclick="toggleSmsPanel()">💬 Chat</button>
-    <button id="favoriteBtn" class="btn btn-purple btn-sm hidden" onclick="toggleFavorite()">⭐ Save</button>
-    <button id="blurBtn" class="btn blur-btn btn-sm hidden" onclick="toggleBlur()">🫣 Blur Him</button>
-</div>
-
-<!-- 💬 CHAT HUB -->
-<div id="chatHub" class="chat-hub hidden">
-    <div class="chat-hub-header">
-        <h3>💬 My Unlocked Chats</h3>
-        <button class="top-btn" onclick="loadChatHub()">🔄</button>
-    </div>
-    <div class="chat-hub-list" id="chatHubList">
-        <div class="empty-hub">
-            <div class="icon">🔒</div>
-            <p><strong>No chats unlocked yet</strong></p>
-            <p style="margin-top:8px">Spend <strong>900 minutes</strong> calling a woman to unlock messaging 💬</p>
-        </div>
-    </div>
-</div>
-
-<!-- SMS PANEL -->
-<div id="smsPanel" class="sms-panel">
-    <div class="sms-header">
-        <h3 id="smsPartnerName">💬 Messages</h3>
-        <span id="smsStatus" class="sms-status locked">🔒 0/900 min</span>
-    </div>
-    <div id="smsMessages" class="sms-messages">
-        <div class="empty-hub">
-            <div class="icon">⏳</div>
-            <p><strong>Keep calling to unlock chat!</strong></p>
-            <div class="progress-bar"><div class="progress-fill" id="smsProgress"></div></div>
-            <p style="margin-top:8px;font-size:12px">900 minutes required to unlock messaging 💬</p>
-        </div>
-    </div>
-    <div id="smsInputWrap" class="sms-input-wrap hidden">
-        <input type="text" id="smsInput" class="sms-input" placeholder="Type message… (2 coins = $1.00)" maxlength="500" onkeydown="if(event.key==='Enter')sendSms()">
-        <button class="sms-send" onclick="sendSms()">➤ 2</button>
-    </div>
-</div>
-
 <!-- BUY COINS MODAL -->
 <div id="hubModal" class="modal">
     <div class="modal-card">
         <h2>💰 Buy Coin Packs</h2>
         <div class="pack" onclick="buy('small')"><div><strong>100 Coins</strong></div><div class="price">$4.99</div></div>
-        <div class="pack popular" onclick="buy('medium')"><div><strong>500 Coins</strong><div style="color:#34D399;font-size:12px">+50 FREE 🎁</div></div><div class="price">$19.99</div></div>
-        <div class="pack" onclick="buy('large')"><div><strong>1,500 Coins</strong><div style="color:#34D399;font-size:12px">+200 FREE 🎁</div></div><div class="price">$49.99</div></div>
-        <div class="pack" onclick="buy('mega')"><div><strong>5,000 Coins</strong><div style="color:#34D399;font-size:12px">+800 FREE 🎁</div></div><div class="price">$149.99</div></div>
+        <div class="pack popular" onclick="buy('medium')"><div><strong>500 Coins</strong> + 50 FREE 🎁</div><div class="price">$19.99</div></div>
+        <div class="pack" onclick="buy('large')"><div><strong>1,500 Coins</strong> + 200 FREE 🎁</div><div class="price">$49.99</div></div>
+        <div class="pack" onclick="buy('mega')"><div><strong>5,000 Coins</strong> + 800 FREE 🎁</div><div class="price">$149.99</div></div>
         <div id="hubMsg" class="msg"></div>
         <button class="btn-wide secondary" onclick="closeHub()">Close</button>
     </div>
@@ -230,14 +146,58 @@
     <div class="top-right">
         <span class="user-label" id="userName"></span>
         <button class="coins" onclick="openHub()">💰 <span id="coinCount">0</span></button>
-        <button class="top-btn" onclick="logout()" style="color:#F87171">Logout</button>
+        <button class="top-btn" onclick="logout()">Logout</button>
     </div>
 </div>
 
-<!-- MAIN VIDEO AREA -->
+<!-- CALL STATS -->
+<div id="callStats" class="call-stats">
+    <div class="timer" id="callTimer">00:00</div>
+    <div class="stat-item min"><span>Together</span><strong id="minCount">0/900</strong></div>
+    <div class="stat-item cost" id="costDisplay"><span>Cost</span><strong>-0</strong></div>
+    <div class="stat-item earn" id="earnDisplay"><span>Earned</span><strong>+0</strong></div>
+    <button id="smsToggle" class="btn-sm btn-pink hidden" onclick="toggleSmsPanel()">💬 Chat</button>
+    <button id="favoriteBtn" class="btn-sm btn-purple hidden" onclick="toggleFavorite()">⭐ Save</button>
+    <button id="blurBtn" class="btn-sm blur-btn hidden" onclick="toggleBlur()">🫣 Blur Him</button>
+</div>
+
+<!-- CHAT HUB -->
+<div id="chatHub" class="chat-hub hidden">
+    <div class="chat-hub-header">
+        <h3>💬 My Chats</h3>
+        <button class="top-btn" onclick="loadChatHub()">🔄</button>
+    </div>
+    <div class="chat-hub-list" id="chatHubList">
+        <div class="empty-hub">
+            <div class="icon">🔒</div>
+            <p><strong>No chats unlocked yet</strong></p>
+            <p style="margin-top:8px;font-size:12px">Call for 900 minutes to unlock messaging 💬</p>
+        </div>
+    </div>
+</div>
+
+<!-- SMS PANEL -->
+<div id="smsPanel" class="sms-panel">
+    <div class="sms-header">
+        <h3 id="smsPartnerName">Messages</h3>
+        <span id="smsStatus" class="sms-status locked">🔒 0/900 min</span>
+    </div>
+    <div id="smsMessages" class="sms-messages">
+        <div class="empty-hub">
+            <div class="icon">⏳</div>
+            <p><strong>Keep calling to unlock chat!</strong></p>
+        </div>
+    </div>
+    <div class="sms-input-wrap hidden" id="smsInputWrap">
+        <input type="text" id="smsInput" class="sms-input" placeholder="Type message..." onkeydown="if(event.key==='Enter')sendSms()">
+        <button class="sms-send" onclick="sendSms()">➤</button>
+    </div>
+</div>
+
+<!-- VIDEO AREA -->
 <div class="video-container">
     <div class="partner-wrap">
-        <span class="partner-label" id="partnerLabel">👩 Partner</span>
+        <span class="partner-label" id="partnerLabel">👤 Partner</span>
         <video id="remoteVid" autoplay playsinline></video>
         <div id="remoteEmpty" class="partner-empty">
             <h3>✨ Ready to connect?</h3>
@@ -257,14 +217,14 @@
     <button id="endBtn" class="btn btn-red hidden" onclick="endCall()">📞 End Call</button>
 </div>
 
-<!-- 👩 ONLINE WOMEN — BOTTOM HUB -->
+<!-- WOMEN LIST -->
 <div class="women-hub" id="womenHub">
     <div class="hub-title">
         <span><span class="pulse"></span> Women Online Now</span>
-        <span id="refreshLink" style="color:#A855F7;cursor:pointer;font-size:12px" onclick="loadOnlineWomen()">🔄 Refresh</span>
+        <span onclick="loadOnlineWomen()">🔄 Refresh</span>
     </div>
     <div class="women-scroll" id="womenScroll">
-        <div class="empty-hub">⏳ Loading women…</div>
+        <div class="empty-hub">⏳ Loading...</div>
     </div>
 </div>
 
@@ -274,468 +234,138 @@ const socket = io();
 let user = null, stream = null, pc = null, partnerId = null;
 let partnerEmail = null, partnerName = null;
 let callStartTime = null, callTimer = null, minutesBilled = 0;
-let totalMinutesTogether = 0;
-let isFavorite = false;
-let manCameraBlurred = false;
-const UNLOCK_MINUTES = 900;
-const RATE_COST_PER_MINUTE = 1, RATE_EARN_PER_MINUTE = 0.50;
+let totalMinutesTogether = 0, isFavorite = false, isBlurred = false;
+const UNLOCK_MIN = 900, COST_PER_MIN = 1, EARNS_PER_MIN = 0.50;
 
 window.onload = async () => {
     const saved = localStorage.getItem('user');
-    if (!saved) { alert('⚠️ Please login first!'); return window.location = 'login.html'; }
+    if (!saved) { alert('⚠️ Please login first!'); location.href = 'login.html'; return; }
     user = JSON.parse(saved);
     document.getElementById('userName').textContent = '@' + user.username;
     document.getElementById('coinCount').textContent = user.coins || 0;
 
-    // Send welcome email for NEW male users — ONLY ON FIRST LOGIN
-    const welcomeSent = localStorage.getItem('welcomeEmailSent');
-    if (user.role === 'payer' && !welcomeSent) {
-        try {
-            await fetch('/api/send-welcome-email', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: user.email, username: user.username })
-            });
-            localStorage.setItem('welcomeEmailSent', 'true');
-            console.log('✅ Welcome email sent!');
-        } catch (e) {
-            console.log('Welcome email note sent (may already exist)');
-            localStorage.setItem('welcomeEmailSent', 'true');
-        }
-    }
-
     if (user.role === 'earner') {
         document.getElementById('costDisplay').style.display = 'none';
-        document.getElementById('earnDisplay').innerHTML = `<span>💰 Earned</span><strong>+0</strong>`;
-        document.getElementById('chatHub').style.display = 'none';
+        document.getElementById('chatHub').classList.add('hidden');
     } else {
         document.getElementById('earnDisplay').style.display = 'none';
         document.getElementById('chatHub').classList.remove('hidden');
-        await loadChatHub();
-        setInterval(loadChatHub, 30000);
+        loadOnlineWomen();
+        setInterval(loadOnlineWomen, 15000);
     }
 
     socket.emit('login-online', { email: user.email, username: user.username, role: user.role });
 
-    if (user.role === 'payer') {
-        await loadOnlineWomen();
-        setInterval(loadOnlineWomen, 15000);
-    } else {
-        document.getElementById('womenHub').style.display = 'none';
-    }
-
     try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { width:1280, height:720 }, audio: true });
+        stream = await navigator.mediaDevices.getUserMedia({video:true,audio:true});
         document.getElementById('localVid').srcObject = stream;
         document.getElementById('localEmpty').classList.add('hidden');
     } catch {
         document.getElementById('localEmpty').classList.remove('hidden');
-        document.getElementById('localEmpty').textContent = '⚠️ Camera blocked';
     }
 };
 
-// ✅ OPEN BUY COINS MODAL — FULLY WORKING
-function openHub(){
-    document.getElementById('hubModal').classList.add('show');
-    document.getElementById('hubMsg').textContent = '';
-    document.getElementById('hubMsg').className = 'msg';
-}
+// ✅ BUY COINS MODAL
+function openHub(){ document.getElementById('hubModal').classList.add('show'); document.getElementById('hubMsg').textContent = ''; }
+function closeHub(){ document.getElementById('hubModal').classList.remove('show'); }
 
-// ✅ CLOSE MODAL
-function closeHub(){
-    document.getElementById('hubModal').classList.remove('show');
-    document.getElementById('hubMsg').textContent = '';
-}
-
-// ✅ BUY COINS FUNCTION
+// ✅ BUY HANDLER
 async function buy(pack){
-    const msgBox = document.getElementById('hubMsg');
-    msgBox.textContent = 'Processing purchase…';
-    msgBox.className = 'msg ok';
+    const msg = document.getElementById('hubMsg');
+    msg.textContent = 'Processing...'; msg.className = 'msg ok';
     try {
         const res = await fetch('/buy-coins', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: user.email, pack })
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({email:user.email, pack})
         });
         const d = await res.json();
         if (d.success) {
             user.coins = d.newCoinCount;
             localStorage.setItem('user', JSON.stringify(user));
             document.getElementById('coinCount').textContent = d.newCoinCount;
-            msgBox.textContent = '✅ Coins added successfully!';
-            msgBox.className = 'msg ok';
+            msg.textContent = '✅ Coins added!';
             setTimeout(closeHub, 1500);
-        } else {
-            msgBox.textContent = d.error || 'Purchase failed';
-            msgBox.className = 'msg err';
-        }
-    } catch (err) {
-        msgBox.textContent = '⚠️ Server error. Try again.';
-        msgBox.className = 'msg err';
-    }
+        } else { msg.textContent = d.error || 'Failed'; msg.className = 'msg err'; }
+    } catch { msg.textContent = '⚠️ Server error'; msg.className = 'msg err'; }
 }
 
-// ✅ LOGOUT — FULLY WORKING
+// ✅ LOGOUT
 function logout(){
-    if (confirm('Are you sure you want to logout?')) {
-        localStorage.removeItem('user');
-        window.location.href = 'login.html';
-    }
+    if(confirm('Logout?')) { localStorage.removeItem('user'); location.href='login.html'; }
 }
 
-// 💬 Load Chat Hub
-async function loadChatHub() {
-    if (user.role !== 'payer') return;
-    try {
-        const res = await fetch('/api/chat-hub', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userEmail: user.email })
-        });
-        const d = await res.json();
-        if (!d.success || d.unlocked.length === 0) {
-            document.getElementById('chatHubList').innerHTML = `
-                <div class="empty-hub">
-                    <div class="icon">🔒</div>
-                    <p><strong>No chats unlocked yet</strong></p>
-                    <p style="margin-top:8px">Spend <strong>900 minutes</strong> calling a woman to unlock messaging 💬</p>
-                </div>`;
-            return;
-        }
-        document.getElementById('chatHubList').innerHTML = d.unlocked.map(w => `
-            <div class="chat-hub-item" data-email="${w.email}" onclick="openChatWith('${w.email}','${w.username}')">
-                <div class="chat-hub-avatar">
-                    ${w.selfiePhoto ? `<img src="${w.selfiePhoto}" alt="${w.username}">` : `<div class="fallback">👩</div>`}
-                </div>
-                <div class="chat-hub-info">
-                    <div class="chat-hub-name">
-                        ${w.username}
-                        ${w.isFavorite ? '<span class="badge badge-fav">⭐ Fav</span>' : ''}
-                    </div>
-                    <div class="chat-hub-meta">
-                        ${w.lastMessage ? w.lastMessage.text.substring(0,28)+'…' : '💬 Click to message'}
-                    </div>
-                    <div class="chat-hub-badges">
-                        <span class="badge badge-unlocked">✅ Unlocked</span>
-                    </div>
-                </div>
-                <span class="star-icon ${w.isFavorite ? '' : 'inactive'}" onclick="event.stopPropagation(); toggleStar('${w.email}', this)">⭐</span>
-            </div>
-        `).join('');
-    } catch {
-        document.getElementById('chatHubList').innerHTML = `<div class="empty-hub"><div class="icon">⚠️</div><p>Refresh failed</p></div>`;
-    }
-}
-
-async function toggleStar(partnerEmail, el) {
-    const isAdding = el.classList.contains('inactive');
-    await fetch('/api/favorite', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userEmail: user.email, partnerEmail, action: isAdding ? 'add' : 'remove' })
-    });
-    el.classList.toggle('inactive');
-}
-
-async function openChatWith(email, name) {
-    partnerEmail = email;
-    partnerName = name;
-    document.getElementById('smsPanel').classList.add('show');
-    document.getElementById('smsPartnerName').textContent = `💬 ${name}`;
-    await checkSmsUnlock();
-}
-
-// 👩 Load Online Women
-async function loadOnlineWomen() {
-    try {
-        const res = await fetch('/api/online-women', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({})
-        });
-        const data = await res.json();
-        if (!data.success || data.women.length === 0) {
-            document.getElementById('womenScroll').innerHTML = `<div class="empty-hub"><div class="icon">🌐</div><p>No women online right now</p></div>`;
-            return;
-        }
-        document.getElementById('womenScroll').innerHTML = data.women.map(w => `
-            <div class="woman-card" onclick="callWoman('${w.email}','${w.username}')">
-                <div class="woman-avatar">
-                    ${w.selfiePhoto ? `<img src="${w.selfiePhoto}" alt="${w.username}">` : `<div class="fallback">👩</div>`}
-                </div>
-                <div class="woman-name">${w.username}</div>
-                <div class="woman-status">Online</div>
-            </div>
-        `).join('');
-    } catch {
-        document.getElementById('womenScroll').innerHTML = `<div class="empty-hub"><div class="icon">⚠️</div><p>Refresh to see women</p></div>`;
-    }
-}
-
-async function callWoman(email, name) {
-    if ((user.coins || 0) < 10) { alert('⚠️ Need at least 10 coins!'); openHub(); return; }
-    if (!confirm(`📞 Call ${name}?\n\n💛 Cost: 1 coin/min\n💜 She earns: 0.50/min\n💬 Unlock chat after 900 min together!`)) return;
-    partnerEmail = email;
-    partnerName = name;
-    setStatus(`📞 Calling ${name}…`);
-    document.getElementById('remoteEmpty').innerHTML = `<h3>📞 Calling ${name}…</h3>`;
-    document.getElementById('remoteEmpty').style.display = 'block';
-    setButtons('searching');
-    socket.emit('find', { username: user.username, email: user.email, role: user.role, targetEmail: email });
-}
-
-async function findPartner() {
-    if ((user.coins || 0) < 10) { alert('⚠️ Need at least 10 coins!'); openHub(); return; }
-    setStatus('🔍 Searching for someone…');
-    document.getElementById('remoteEmpty').innerHTML = `<h3>🔍 Searching…</h3>`;
-    document.getElementById('remoteEmpty').style.display = 'block';
-    setButtons('searching');
-    socket.emit('find', { username: user.username, email: user.email, role: user.role });
-}
-
-socket.on('wait', () => setStatus('⏳ Waiting for someone to join…'));
-
-socket.on('found', async (data) => {
-    partnerId = data.partnerId;
-    partnerEmail = data.partnerEmail;
-    partnerName = data.name;
-    setStatus(`✅ Connected with ${data.name} ✨`);
-    document.getElementById('remoteEmpty').style.display = 'none';
-    setButtons('connected');
-    document.getElementById('smsToggle').classList.remove('hidden');
-    if (user.role === 'payer') document.getElementById('favoriteBtn').classList.remove('hidden');
-    if (user.role === 'earner') document.getElementById('blurBtn').classList.remove('hidden');
-    await checkSmsUnlock();
-    await checkBlurStatus();
-    startCallTimer();
-    await startConnection();
-});
-
-async function checkSmsUnlock() {
-    if (!partnerEmail) return;
-    try {
-        const res = await fetch('/api/check-sms-unlocked', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userEmail: user.email, partnerEmail })
-        });
-        const d = await res.json();
-        if (d.success) {
-            totalMinutesTogether = d.totalMinutes;
-            updateSmsUi(d.canText, d.totalMinutes, d.messages);
-        }
-    } catch(e){console.log(e)}
-}
-
-function updateSmsUi(canText, minutes, messages = []) {
-    document.getElementById('minCount').textContent = `${minutes}/${UNLOCK_MINUTES}`;
-    document.getElementById('smsStatus').textContent = canText ? `✅ UNLOCKED! 🎉` : `🔒 ${minutes}/${UNLOCK_MINUTES} min`;
-    document.getElementById('smsStatus').className = `sms-status ${canText ? 'unlocked' : 'locked'}`;
-    document.getElementById('smsProgress').style.width = `${Math.min(100, (minutes/UNLOCK_MINUTES)*100)}%`;
-
-    if (canText) {
-        document.getElementById('smsInputWrap').classList.remove('hidden');
-        document.getElementById('smsMessages').innerHTML = '';
-        messages.forEach(m => addMessageToUi(m.text, m.from === user.email));
-    }
-}
-
-function toggleSmsPanel() {
-    document.getElementById('smsPanel').classList.toggle('show');
-    if (document.getElementById('smsPanel').classList.contains('show')) checkSmsUnlock();
-}
-
-async function sendSms() {
-    const input = document.getElementById('smsInput');
-    const text = input.value.trim();
-    if (!text) return;
-    if (!partnerEmail) return alert('⚠️ No partner selected');
-
-    try {
-        const res = await fetch('/api/send-sms', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fromEmail: user.email, toEmail: partnerEmail, text })
-        });
-        const d = await res.json();
-        if (d.success) {
-            addMessageToUi(text, true);
-            input.value = '';
-            document.getElementById('coinCount').textContent = d.senderCoins;
-        } else {
-            alert(d.error || 'Failed to send');
-        }
-    } catch { alert('⚠️ Message failed to send'); }
-}
-
-function addMessageToUi(text, sentByMe) {
-    const wrap = document.getElementById('smsMessages');
-    const msg = document.createElement('div');
-    msg.className = `sms-msg ${sentByMe ? 'sent' : 'received'}`;
-    msg.textContent = text;
-    wrap.appendChild(msg);
-    wrap.scrollTop = wrap.scrollHeight;
-}
-
-async function toggleFavorite() {
-    if (!partnerEmail) return;
-    isFavorite = !isFavorite;
-    await fetch('/api/favorite', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userEmail: user.email, partnerEmail, action: isFavorite ? 'add' : 'remove' })
-    });
-    document.getElementById('favoriteBtn').style.boxShadow = isFavorite ? '0 0 12px rgba(250,204,21,.4)' : '';
-}
-
-async function checkBlurStatus() {
-    if (!partnerEmail || user.role !== 'earner') return;
-    try {
-        const res = await fetch('/api/check-blur', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ womanEmail: user.email, manEmail: partnerEmail })
-        });
-        const d = await res.json();
-        if (d.blurred) {
-            manCameraBlurred = true;
-            document.getElementById('selfWrap').classList.add('blur');
-            document.getElementById('blurBtn').classList.add('active');
-        }
-    } catch {}
-}
-
-async function toggleBlur() {
-    if (!partnerEmail || user.role !== 'earner') return;
-    manCameraBlurred = !manCameraBlurred;
-    document.getElementById('selfWrap').classList.toggle('blur', manCameraBlurred);
-    document.getElementById('blurBtn').classList.toggle('active', manCameraBlurred);
-    await fetch('/api/toggle-blur', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ womanEmail: user.email, manEmail: partnerEmail, enabled: manCameraBlurred })
-    });
-}
-
-// === CALL TIMER & BILLING ===
-function startCallTimer() {
-    callStartTime = Date.now();
-    minutesBilled = 0;
-    document.getElementById('callStats').classList.add('show');
-    callTimer = setInterval(() => {
-        const elapsed = Math.floor((Date.now() - callStartTime)/1000);
-        const m = Math.floor(elapsed/60).toString().padStart(2,'0');
-        const s = (elapsed%60).toString().padStart(2,'0');
-        document.getElementById('callTimer').textContent = `${m}:${s}`;
-        const currentMinute = Math.floor(elapsed/60);
-        if (currentMinute > minutesBilled) {
-            minutesBilled = currentMinute;
-            billOneMinute();
-        }
-    }, 1000);
-}
-
-async function billOneMinute() {
-    if (!partnerEmail) return;
-    try {
-        const res = await fetch('/call/bill-minute', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ payerEmail: user.role==='payer'?user.email:partnerEmail, earnerEmail: user.role==='earner'?user.email:partnerEmail })
-        });
-        const d = await res.json();
-        if (d.outOfCoins) { alert('⚠️ Coins ran out — call ended'); endCall(); return; }
-        if (d.success) {
-            totalMinutesTogether = d.totalMinutesTogether;
-            document.getElementById('minCount').textContent = `${d.totalMinutesTogether}/${UNLOCK_MINUTES}`;
-            document.getElementById('coinCount').textContent = d.payerCoins;
-            if (user.role==='earner') document.getElementById('earnDisplay strong').textContent = `+${(minutesBilled*RATE_EARN_PER_MINUTE).toFixed(2)}`;
-            if (user.role==='payer') document.getElementById('costDisplay strong').textContent = `-${minutesBilled}`;
-            if (d.canText) checkSmsUnlock();
-        }
-    } catch(e){}
-}
-
-function setStatus(t){document.getElementById('callStatus').textContent=t}
+// PARTNER & CALL
+function nextPartner(){ if((user.coins||0)<10){alert('⚠️ Need 10 coins!');openHub();return;} endCall(); setTimeout(findPartner, 500); }
 function setButtons(s){
     document.getElementById('findBtn').classList.toggle('hidden', s!=='searching');
-    document.getElementById('endBtn').class
-// ==============================================
-// ✅ THESE ARE THE MISSING FUNCTIONS — ADD THEM
-// ==============================================
+    document.getElementById('endBtn').classList.toggle('hidden', s!=='connected');
+    document.getElementById('nextBtn').classList.toggle('hidden', s!=='connected');
+    document.getElementById('smsToggle').classList.toggle('hidden', s!=='connected');
+    document.getElementById('favoriteBtn').classList.toggle('hidden', s!=='connected' || user.role!=='payer');
+    document.getElementById('blurBtn').classList.toggle('hidden', s!=='connected' || user.role!=='earner');
+}
+function setStatus(t){ document.getElementById('callStatus').textContent = t; }
 
-// OPEN BUY COINS MODAL
-function openHub(){
-    document.getElementById('hubModal').classList.add('show');
-    document.getElementById('hubMsg').textContent = '';
+async function findPartner(){
+    if((user.coins||0)<10){alert('⚠️ Need at least 10 coins!'); openHub(); return;}
+    setStatus('🔍 Searching...');
+    document.getElementById('remoteEmpty').style.display='block';
+    document.getElementById('remoteEmpty').innerHTML='<h3>🔍 Searching...</h3><p>Please wait</p>';
+    document.getElementById('remoteVid').srcObject=null;
+    setButtons('searching');
+    socket.emit('find-partner', {role:user.role});
 }
 
-// CLOSE BUY COINS MODAL
-function closeHub(){
-    document.getElementById('hubModal').classList.remove('show');
-}
+socket.on('partner-found', async (data)=>{
+    partnerId=data.partnerId; partnerEmail=data.email; partnerName=data.name||'Partner';
+    setStatus(`✅ Connected with ${partnerName}`);
+    document.getElementById('remoteEmpty').style.display='none';
+    document.getElementById('partnerLabel').textContent='👤 '+partnerName;
+    document.getElementById('callStats').classList.add('show');
+    setButtons('connected');
+    startTimer();
+});
 
-// BUY COINS HANDLER
-async function buy(pack){
-    const msgBox = document.getElementById('hubMsg');
-    msgBox.textContent = 'Processing...';
-    msgBox.className = 'msg ok';
-    try {
-        const res = await fetch('/buy-coins', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: user.email, pack })
-        });
-        const d = await res.json();
-        if (d.success) {
-            user.coins = d.newCoinCount;
-            localStorage.setItem('user', JSON.stringify(user));
-            document.getElementById('coinCount').textContent = d.newCoinCount;
-            msgBox.textContent = '✅ Coins added!';
-            setTimeout(closeHub, 1500);
-        } else {
-            msgBox.textContent = d.error || 'Failed';
-            msgBox.className = 'msg err';
+socket.on('partner-left', ()=>{ endCall(); setStatus('Partner left'); });
+
+function startTimer(){
+    callStartTime=Date.now(); minutesBilled=0;
+    callTimer=setInterval(()=>{
+        const elapsed=Math.floor((Date.now()-callStartTime)/1000);
+        const m=Math.floor(elapsed/60).toString().padStart(2,'0');
+        const s=(elapsed%60).toString().padStart(2,'0');
+        document.getElementById('callTimer').textContent=`${m}:${s}`;
+        const currMin=Math.floor(elapsed/60);
+        if(currMin>minutesBilled){
+            minutesBilled=currMin; totalMinutesTogether++;
+            document.getElementById('minCount').textContent = `${totalMinutesTogether}/${UNLOCK_MIN}`;
+            if(user.role==='payer'){
+                document.getElementById('costDisplay').querySelector('strong').textContent = `-${minutesBilled}`;
+            } else {
+                document.getElementById('earnDisplay').querySelector('strong').textContent = `$${(minutesBilled*EARNS_PER_MIN).toFixed(2)}`;
+            }
         }
-    } catch {
-        msgBox.textContent = '⚠️ Server error';
-        msgBox.className = 'msg err';
-    }
+    },1000);
 }
 
-// LOGOUT BUTTON
-function logout(){
-    if (confirm('Logout?')) {
-        localStorage.removeItem('user');
-        window.location.href = 'login.html';
-    }
-}
-
-// NEXT PARTNER BUTTON
-function nextPartner(){
-    if ((user.coins || 0) < 10) {
-        alert('⚠️ Need 10 coins!');
-        openHub();
-        return;
-    }
-    endCall();
-    setTimeout(() => findPartner(), 500);
-}
-
-// END CALL FUNCTION (if missing)
 function endCall(){
-    if(callTimer) clearInterval(callTimer);
-    if(pc) pc.close();
-    callStartTime = null;
-    minutesBilled = 0;
+    if(callTimer)clearInterval(callTimer);
+    callStartTime=null; minutesBilled=0;
     document.getElementById('callStats').classList.remove('show');
-    document.getElementById('remoteEmpty').style.display = 'block';
-    document.getElementById('remoteEmpty').innerHTML = '<h3>✨ Ready to connect?</h3><p>Find a partner or call someone below</p>';
-    if(document.getElementById('remoteVid')) document.getElementById('remoteVid').srcObject = null;
-    document.getElementById('smsToggle').classList.add('hidden');
-    document.getElementById('favoriteBtn').classList.add('hidden');
-    document.getElementById('blurBtn').classList.add('hidden');
-    document.getElementById('smsPanel').classList.remove('show');
-    setButtons('idle');
-    partnerId = partnerEmail = partnerName = null;
-    isFavorite = manCameraBlurred = false;
-    document.getElementById('selfWrap').classList.remove('blur');
+    document.getElementById('remoteEmpty').style.display='block';
+    document.getElementById('remoteEmpty').innerHTML='<h3>✨ Ready to connect?</h3><p>Find a partner below</p>';
+    document.getElementById('remoteVid').srcObject=null;
+    setButtons('searching');
+    partnerId=partnerEmail=partnerName=null;
+    isBlurred=false; document.getElementById('blurBtn').classList.remove('active');
 }
 
-// SET BUTTON STATES
-function setButtons(s){
-    document.getElementById('findBtn').classList.toggle('hidden', s !== 'searching');
-    document.getElementById('endBtn').classList.toggle('hidden', s !== 'connected');
-    document.getElementById('nextBtn').classList.toggle('hidden', s !== 'connected');
-}
+async function loadOnlineWomen(){/*placeholder*/}
+async function loadChatHub(){/*placeholder*/}
+function toggleSmsPanel(){ document.getElementById('smsPanel').classList.toggle('show'); }
+async function sendSms(){ alert('Unlock chat first by calling!'); }
+function toggleFavorite(){ isFavorite=!isFavorite; document.getElementById('favoriteBtn').style.background=isFavorite?'gold':''; }
+function toggleBlur(){ isBlurred=!isBlurred; document.getElementById('selfWrap').classList.toggle('blur',isBlurred); document.getElementById('blurBtn').classList.toggle('active',isBlurred); }
+</script>
+</body>
+</html>
